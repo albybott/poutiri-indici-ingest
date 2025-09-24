@@ -1,6 +1,6 @@
 # Poutiri Indici Ingest Service
 
-A modern Node.js TypeScript project built with best practices for 2025.
+Headless S3→Postgres ingestion for Indici extracts (raw/stg/core with audits). A modern Node.js TypeScript project built with best practices for 2025.
 
 ## Features
 
@@ -15,7 +15,7 @@ A modern Node.js TypeScript project built with best practices for 2025.
 ## Prerequisites
 
 - Node.js 18.17+ or 20+
-- pnpm 8.0.0+
+- pnpm 9.5.0+
 
 ## Quick Start
 
@@ -42,15 +42,20 @@ pnpm check-all
 ## Available Scripts
 
 - `pnpm dev` - Start development server with hot reload
+- `pnpm dev:debug` - Start development server with debugging enabled
 - `pnpm build` - Build TypeScript to JavaScript
+- `pnpm build:clean` - Clean and build TypeScript to JavaScript
 - `pnpm start` - Start production server
+- `pnpm start:prod` - Start production server with NODE_ENV=production
 - `pnpm clean` - Clean build directory
 - `pnpm type-check` - Type check without building
 - `pnpm lint` - Run ESLint
 - `pnpm lint:fix` - Fix ESLint issues automatically
 - `pnpm format` - Format code with Prettier
+- `pnpm format:check` - Check code formatting without fixing
 - `pnpm test` - Run tests in watch mode
 - `pnpm test:run` - Run tests once
+- `pnpm test:coverage` - Run tests with coverage report
 - `pnpm check-all` - Run all quality checks
 
 ## Project Structure
@@ -59,11 +64,7 @@ pnpm check-all
 /
 ├── src/
 │   ├── index.ts          # Main entry point
-│   ├── types/            # Type definitions
 │   ├── utils/            # Utility functions
-│   ├── services/         # Business logic services
-│   ├── controllers/      # Request handlers
-│   ├── models/           # Data models
 │   └── __tests__/        # Test files
 ├── config/               # Configuration files
 ├── docs/                 # Documentation
@@ -72,13 +73,15 @@ pnpm check-all
 
 ## Environment Variables
 
-Create a `.env` file based on `.env.example`:
+Create a `.env` file in the project root with the following variables:
 
 ```env
 NODE_ENV=development
 PORT=3000
 LOG_LEVEL=info
 ```
+
+The project uses `dotenv` to load environment variables automatically.
 
 ## Development
 
