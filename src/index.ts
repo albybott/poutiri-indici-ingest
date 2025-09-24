@@ -10,6 +10,7 @@ const config: AppConfig = {
   environment: process.env.NODE_ENV || "development",
 };
 
+// eslint-disable-next-line @typescript-eslint/require-await
 async function main(): Promise<void> {
   console.log("🚀 Starting application...");
   console.log(`📡 Environment: ${config.environment}`);
