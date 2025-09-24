@@ -1,3 +1,6 @@
+// Schema definitions
+export * from "./schemas";
+
 // Raw schemas - all source columns as text with lineage
 export * from "./raw/patients";
 export * from "./raw/appointments";
