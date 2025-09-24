@@ -1,63 +1,40 @@
-# Environment files - NEVER commit these!
-.env
-.env.local
-.env.production
-.env.staging
-*.env
-
-# Docker volumes and data directories
-data/
-volumes/
-redis-data/
-postgres-data/
-mongodb-data/
-mysql-data/
-
-# Backup files
-backups/
-*.sql
-*.dump
-*.rdb
-*.aof
-
-# Log files
-logs/
-*.log
-*.log.*
+# Dependencies
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+.pnpm-debug.log*
 
 # Runtime data
-pids/
+pids
 *.pid
 *.seed
 *.pid.lock
 
-# Docker related files that might be generated
-docker-compose.override.yml
-.dockerignore
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+.nyc_output
 
-# SSL certificates and keys
-ssl/
-certs/
-*.pem
-*.key
-*.crt
-*.p12
-*.pfx
+# Compiled output
+dist/
+build/
+*.tsbuildinfo
 
-# Secrets and credentials
-secrets/
-credentials/
-auth/
-tokens/
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# Temporary files
-tmp/
-temp/
-.tmp/
-.cache/
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 
 # OS generated files
 .DS_Store
@@ -67,68 +44,16 @@ temp/
 .Trashes
 ehthumbs.db
 Thumbs.db
-*.swp
-*.swo
-*~
 
-# IDE and editor files
-.vscode/
-.idea/
-*.sublime-project
-*.sublime-workspace
-.project
-.settings/
-.classpath
+# Logs
+logs
+*.log
 
-# Node.js (if you have any Node scripts)
-node_modules/
-package-lock.json
-yarn.lock
+# Runtime data
+*.pid
+*.seed
+*.pid.lock
 
-# Python (if you have any Python scripts)
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-venv/
-.venv/
-
-# Terraform (if you use IaC)
-*.tfstate
-*.tfstate.*
-.terraform/
-*.tfplan
-
-# Ansible (if you use configuration management)
-*.retry
-
-# Local configuration overrides
-config.local.*
-settings.local.*
-docker-compose.local.yml
-
-# Monitoring and metrics data
-prometheus-data/
-grafana-data/
-influxdb-data/
-
-# Application specific data directories
-nextcloud-data/
-plex-data/
-jellyfin-data/
-sonarr-data/
-radarr-data/
-
-# Test files and coverage
-coverage/
-.nyc_output/
-.coverage
-
-# Archive files
-*.tar
-*.tar.gz
-*.zip
-*.rar
-*.7z
+# Temporary folders
+tmp/
+temp/
