@@ -1,0 +1,46 @@
+import { text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { createTable } from "../../../utils/create-table.js";
+
+export const recallsRaw = createTable("raw.recalls_raw", {
+  // Source columns as text (all fields from Recalls extract)
+  reCallId: text("re_call_id"),
+  patientId: text("patient_id"),
+  reCallDate: text("re_call_date"),
+  isContacted: text("is_contacted"),
+  notes: text("notes"),
+  patientMedTechId: text("patient_med_tech_id"),
+  recallReason: text("recall_reason"),
+  screeningType: text("screening_type"),
+  code: text("code"),
+  vaccine: text("vaccine"),
+  vaccineGroup: text("vaccine_group"),
+  reCallGroup: text("re_call_group"),
+  insertedAt: text("inserted_at"),
+  insertedby: text("insertedby"),
+  updatedAt: text("updated_at"),
+  updatedBy: text("updated_by"),
+  isActive: text("is_active"),
+  practice: text("practice"),
+  practiceId: text("practice_id"),
+  providerId: text("provider_id"),
+  isDeleted: text("is_deleted"),
+  permanentAddressLatitude: text("permanent_address_latitude"),
+  permanentAddressLongitude: text("permanent_address_longitude"),
+  isConfidential: text("is_confidential"),
+  showonPatientPortal: text("showon_patient_portal"),
+  isCanceled: text("is_canceled"),
+  reCallAttempts: text("re_call_attempts"),
+  scnCode: text("scn_code"),
+  perOrgId: text("per_org_id"),
+  loadedDateTime: text("loaded_date_time"),
+
+  // Lineage columns
+  s3Bucket: text("s3_bucket").notNull(),
+  s3Key: text("s3_key").notNull(),
+  s3VersionId: text("s3_version_id").notNull(),
+  fileHash: text("file_hash").notNull(),
+  dateExtracted: text("date_extracted").notNull(),
+  extractType: text("extract_type").notNull(),
+  loadRunId: uuid("load_run_id").notNull(),
+  loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
+});

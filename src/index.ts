@@ -1,20 +1,17 @@
 import "dotenv/config";
 
 interface AppConfig {
-  port: number;
-  environment: string;
+  databaseUrl: string;
 }
 
 const config: AppConfig = {
-  port: parseInt(process.env.PORT || "3000", 10),
-  environment: process.env.NODE_ENV || "development",
+  databaseUrl: process.env.DATABASE_URL!,
 };
 
 // eslint-disable-next-line @typescript-eslint/require-await
 async function main(): Promise<void> {
   console.log("🚀 Starting application...");
-  console.log(`📡 Environment: ${config.environment}`);
-  console.log(`🌐 Port: ${config.port}`);
+  console.log(`📡 Database URL: ${config.databaseUrl}`);
 
   // Your application logic here
   console.log("✅ Application started successfully!");

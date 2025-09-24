@@ -1,0 +1,48 @@
+import { text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { createTable } from "../../../utils/create-table.js";
+
+export const patientAlertsRaw = createTable("raw.patient_alerts_raw", {
+  // Source columns as text (all fields from PatientAlerts extract)
+  patientAlertId: text("patient_alert_id"),
+  patientId: text("patient_id"),
+  typeId: text("type_id"),
+  type: text("type"),
+  alertId: text("alert_id"),
+  alert: text("alert"),
+  severityId: text("severity_id"),
+  severity: text("severity"),
+  alertValue: text("alert_value"),
+  lastUpdatedDate: text("last_updated_date"),
+  effectiveDate: text("effective_date"),
+  expiryDate: text("expiry_date"),
+  note: text("note"),
+  isActive: text("is_active"),
+  isDeleted: text("is_deleted"),
+  insertedById: text("inserted_by_id"),
+  insertedBy: text("inserted_by"),
+  updatedById: text("updated_by_id"),
+  updatedBy: text("updated_by"),
+  insertedAt: text("inserted_at"),
+  updatedAt: text("updated_at"),
+  medTechId: text("med_tech_id"),
+  userLoggingId: text("user_logging_id"),
+  loggingUserName: text("logging_user_name"),
+  isGp2Gp: text("is_gp2gp"),
+  permanentAddressLatitude: text("permanent_address_latitude"),
+  permanentAddressLongitude: text("permanent_address_longitude"),
+  alertState: text("alert_state"),
+  practiceId: text("practice_id"),
+  providerId: text("provider_id"),
+  perOrgId: text("per_org_id"),
+  loadedDateTime: text("loaded_date_time"),
+
+  // Lineage columns
+  s3Bucket: text("s3_bucket").notNull(),
+  s3Key: text("s3_key").notNull(),
+  s3VersionId: text("s3_version_id").notNull(),
+  fileHash: text("file_hash").notNull(),
+  dateExtracted: text("date_extracted").notNull(),
+  extractType: text("extract_type").notNull(),
+  loadRunId: uuid("load_run_id").notNull(),
+  loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
+});

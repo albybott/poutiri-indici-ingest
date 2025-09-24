@@ -40,9 +40,11 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^20.11.0",
+    "@types/node": "^20.19.17",
+    "@types/pg": "^8.15.5",
     "@typescript-eslint/eslint-plugin": "^8.39.1",
     "@typescript-eslint/parser": "^8.39.1",
+    "drizzle-kit": "^0.31.4",
     "eslint": "^9.33.0",
     "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
@@ -51,6 +53,9 @@
     "vitest": "^3.2.4"
   },
   "dependencies": {
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.6.1",
+    "drizzle-orm": "^0.44.5",
+    "pg": "^8.16.3",
+    "postgres": "^3.4.7"
   }
 }
