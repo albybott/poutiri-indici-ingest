@@ -1,4 +1,5 @@
 import { index, uniqueIndex } from "drizzle-orm/pg-core";
+
 import {
   patientsRaw,
   appointmentsRaw,
@@ -9,23 +10,28 @@ import {
   practiceInfoRaw,
   measurementsRaw,
   diagnosesRaw,
-  recallsRaw,
-  inboxRaw,
-  inboxDetailRaw,
-  medicineRaw,
-  nextOfKinRaw,
-  vaccineRaw,
-  allergiesRaw,
-  appointmentMedicationsRaw,
-  patientAlertsRaw,
-} from "./raw";
+  // recallsRaw,
+  // inboxRaw,
+  // inboxDetailRaw,
+  // medicineRaw,
+  // nextOfKinRaw,
+  // vaccineRaw,
+  // allergiesRaw,
+  // appointmentMedicationsRaw,
+  // patientAlertsRaw,
+} from "./index.js";
+
 import {
   patientsStg,
   appointmentsStg,
   immunisationsStg,
   invoicesStg,
   invoiceDetailStg,
-} from "./stg";
+  providersStg,
+  practiceInfoStg,
+  diagnosesStg,
+} from "./index.js";
+
 import {
   dimPatient,
   dimProvider,
@@ -38,7 +44,8 @@ import {
   factInvoiceDetail,
   factDiagnosis,
   factMeasurement,
-} from "./core";
+} from "./index.js";
+
 import {
   loadRuns,
   loadRunFiles,
@@ -47,7 +54,7 @@ import {
   config,
   extractConfig,
   dqThresholds,
-} from "./etl";
+} from "./index.js";
 
 // Raw schema indexes - optimized for discovery and lineage tracking
 export const rawIndexes = {
@@ -207,6 +214,49 @@ export const stgIndexes = {
     invoiceTransactionId: index(
       "invoice_detail_stg_invoice_transaction_id_idx"
     ).on(invoiceDetailStg.invoiceTransactionId),
+  },
+  providersStg: {
+    naturalKey: uniqueIndex("providers_stg_natural_key_idx").on(
+      providersStg.providerId,
+      providersStg.practiceId,
+      providersStg.perOrgId
+    ),
+    providerId: index("providers_stg_provider_id_idx").on(
+      providersStg.providerId
+    ),
+    nhiNumber: index("providers_stg_nhi_number_idx").on(providersStg.nhiNumber),
+    isActive: index("providers_stg_is_active_idx").on(providersStg.isActive),
+    dob: index("providers_stg_dob_idx").on(providersStg.dob),
+  },
+  practiceInfoStg: {
+    naturalKey: uniqueIndex("practice_info_stg_natural_key_idx").on(
+      practiceInfoStg.practiceId,
+      practiceInfoStg.perOrgId
+    ),
+    practiceId: index("practice_info_stg_practice_id_idx").on(
+      practiceInfoStg.practiceId
+    ),
+    isActive: index("practice_info_stg_is_active_idx").on(
+      practiceInfoStg.isActive
+    ),
+    practiceName: index("practice_info_stg_practice_name_idx").on(
+      practiceInfoStg.practiceName
+    ),
+  },
+  diagnosesStg: {
+    naturalKey: uniqueIndex("diagnoses_stg_natural_key_idx").on(
+      diagnosesStg.diagnosisId,
+      diagnosesStg.practiceId,
+      diagnosesStg.perOrgId
+    ),
+    diagnosisId: index("diagnoses_stg_diagnosis_id_idx").on(
+      diagnosesStg.diagnosisId
+    ),
+    patientId: index("diagnoses_stg_patient_id_idx").on(diagnosesStg.patientId),
+    diagnosisDate: index("diagnoses_stg_diagnosis_date_idx").on(
+      diagnosesStg.diagnosisDate
+    ),
+    isActive: index("diagnoses_stg_is_active_idx").on(diagnosesStg.isActive),
   },
 };
 
@@ -388,9 +438,6 @@ export const coreIndexes = {
       factMeasurement.practiceId,
       factMeasurement.perOrgId
     ),
-    patientId: index("fact_measurement_patient_id_idx").on(
-      factMeasurement.patientId
-    ),
     patientKey: index("fact_measurement_patient_key_idx").on(
       factMeasurement.patientKey
     ),
@@ -478,7 +525,3 @@ export const etlIndexes = {
     isActive: index("dq_thresholds_is_active_idx").on(dqThresholds.isActive),
   },
 };
-
-
-
-

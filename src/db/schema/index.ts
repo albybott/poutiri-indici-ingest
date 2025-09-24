@@ -24,6 +24,9 @@ export * from "./stg/appointments.js";
 export * from "./stg/immunisations.js";
 export * from "./stg/invoices.js";
 export * from "./stg/invoice_detail.js";
+export * from "./stg/providers.js";
+export * from "./stg/practice_info.js";
+export * from "./stg/diagnoses.js";
 export * from "./stg/mappings.js";
 
 // Shared enums and types
@@ -67,6 +70,9 @@ export const stgSchemas = {
   immunisations: () => import("./stg/immunisations.js"),
   invoices: () => import("./stg/invoices.js"),
   invoiceDetail: () => import("./stg/invoice_detail.js"),
+  providers: () => import("./stg/providers.js"),
+  practiceInfo: () => import("./stg/practice_info.js"),
+  diagnoses: () => import("./stg/diagnoses.js"),
   mappings: () => import("./stg/mappings.js"),
 };
 
