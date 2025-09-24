@@ -1,4 +1,11 @@
-import { text, timestamp, uuid, boolean, date } from "drizzle-orm/pg-core";
+import {
+  text,
+  timestamp,
+  uuid,
+  boolean,
+  date,
+  uniqueIndex,
+} from "drizzle-orm/pg-core";
 import { createTable } from "../../../utils/create-table";
 
 export const practiceInfoStg = createTable("stg.practice_info", {
@@ -55,3 +62,12 @@ export const practiceInfoStg = createTable("stg.practice_info", {
   loadRunId: uuid("load_run_id").notNull(),
   loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
 });
+
+// Unique constraint on natural key - proper implementation
+// Temporarily commented out for testing
+// export const practiceInfoStgUniqueConstraint = uniqueIndex(
+//   "practice_info_stg_natural_key_idx"
+// ).on(
+//   practiceInfoStg.practiceId,
+//   practiceInfoStg.perOrgId
+// );

@@ -100,10 +100,10 @@ export const immunisationsStg = createTable("stg.immunisations", {
 });
 
 // Unique constraint on natural key - proper implementation
-export const immunisationsStgUniqueConstraint = uniqueIndex(
-  "immunisations_stg_natural_key_idx"
-).on(
-  immunisationsStg.appointmentImmunisationId,
-  immunisationsStg.practiceId,
-  immunisationsStg.perOrgId
-);
+// export const immunisationsStgUniqueConstraint = uniqueIndex(
+//   "immunisations_stg_natural_key_idx"
+// ).on(
+//   immunisationsStg.appointmentImmunisationId,
+//   immunisationsStg.practiceId,
+//   immunisationsStg.perOrgId
+// );

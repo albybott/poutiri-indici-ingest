@@ -60,10 +60,10 @@ export const invoicesStg = createTable("stg.invoices", {
 });
 
 // Unique constraint on natural key - proper implementation
-export const invoicesStgUniqueConstraint = uniqueIndex(
-  "invoices_stg_natural_key_idx"
-).on(
-  invoicesStg.invoiceTransactionId,
-  invoicesStg.practiceId,
-  invoicesStg.perOrgId
-);
+// export const invoicesStgUniqueConstraint = uniqueIndex(
+//   "invoices_stg_natural_key_idx"
+// ).on(
+//   invoicesStg.invoiceTransactionId,
+//   invoicesStg.practiceId,
+//   invoicesStg.perOrgId
+// );

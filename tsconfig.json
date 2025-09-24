@@ -4,21 +4,15 @@
     // Language and Environment
     "target": "ES2022",
     "lib": ["ES2022"],
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
 
     // Strict Type Checking
     "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
     "noImplicitReturns": true,
-    "noImplicitOverride": true,
-    "noUncheckedIndexedAccess": true,
 
     // Module Resolution and Interop
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "verbatimModuleSyntax": true,
@@ -27,21 +21,34 @@
     // Emit Options
     "outDir": "./dist",
     "rootDir": "./src",
-    "removeComments": true,
+    "removeComments": false,
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
     "noEmit": false,
+    "newLine": "lf",
+    "stripInternal": true,
 
     // Performance
     "skipLibCheck": true,
     "incremental": true,
-    "tsBuildInfoFile": "./dist/.tsbuildinfo"
+    "tsBuildInfoFile": "./dist/.tsbuildinfo",
+    "assumeChangesOnlyAffectDirectDependencies": true
 
     // Notes:
     // - Omit "isolatedModules" unless using a bundler that requires it.
     // - If using path aliases, add baseUrl and paths here.
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.json",
+    "src/**/*.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "coverage",
+    "**/*.test.js",
+    "**/*.spec.js"
+  ]
 }

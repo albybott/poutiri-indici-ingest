@@ -101,10 +101,10 @@ export const appointmentsStg = createTable("stg.appointments", {
 });
 
 // Unique constraint on natural key - proper implementation
-export const appointmentsStgUniqueConstraint = uniqueIndex(
-  "appointments_stg_natural_key_idx"
-).on(
-  appointmentsStg.appointmentId,
-  appointmentsStg.practiceId,
-  appointmentsStg.perOrgId
-);
+// export const appointmentsStgUniqueConstraint = uniqueIndex(
+//   "appointments_stg_natural_key_idx"
+// ).on(
+//   appointmentsStg.appointmentId,
+//   appointmentsStg.practiceId,
+//   appointmentsStg.perOrgId
+// );

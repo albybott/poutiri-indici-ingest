@@ -29,7 +29,9 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "check-all": "pnpm type-check && pnpm lint && pnpm format:check && pnpm test:run"
+    "check-all": "pnpm type-check && pnpm lint && pnpm format:check && pnpm test:run",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
   },
   "keywords": [
     "typescript",

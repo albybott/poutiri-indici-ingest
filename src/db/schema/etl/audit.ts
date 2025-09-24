@@ -8,6 +8,7 @@ import {
   serial,
   check,
   uniqueIndex,
+  index,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { createTable } from "../../../utils/create-table";
@@ -34,31 +35,41 @@ export const loadRuns = createTable("etl.load_runs", {
 });
 
 // Load run files - one per input file
-export const loadRunFiles = createTable("etl.load_run_files", {
-  loadRunFileId: serial("load_run_file_id").primaryKey(),
-  loadRunId: uuid("load_run_id").notNull(),
-  s3Bucket: text("s3_bucket").notNull(),
-  s3Key: text("s3_key").notNull(),
-  s3VersionId: text("s3_version_id").notNull(),
-  fileHash: text("file_hash").notNull(),
-  dateExtracted: text("date_extracted").notNull(),
-  extractType: text("extract_type").notNull(),
-  perOrgId: text("per_org_id").notNull(),
-  practiceId: text("practice_id").notNull(),
-  rowsRead: integer("rows_read").default(0),
-  rowsIngested: integer("rows_ingested").default(0),
-  rowsRejected: integer("rows_rejected").default(0),
-  startedAt: timestamp("started_at", { withTimezone: true }),
-  finishedAt: timestamp("finished_at", { withTimezone: true }),
-  status: text("status").notNull(), // 'pending', 'processing', 'completed', 'failed'
-  errorMessage: text("error_message"),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-});
+export const loadRunFiles = createTable(
+  "etl.load_run_files",
+  {
+    loadRunFileId: serial("load_run_file_id").primaryKey(),
+    loadRunId: uuid("load_run_id").notNull(),
+    s3Bucket: text("s3_bucket").notNull(),
+    s3Key: text("s3_key").notNull(),
+    s3VersionId: text("s3_version_id").notNull(),
+    fileHash: text("file_hash").notNull(),
+    dateExtracted: text("date_extracted").notNull(),
+    extractType: text("extract_type").notNull(),
+    perOrgId: text("per_org_id").notNull(),
+    practiceId: text("practice_id").notNull(),
+    rowsRead: integer("rows_read").default(0),
+    rowsIngested: integer("rows_ingested").default(0),
+    rowsRejected: integer("rows_rejected").default(0),
+    startedAt: timestamp("started_at", { withTimezone: true }),
+    finishedAt: timestamp("finished_at", { withTimezone: true }),
+    status: text("status").notNull(), // 'pending', 'processing', 'completed', 'failed'
+    errorMessage: text("error_message"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => ({
+    // Unique constraint for idempotency - ensure only one record per file
+    fileIdempotencyIdx: uniqueIndex("load_run_files_unique_idx").on(
+      table.s3VersionId,
+      table.fileHash
+    ),
+  })
+);
 
 // Data quality results - per-run metrics
 export const dqResults = createTable("etl.dq_results", {
@@ -183,8 +194,3 @@ export const rejectsInvoiceDetail = createTable("etl.rejects_invoice_detail", {
     .notNull()
     .defaultNow(),
 });
-
-// Unique constraint for idempotency - proper implementation
-export const loadRunFilesUniqueConstraint = uniqueIndex(
-  "load_run_files_unique_idx"
-).on(loadRunFiles.s3VersionId, loadRunFiles.fileHash);
