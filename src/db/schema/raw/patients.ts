@@ -3,7 +3,7 @@ import { sql } from "drizzle-orm";
 import { extractTypeEnum } from "../shared/enums.js";
 import { createTable } from "../../../utils/create-table.js";
 
-export const patientsRaw = createTable("raw.patients_raw", {
+export const patientsRaw = createTable("raw.patients", {
   // Source columns as text (all fields from Patient extract)
   patientId: text("patient_id"),
   nhiNumber: text("nhi_number"),

@@ -1,7 +1,7 @@
 import { text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { createTable } from "../../../utils/create-table.js";
 
-export const invoiceDetailRaw = createTable("raw.invoice_detail_raw", {
+export const invoiceDetailRaw = createTable("raw.invoice_detail", {
   // Source columns as text (all fields from InvoiceDetail extract)
   invoiceDetailId: text("invoice_detail_id"),
   invoiceTransactionId: text("invoice_transaction_id"),

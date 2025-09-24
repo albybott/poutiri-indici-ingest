@@ -1,7 +1,7 @@
 import { text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { createTable } from "../../../utils/create-table.js";
 
-export const inboxDetailRaw = createTable("raw.inbox_detail_raw", {
+export const inboxDetailRaw = createTable("raw.inbox_detail", {
   // Source columns as text (all fields from InboxDetail extract)
   inBoxFolderItemInLineId: text("in_box_folder_item_in_line_id"),
   inboxFolderItemId: text("inbox_folder_item_id"),

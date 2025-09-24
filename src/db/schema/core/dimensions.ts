@@ -11,7 +11,7 @@ import {
 import { createTable } from "../../../utils/create-table.js";
 
 // Patient dimension with SCD2
-export const dimPatient = createTable("core.dim_patient", {
+export const dimPatient = createTable("core.patient", {
   // Surrogate key
   patientKey: serial("patient_key").primaryKey(),
 
@@ -77,7 +77,7 @@ export const dimPatient = createTable("core.dim_patient", {
 });
 
 // Provider dimension with SCD2
-export const dimProvider = createTable("core.dim_provider", {
+export const dimProvider = createTable("core.provider", {
   // Surrogate key
   providerKey: serial("provider_key").primaryKey(),
 
@@ -130,7 +130,7 @@ export const dimProvider = createTable("core.dim_provider", {
 });
 
 // Practice dimension with SCD1/2 as needed
-export const dimPractice = createTable("core.dim_practice", {
+export const dimPractice = createTable("core.practice", {
   // Surrogate key
   practiceKey: serial("practice_key").primaryKey(),
 
@@ -185,7 +185,7 @@ export const dimPractice = createTable("core.dim_practice", {
 });
 
 // Medicine dimension with SCD2
-export const dimMedicine = createTable("core.dim_medicine", {
+export const dimMedicine = createTable("core.medicine", {
   // Surrogate key
   medicineKey: serial("medicine_key").primaryKey(),
 
@@ -221,7 +221,7 @@ export const dimMedicine = createTable("core.dim_medicine", {
 });
 
 // Vaccine dimension with SCD2
-export const dimVaccine = createTable("core.dim_vaccine", {
+export const dimVaccine = createTable("core.vaccine", {
   // Surrogate key
   vaccineKey: serial("vaccine_key").primaryKey(),
 

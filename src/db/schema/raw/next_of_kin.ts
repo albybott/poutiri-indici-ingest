@@ -1,7 +1,7 @@
 import { text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { createTable } from "../../../utils/create-table.js";
 
-export const nextOfKinRaw = createTable("raw.next_of_kin_raw", {
+export const nextOfKinRaw = createTable("raw.next_of_kin", {
   // Source columns as text (all fields from NextofKin extract)
   nexttoKinId: text("nextto_kin_id"),
   patientId: text("patient_id"),

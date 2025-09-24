@@ -11,7 +11,7 @@ import {
 import { sql } from "drizzle-orm";
 import { createTable } from "../../../utils/create-table.js";
 
-export const invoiceDetailStg = createTable("stg.invoice_detail_stg", {
+export const invoiceDetailStg = createTable("stg.invoice_detail", {
   // Typed columns with proper constraints
   invoiceDetailId: text("invoice_detail_id").notNull(),
   invoiceTransactionId: text("invoice_transaction_id"),

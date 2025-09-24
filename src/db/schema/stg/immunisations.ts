@@ -12,7 +12,7 @@ import {
 import { sql } from "drizzle-orm";
 import { createTable } from "../../../utils/create-table.js";
 
-export const immunisationsStg = createTable("stg.immunisations_stg", {
+export const immunisationsStg = createTable("stg.immunisations", {
   // Typed columns with proper constraints
   appointmentImmunisationId: text("appointment_immunisation_id").notNull(),
   patientId: text("patient_id"),

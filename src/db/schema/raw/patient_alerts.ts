@@ -1,7 +1,7 @@
 import { text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { createTable } from "../../../utils/create-table.js";
 
-export const patientAlertsRaw = createTable("raw.patient_alerts_raw", {
+export const patientAlertsRaw = createTable("raw.patient_alerts", {
   // Source columns as text (all fields from PatientAlerts extract)
   patientAlertId: text("patient_alert_id"),
   patientId: text("patient_id"),

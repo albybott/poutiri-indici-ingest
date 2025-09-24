@@ -2,7 +2,7 @@ import { text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { createTable } from "../../../utils/create-table.js";
 import { extractTypeEnum } from "../shared/enums.js";
 
-export const allergiesRaw = createTable("raw.allergies_raw", {
+export const allergiesRaw = createTable("raw.allergies", {
   // Source columns as text (all fields from Allergies extract)
   allergyId: text("allergy_id"),
   appointmentId: text("appointment_id"),
