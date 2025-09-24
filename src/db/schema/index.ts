@@ -1,89 +1,89 @@
 // Raw schemas - all source columns as text with lineage
-export * from "./raw/patients.js";
-export * from "./raw/appointments.js";
-export * from "./raw/immunisations.js";
-export * from "./raw/invoices.js";
-export * from "./raw/invoice_detail.js";
-export * from "./raw/providers.js";
-export * from "./raw/practice_info.js";
-export * from "./raw/measurements.js";
-export * from "./raw/diagnoses.js";
-export * from "./raw/recalls.js";
-export * from "./raw/inbox.js";
-export * from "./raw/inbox_detail.js";
-export * from "./raw/medicine.js";
-export * from "./raw/next_of_kin.js";
-export * from "./raw/vaccine.js";
-export * from "./raw/allergies.js";
-export * from "./raw/appointment_medications.js";
-export * from "./raw/patient_alerts.js";
+export * from "./raw/patients";
+export * from "./raw/appointments";
+export * from "./raw/immunisations";
+export * from "./raw/invoices";
+export * from "./raw/invoice_detail";
+export * from "./raw/providers";
+export * from "./raw/practice_info";
+export * from "./raw/measurements";
+export * from "./raw/diagnoses";
+export * from "./raw/recalls";
+export * from "./raw/inbox";
+export * from "./raw/inbox_detail";
+export * from "./raw/medicine";
+export * from "./raw/next_of_kin";
+export * from "./raw/vaccine";
+export * from "./raw/allergies";
+export * from "./raw/appointment_medications";
+export * from "./raw/patient_alerts";
 
 // Staging schemas - typed columns with constraints and mapping tables
-export * from "./stg/patients.js";
-export * from "./stg/appointments.js";
-export * from "./stg/immunisations.js";
-export * from "./stg/invoices.js";
-export * from "./stg/invoice_detail.js";
-export * from "./stg/providers.js";
-export * from "./stg/practice_info.js";
-export * from "./stg/diagnoses.js";
-export * from "./stg/mappings.js";
+export * from "./stg/patients";
+export * from "./stg/appointments";
+export * from "./stg/immunisations";
+export * from "./stg/invoices";
+export * from "./stg/invoice_detail";
+export * from "./stg/providers";
+export * from "./stg/practice_info";
+export * from "./stg/diagnoses";
+export * from "./stg/mappings";
 
 // Shared enums and types
-export * from "./shared/enums.js";
+export * from "./shared/enums";
 
 // Core schemas - dimensions and facts with SCD2 and relationships
-export * from "./core/dimensions.js";
-export * from "./core/facts.js";
+export * from "./core/dimensions";
+export * from "./core/facts";
 
 // ETL schemas - audit, config, and health management
-export * from "./etl/audit.js";
-export * from "./etl/health.js";
+export * from "./etl/audit";
+export * from "./etl/health";
 
 // Schema collections for dynamic loading
 // These enable loading schemas on-demand and provide a clean API
 // for dynamic schema management scenarios
 export const rawSchemas = {
-  patients: () => import("./raw/patients.js"),
-  appointments: () => import("./raw/appointments.js"),
-  immunisations: () => import("./raw/immunisations.js"),
-  invoices: () => import("./raw/invoices.js"),
-  invoiceDetail: () => import("./raw/invoice_detail.js"),
-  providers: () => import("./raw/providers.js"),
-  practiceInfo: () => import("./raw/practice_info.js"),
-  measurements: () => import("./raw/measurements.js"),
-  diagnoses: () => import("./raw/diagnoses.js"),
-  recalls: () => import("./raw/recalls.js"),
-  inbox: () => import("./raw/inbox.js"),
-  inboxDetail: () => import("./raw/inbox_detail.js"),
-  medicine: () => import("./raw/medicine.js"),
-  nextOfKin: () => import("./raw/next_of_kin.js"),
-  vaccine: () => import("./raw/vaccine.js"),
-  allergies: () => import("./raw/allergies.js"),
-  appointmentMedications: () => import("./raw/appointment_medications.js"),
-  patientAlerts: () => import("./raw/patient_alerts.js"),
+  patients: () => import("./raw/patients"),
+  appointments: () => import("./raw/appointments"),
+  immunisations: () => import("./raw/immunisations"),
+  invoices: () => import("./raw/invoices"),
+  invoiceDetail: () => import("./raw/invoice_detail"),
+  providers: () => import("./raw/providers"),
+  practiceInfo: () => import("./raw/practice_info"),
+  measurements: () => import("./raw/measurements"),
+  diagnoses: () => import("./raw/diagnoses"),
+  recalls: () => import("./raw/recalls"),
+  inbox: () => import("./raw/inbox"),
+  inboxDetail: () => import("./raw/inbox_detail"),
+  medicine: () => import("./raw/medicine"),
+  nextOfKin: () => import("./raw/next_of_kin"),
+  vaccine: () => import("./raw/vaccine"),
+  allergies: () => import("./raw/allergies"),
+  appointmentMedications: () => import("./raw/appointment_medications"),
+  patientAlerts: () => import("./raw/patient_alerts"),
 };
 
 export const stgSchemas = {
-  patients: () => import("./stg/patients.js"),
-  appointments: () => import("./stg/appointments.js"),
-  immunisations: () => import("./stg/immunisations.js"),
-  invoices: () => import("./stg/invoices.js"),
-  invoiceDetail: () => import("./stg/invoice_detail.js"),
-  providers: () => import("./stg/providers.js"),
-  practiceInfo: () => import("./stg/practice_info.js"),
-  diagnoses: () => import("./stg/diagnoses.js"),
-  mappings: () => import("./stg/mappings.js"),
+  patients: () => import("./stg/patients"),
+  appointments: () => import("./stg/appointments"),
+  immunisations: () => import("./stg/immunisations"),
+  invoices: () => import("./stg/invoices"),
+  invoiceDetail: () => import("./stg/invoice_detail"),
+  providers: () => import("./stg/providers"),
+  practiceInfo: () => import("./stg/practice_info"),
+  diagnoses: () => import("./stg/diagnoses"),
+  mappings: () => import("./stg/mappings"),
 };
 
 export const coreSchemas = {
-  dimensions: () => import("./core/dimensions.js"),
-  facts: () => import("./core/facts.js"),
+  dimensions: () => import("./core/dimensions"),
+  facts: () => import("./core/facts"),
 };
 
 export const etlSchemas = {
-  audit: () => import("./etl/audit.js"),
-  health: () => import("./etl/health.js"),
+  audit: () => import("./etl/audit"),
+  health: () => import("./etl/health"),
 };
 
 // Extract types enum for type safety

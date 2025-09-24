@@ -1,5 +1,5 @@
 import { text, timestamp, uuid, boolean, date } from "drizzle-orm/pg-core";
-import { createTable } from "../../../utils/create-table.js";
+import { createTable } from "../../../utils/create-table";
 
 export const practiceInfoStg = createTable("stg.practice_info", {
   // Typed columns with proper constraints

@@ -1,7 +1,7 @@
 import { text, timestamp, uuid, check } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
-import { extractTypeEnum } from "../shared/enums.js";
-import { createTable } from "../../../utils/create-table.js";
+import { extractTypeEnum } from "../shared/enums";
+import { createTable } from "../../../utils/create-table";
 
 export const patientsRaw = createTable("raw.patients", {
   // Source columns as text (all fields from Patient extract)

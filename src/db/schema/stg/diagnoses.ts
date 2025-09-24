@@ -7,7 +7,7 @@ import {
   decimal,
   date,
 } from "drizzle-orm/pg-core";
-import { createTable } from "../../../utils/create-table.js";
+import { createTable } from "../../../utils/create-table";
 
 export const diagnosesStg = createTable("stg.diagnoses", {
   // Typed columns with proper constraints

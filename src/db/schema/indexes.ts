@@ -19,7 +19,7 @@ import {
   // allergiesRaw,
   // appointmentMedicationsRaw,
   // patientAlertsRaw,
-} from "./index.js";
+} from "./";
 
 import {
   patientsStg,
@@ -30,7 +30,7 @@ import {
   providersStg,
   practiceInfoStg,
   diagnosesStg,
-} from "./index.js";
+} from "./";
 
 import {
   dimPatient,
@@ -44,7 +44,7 @@ import {
   factInvoiceDetail,
   factDiagnosis,
   factMeasurement,
-} from "./index.js";
+} from "./";
 
 import {
   loadRuns,
@@ -54,7 +54,7 @@ import {
   config,
   extractConfig,
   dqThresholds,
-} from "./index.js";
+} from "./";
 
 // Raw schema indexes - optimized for discovery and lineage tracking
 export const rawIndexes = {

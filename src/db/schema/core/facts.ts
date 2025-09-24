@@ -7,18 +7,11 @@ import {
   decimal,
   date,
   serial,
-  check,
   uniqueIndex,
   foreignKey,
 } from "drizzle-orm/pg-core";
-import { sql } from "drizzle-orm";
-import { createTable } from "../../../utils/create-table.js";
-import {
-  dimPatient,
-  dimProvider,
-  dimPractice,
-  dimVaccine,
-} from "./dimensions.js";
+import { createTable } from "../../../utils/create-table";
+import { dimPatient, dimProvider, dimPractice, dimVaccine } from "./dimensions";
 
 // Appointment fact table
 export const factAppointment = createTable("core.fact_appointment", {

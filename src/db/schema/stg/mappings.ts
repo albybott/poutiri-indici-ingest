@@ -1,5 +1,5 @@
 import { text, timestamp, uuid, boolean } from "drizzle-orm/pg-core";
-import { createTable } from "../../../utils/create-table.js";
+import { createTable } from "../../../utils/create-table";
 
 // Mapping table for appointment status
 export const mapAppointmentStatus = createTable("stg.map_appointment_status", {

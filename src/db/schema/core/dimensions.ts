@@ -8,7 +8,7 @@ import {
   serial,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { createTable } from "../../../utils/create-table.js";
+import { createTable } from "../../../utils/create-table";
 
 // Patient dimension with SCD2
 export const dimPatient = createTable("core.patient", {
