@@ -1,7 +1,7 @@
 {
-  "name": "live-kit-example",
+  "name": "poutiri-indici-ingest",
   "version": "1.0.0",
-  "description": "A modern Node.js TypeScript project",
+  "description": "Headless S3→Postgres ingestion for Indici extracts (raw/stg/core with audits).",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,9 +10,9 @@
   ],
   "engines": {
     "node": ">=18.17.0",
-    "pnpm": ">=8.0.0"
+    "pnpm": ">=9.5.0"
   },
-  "packageManager": "pnpm@9.0.0",
+  "packageManager": "pnpm@9.5.0",
   "scripts": {
     "dev": "tsx --watch src/index.ts",
     "dev:debug": "tsx --inspect --watch src/index.ts",
@@ -20,12 +20,12 @@
     "build:clean": "pnpm clean && pnpm build",
     "start": "node dist/index.js",
     "start:prod": "NODE_ENV=production node dist/index.js",
-    "clean": "rm -rf dist",
+    "clean": "rimraf dist",
     "type-check": "tsc --noEmit",
-    "lint": "eslint src/**/*.ts",
-    "lint:fix": "eslint src/**/*.ts --fix",
-    "format": "prettier --write src/**/*.ts",
-    "format:check": "prettier --check src/**/*.ts",
+    "lint": "eslint \"src/**/*.ts\"",
+    "lint:fix": "eslint \"src/**/*.ts\" --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\"",
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
@@ -34,23 +34,23 @@
   "keywords": [
     "typescript",
     "node",
-    "pnpm"
+    "etl",
+    "s3",
+    "postgres"
   ],
-  "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@types/dotenv": "^8.2.3",
-    "@types/node": "^24.2.1",
+    "@types/node": "^20.11.0",
     "@typescript-eslint/eslint-plugin": "^8.39.1",
     "@typescript-eslint/parser": "^8.39.1",
     "eslint": "^9.33.0",
-    "nodemon": "^3.1.10",
     "prettier": "^3.6.2",
+    "rimraf": "^6.0.1",
     "tsx": "^4.20.4",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"
   },
   "dependencies": {
-    "dotenv": "^17.2.1"
+    "dotenv": "^16.4.5"
   }
 }

@@ -1,4 +1,4 @@
-# Live Kit Example
+# Poutiri Indici Ingest Service
 
 A modern Node.js TypeScript project built with best practices for 2025.
 
