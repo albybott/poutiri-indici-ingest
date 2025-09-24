@@ -16,6 +16,39 @@ The **Raw Loader** is responsible for streaming CSV data from S3 directly into r
 
 ---
 
+## 📁 **Related Files**
+
+### **Database Schema - Raw Layer**
+
+- [`src/db/schema/raw/patients.ts`](../../src/db/schema/raw/patients.ts) - Raw patients table definition
+- [`src/db/schema/raw/appointments.ts`](../../src/db/schema/raw/appointments.ts) - Raw appointments table definition
+- [`src/db/schema/raw/providers.ts`](../../src/db/schema/raw/providers.ts) - Raw providers table definition
+- [`src/db/schema/raw/practice_info.ts`](../../src/db/schema/raw/practice_info.ts) - Raw practice info table definition
+- [`src/db/schema/raw/invoices.ts`](../../src/db/schema/raw/invoices.ts) - Raw invoices table definition
+- [`src/db/schema/schemas.ts`](../../src/db/schema/schemas.ts) - Raw schema setup and configuration
+- [`src/db/schema/shared/enums.ts`](../../src/db/schema/shared/enums.ts) - Extract type enums
+
+### **Database Schema - ETL Layer**
+
+- [`src/db/schema/etl/audit.ts`](../../src/db/schema/etl/audit.ts) - Load run and file tracking tables
+- [`src/db/schema/etl/health.ts`](../../src/db/schema/etl/health.ts) - Health monitoring tables
+
+### **Utilities**
+
+- [`src/utils/create-table.ts`](../../src/utils/create-table.ts) - Database table creation utilities
+- [`src/utils/logger.ts`](../../src/utils/logger.ts) - Logging utilities for raw loading operations
+
+### **Database Connection**
+
+- [`src/db/client.ts`](../../src/db/client.ts) - Database client setup and configuration
+
+### **Project Documentation**
+
+- [`docs/project-files/data-extract-Info.md`](../project-files/data-extract-Info.md) - CSV format specifications and column definitions
+- [`docs/schema/schema-guide.md`](../schema/schema-guide.md) - Comprehensive schema documentation
+
+---
+
 ## 📋 **Detailed Implementation Tasks**
 
 ### **Task 1: CSV Parser Implementation**

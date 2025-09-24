@@ -17,6 +17,45 @@ The **Audit Manager** is the central nervous system for ETL operations, responsi
 
 ---
 
+## 📁 **Related Files**
+
+### **Database Schema - ETL Layer**
+
+- [`src/db/schema/etl/audit.ts`](../../src/db/schema/etl/audit.ts) - Load runs, file tracking, and audit tables
+- [`src/db/schema/etl/health.ts`](../../src/db/schema/etl/health.ts) - Health monitoring tables
+- [`src/db/schema/etl/config.ts`](../../src/db/schema/etl/config.ts) - Configuration and thresholds tables
+- [`src/db/schema/etl/dq_thresholds.ts`](../../src/db/schema/etl/dq_thresholds.ts) - Data quality thresholds (if exists)
+- [`src/db/schema/schemas.ts`](../../src/db/schema/schemas.ts) - ETL schema setup and configuration
+
+### **Database Schema - All Layers**
+
+- [`src/db/schema/raw/patients.ts`](../../src/db/schema/raw/patients.ts) - Raw layer for lineage tracking
+- [`src/db/schema/stg/patients.ts`](../../src/db/schema/stg/patients.ts) - Staging layer for transformation tracking
+- [`src/db/schema/core/dimensions.ts`](../../src/db/schema/core/dimensions.ts) - Core layer for SCD2 audit tracking
+
+### **Utilities**
+
+- [`src/utils/create-table.ts`](../../src/utils/create-table.ts) - Database table creation utilities
+- [`src/utils/logger.ts`](../../src/utils/logger.ts) - Logging utilities for audit operations
+
+### **Database Connection**
+
+- [`src/db/client.ts`](../../src/db/client.ts) - Database client setup and configuration
+
+### **Project Documentation**
+
+- [`docs/etl/etl-guide.md`](../etl/etl-guide.md) - ETL service architecture guide
+- [`docs/schema/schema-guide.md`](../schema/schema-guide.md) - Comprehensive schema documentation
+- [`docs/schema/schema-coverage.md`](../schema/schema-coverage.md) - Schema implementation status tracker
+
+### **Configuration Files**
+
+- [`package.json`](../../package.json) - Project dependencies and configuration
+- [`tsconfig.json`](../../tsconfig.json) - TypeScript configuration
+- [`drizzle.config.ts`](../../drizzle.config.ts) - Database configuration
+
+---
+
 ## 📋 **Detailed Implementation Tasks**
 
 ### **Task 1: Load Run Management System**

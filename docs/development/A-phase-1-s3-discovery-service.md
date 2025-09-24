@@ -15,6 +15,31 @@ The **S3 Discovery Service** is the foundational component of the ETL pipeline r
 
 ---
 
+## 📁 **Related Files**
+
+### **Project Requirements & Configuration**
+
+- [`package.json`](../../package.json) - AWS SDK dependencies and project configuration
+- [`docs/project-files/ingest-tool-requirements.md`](../project-files/ingest-tool-requirements.md) - Technical requirements including S3 specifications
+- [`docs/project-files/data-extract-Info.md`](../project-files/data-extract-Info.md) - CSV format and filename convention specifications
+
+### **Database Schema**
+
+- [`src/db/schema/schemas.ts`](../../src/db/schema/schemas.ts) - Database schema setup and configuration
+- [`src/db/schema/shared/enums.ts`](../../src/db/schema/shared/enums.ts) - Extract type definitions and enums
+
+### **Utilities**
+
+- [`src/utils/logger.ts`](../../src/utils/logger.ts) - Logging utilities for S3 operations
+- [`src/utils/create-table.ts`](../../src/utils/create-table.ts) - Database table creation utilities
+
+### **Configuration Files**
+
+- [`tsconfig.json`](../../tsconfig.json) - TypeScript configuration
+- [`drizzle.config.ts`](../../drizzle.config.ts) - Database configuration
+
+---
+
 ## 📋 **Detailed Implementation Tasks**
 
 ### **Task 1: AWS S3 Client Setup**

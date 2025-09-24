@@ -16,6 +16,46 @@ The **Core Merger** is responsible for loading transformed staging data into the
 
 ---
 
+## 📁 **Related Files**
+
+### **Database Schema - Core Layer**
+
+- [`src/db/schema/core/dimensions.ts`](../../src/db/schema/core/dimensions.ts) - Core dimension table definitions with SCD2
+- [`src/db/schema/core/facts.ts`](../../src/db/schema/core/facts.ts) - Core fact table definitions
+- [`src/db/schema/schemas.ts`](../../src/db/schema/schemas.ts) - Core schema setup and configuration
+- [`src/db/schema/shared/enums.ts`](../../src/db/schema/shared/enums.ts) - Extract type enums and mappings
+
+### **Database Schema - Staging Layer**
+
+- [`src/db/schema/stg/patients.ts`](../../src/db/schema/stg/patients.ts) - Staging patients table (source data)
+- [`src/db/schema/stg/appointments.ts`](../../src/db/schema/stg/appointments.ts) - Staging appointments table (source data)
+- [`src/db/schema/stg/providers.ts`](../../src/db/schema/stg/providers.ts) - Staging providers table (source data)
+- [`src/db/schema/stg/practice_info.ts`](../../src/db/schema/stg/practice_info.ts) - Staging practice info table (source data)
+- [`src/db/schema/stg/invoices.ts`](../../src/db/schema/stg/invoices.ts) - Staging invoices table (source data)
+
+### **Database Schema - ETL Layer**
+
+- [`src/db/schema/etl/audit.ts`](../../src/db/schema/etl/audit.ts) - Load run and file tracking tables
+- [`src/db/schema/etl/health.ts`](../../src/db/schema/etl/health.ts) - Health monitoring tables
+- [`src/db/schema/etl/config.ts`](../../src/db/schema/etl/config.ts) - Configuration and thresholds tables
+
+### **Utilities**
+
+- [`src/utils/create-table.ts`](../../src/utils/create-table.ts) - Database table creation utilities
+- [`src/utils/logger.ts`](../../src/utils/logger.ts) - Logging utilities for core loading operations
+
+### **Database Connection**
+
+- [`src/db/client.ts`](../../src/db/client.ts) - Database client setup and configuration
+
+### **Project Documentation**
+
+- [`docs/schema/schema-guide.md`](../schema/schema-guide.md) - Comprehensive schema documentation
+- [`docs/schema/schema-coverage.md`](../schema/schema-coverage.md) - Schema implementation status tracker
+- [`docs/schema/schema-todo.md`](../schema/schema-todo.md) - Schema implementation tracking
+
+---
+
 ## 📋 **Detailed Implementation Tasks**
 
 ### **Task 1: SCD2 Dimension Management Engine**
