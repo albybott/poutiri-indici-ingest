@@ -37,7 +37,9 @@ export * from "./core/facts.js";
 export * from "./etl/audit.js";
 export * from "./etl/health.js";
 
-// Schema collections for easy access
+// Schema collections for dynamic loading
+// These enable loading schemas on-demand and provide a clean API
+// for dynamic schema management scenarios
 export const rawSchemas = {
   patients: () => import("./raw/patients.js"),
   appointments: () => import("./raw/appointments.js"),
