@@ -26,6 +26,9 @@ export * from "./stg/invoices.js";
 export * from "./stg/invoice_detail.js";
 export * from "./stg/mappings.js";
 
+// Shared enums and types
+export * from "./shared/enums.js";
+
 // Core schemas - dimensions and facts with SCD2 and relationships
 export * from "./core/dimensions.js";
 export * from "./core/facts.js";

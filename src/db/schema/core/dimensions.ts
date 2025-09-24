@@ -4,12 +4,10 @@ import {
   uuid,
   boolean,
   integer,
-  decimal,
   date,
   serial,
-  check,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { sql } from "drizzle-orm";
 import { createTable } from "../../../utils/create-table.js";
 
 // Patient dimension with SCD2
@@ -36,20 +34,20 @@ export const dimPatient = createTable("core.dim_patient", {
   title: text("title"),
   firstName: text("first_name"),
   middleName: text("middle_name"),
-  familyName: text("family_name"),
-  fullName: text("full_name"),
+  familyName: text("family_name").notNull(),
+  fullName: text("full_name").notNull(),
   preferredName: text("preferred_name"),
   gender: text("gender"),
   dob: date("dob"),
   age: integer("age"),
   ageGroup: text("age_group"),
-  isAlive: boolean("is_alive"),
+  isAlive: boolean("is_alive").notNull().default(true),
   deathDate: date("death_date"),
   maritalStatus: text("marital_status"),
   ethnicity: text("ethnicity"),
   residentialStatus: text("residential_status"),
-  isActive: boolean("is_active"),
-  isDeleted: boolean("is_deleted"),
+  isActive: boolean("is_active").notNull().default(true),
+  isDeleted: boolean("is_deleted").notNull().default(false),
 
   // Contact information (anonymized where possible)
   cellNumber: text("cell_number"),
@@ -100,12 +98,12 @@ export const dimProvider = createTable("core.dim_provider", {
   title: text("title"),
   firstName: text("first_name"),
   middleName: text("middle_name"),
-  familyName: text("family_name"),
-  fullName: text("full_name"),
+  familyName: text("family_name").notNull(),
+  fullName: text("full_name").notNull(),
   preferredName: text("preferred_name"),
   gender: text("gender"),
   dob: date("dob"),
-  isAlive: boolean("is_alive"),
+  isAlive: boolean("is_alive").notNull().default(true),
   deathDate: date("death_date"),
 
   // Professional identifiers
@@ -120,8 +118,8 @@ export const dimProvider = createTable("core.dim_provider", {
   userRole: text("user_role"),
 
   // Status
-  isActive: boolean("is_active"),
-  isDeleted: boolean("is_deleted"),
+  isActive: boolean("is_active").notNull().default(true),
+  isDeleted: boolean("is_deleted").notNull().default(false),
 
   // Lineage columns
   s3VersionId: text("s3_version_id").notNull(),
@@ -160,7 +158,7 @@ export const dimPractice = createTable("core.dim_practice", {
   legalStatus: text("legal_status"),
   incorporationNumber: text("incorporation_number"),
   ownershipModel: text("ownership_model"),
-  rural: boolean("rural"),
+  rural: boolean("rural").notNull().default(false),
 
   // Contact information
   primaryPhone: text("primary_phone"),
@@ -175,8 +173,8 @@ export const dimPractice = createTable("core.dim_practice", {
   accNo: text("acc_no"),
 
   // Status
-  isActive: boolean("is_active"),
-  isDeleted: boolean("is_deleted"),
+  isActive: boolean("is_active").notNull().default(true),
+  isDeleted: boolean("is_deleted").notNull().default(false),
 
   // Lineage columns
   s3VersionId: text("s3_version_id").notNull(),
@@ -186,7 +184,7 @@ export const dimPractice = createTable("core.dim_practice", {
   loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
 });
 
-// Medicine dimension with SCD1
+// Medicine dimension with SCD2
 export const dimMedicine = createTable("core.dim_medicine", {
   // Surrogate key
   medicineKey: serial("medicine_key").primaryKey(),
@@ -196,6 +194,13 @@ export const dimMedicine = createTable("core.dim_medicine", {
   practiceId: text("practice_id").notNull(),
   perOrgId: text("per_org_id").notNull(),
 
+  // SCD2 attributes
+  effectiveFrom: timestamp("effective_from", {
+    withTimezone: true,
+  }).notNull(),
+  effectiveTo: timestamp("effective_to", { withTimezone: true }),
+  isCurrent: boolean("is_current").notNull().default(true),
+
   // Core medicine attributes
   medicineName: text("medicine_name").notNull(),
   medicineShortName: text("medicine_short_name"),
@@ -204,8 +209,8 @@ export const dimMedicine = createTable("core.dim_medicine", {
   pharmaCode: text("pharma_code"),
 
   // Status
-  isActive: boolean("is_active"),
-  isDeleted: boolean("is_deleted"),
+  isActive: boolean("is_active").notNull().default(true),
+  isDeleted: boolean("is_deleted").notNull().default(false),
 
   // Lineage columns
   s3VersionId: text("s3_version_id").notNull(),
@@ -215,7 +220,7 @@ export const dimMedicine = createTable("core.dim_medicine", {
   loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
 });
 
-// Vaccine dimension with SCD1
+// Vaccine dimension with SCD2
 export const dimVaccine = createTable("core.dim_vaccine", {
   // Surrogate key
   vaccineKey: serial("vaccine_key").primaryKey(),
@@ -225,17 +230,24 @@ export const dimVaccine = createTable("core.dim_vaccine", {
   practiceId: text("practice_id").notNull(),
   perOrgId: text("per_org_id").notNull(),
 
+  // SCD2 attributes
+  effectiveFrom: timestamp("effective_from", {
+    withTimezone: true,
+  }).notNull(),
+  effectiveTo: timestamp("effective_to", { withTimezone: true }),
+  isCurrent: boolean("is_current").notNull().default(true),
+
   // Core vaccine attributes
   vaccineCode: text("vaccine_code").notNull(),
   vaccineName: text("vaccine_name").notNull(),
   longDescription: text("long_description"),
   codingSystem: text("coding_system"),
   gender: text("gender"),
-  isNir: boolean("is_nir"),
+  isNir: boolean("is_nir").notNull().default(false),
 
   // Status
-  isActive: boolean("is_active"),
-  isDeleted: boolean("is_deleted"),
+  isActive: boolean("is_active").notNull().default(true),
+  isDeleted: boolean("is_deleted").notNull().default(false),
 
   // Lineage columns
   s3VersionId: text("s3_version_id").notNull(),
@@ -245,28 +257,43 @@ export const dimVaccine = createTable("core.dim_vaccine", {
   loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
 });
 
-// Add unique constraints for SCD2
-export const dimPatientUniqueConstraint = check(
-  "dim_patient_unique_constraint",
-  sql`patient_id IS NOT NULL AND practice_id IS NOT NULL AND per_org_id IS NOT NULL`
+// SCD2 unique constraints - ensure only one current record per business key
+export const dimPatientUniqueConstraint = uniqueIndex(
+  "dim_patient_business_key_current_idx"
+).on(
+  dimPatient.patientId,
+  dimPatient.practiceId,
+  dimPatient.perOrgId,
+  dimPatient.isCurrent
 );
 
-export const dimProviderUniqueConstraint = check(
-  "dim_provider_unique_constraint",
-  sql`provider_id IS NOT NULL AND practice_id IS NOT NULL AND per_org_id IS NOT NULL`
+export const dimProviderUniqueConstraint = uniqueIndex(
+  "dim_provider_business_key_current_idx"
+).on(
+  dimProvider.providerId,
+  dimProvider.practiceId,
+  dimProvider.perOrgId,
+  dimProvider.isCurrent
 );
 
-export const dimPracticeUniqueConstraint = check(
-  "dim_practice_unique_constraint",
-  sql`practice_id IS NOT NULL AND per_org_id IS NOT NULL`
+export const dimPracticeUniqueConstraint = uniqueIndex(
+  "dim_practice_business_key_current_idx"
+).on(dimPractice.practiceId, dimPractice.perOrgId, dimPractice.isCurrent);
+
+export const dimMedicineUniqueConstraint = uniqueIndex(
+  "dim_medicine_business_key_current_idx"
+).on(
+  dimMedicine.medicineId,
+  dimMedicine.practiceId,
+  dimMedicine.perOrgId,
+  dimMedicine.isCurrent
 );
 
-export const dimMedicineUniqueConstraint = check(
-  "dim_medicine_unique_constraint",
-  sql`medicine_id IS NOT NULL AND practice_id IS NOT NULL AND per_org_id IS NOT NULL`
-);
-
-export const dimVaccineUniqueConstraint = check(
-  "dim_vaccine_unique_constraint",
-  sql`vaccine_id IS NOT NULL AND practice_id IS NOT NULL AND per_org_id IS NOT NULL`
+export const dimVaccineUniqueConstraint = uniqueIndex(
+  "dim_vaccine_business_key_current_idx"
+).on(
+  dimVaccine.vaccineId,
+  dimVaccine.practiceId,
+  dimVaccine.perOrgId,
+  dimVaccine.isCurrent
 );

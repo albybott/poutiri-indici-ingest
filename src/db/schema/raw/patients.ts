@@ -1,6 +1,6 @@
 import { text, timestamp, uuid, check } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
-import { extractTypeEnum } from "./allergies.js";
+import { extractTypeEnum } from "../shared/enums.js";
 import { createTable } from "../../../utils/create-table.js";
 
 export const patientsRaw = createTable("raw.patients_raw", {

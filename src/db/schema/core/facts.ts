@@ -8,9 +8,17 @@ import {
   date,
   serial,
   check,
+  uniqueIndex,
+  foreignKey,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { createTable } from "../../../utils/create-table.js";
+import {
+  dimPatient,
+  dimProvider,
+  dimPractice,
+  dimVaccine,
+} from "./dimensions.js";
 
 // Appointment fact table
 export const factAppointment = createTable("core.fact_appointment", {
@@ -40,14 +48,16 @@ export const factAppointment = createTable("core.fact_appointment", {
   consultTime: integer("consult_time"), // minutes
 
   // Status flags
-  arrived: boolean("arrived"),
-  isArrived: boolean("is_arrived"),
-  waitingForPayment: boolean("waiting_for_payment"),
-  appointmentCompleted: boolean("appointment_completed"),
-  isConsultParked: boolean("is_consult_parked"),
-  isDummy: boolean("is_dummy"),
-  isConfidential: boolean("is_confidential"),
-  isConsentToShare: boolean("is_consent_to_share"),
+  arrived: boolean("arrived").notNull().default(false),
+  isArrived: boolean("is_arrived").notNull().default(false),
+  waitingForPayment: boolean("waiting_for_payment").notNull().default(false),
+  appointmentCompleted: boolean("appointment_completed")
+    .notNull()
+    .default(false),
+  isConsultParked: boolean("is_consult_parked").notNull().default(false),
+  isDummy: boolean("is_dummy").notNull().default(false),
+  isConfidential: boolean("is_confidential").notNull().default(false),
+  isConsentToShare: boolean("is_consent_to_share").notNull().default(false),
 
   // Queue times (minutes)
   gpQueueTime: integer("gp_queue_time"),
@@ -492,33 +502,148 @@ export const factMeasurement = createTable("core.fact_measurement", {
   loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
 });
 
-// Add unique constraints for facts
-export const factAppointmentUniqueConstraint = check(
-  "fact_appointment_unique_constraint",
-  sql`appointment_id IS NOT NULL AND practice_id IS NOT NULL AND per_org_id IS NOT NULL`
+// Unique constraints for facts - proper implementation
+export const factAppointmentUniqueConstraint = uniqueIndex(
+  "fact_appointment_business_key_idx"
+).on(
+  factAppointment.appointmentId,
+  factAppointment.practiceId,
+  factAppointment.perOrgId
 );
 
-export const factImmunisationUniqueConstraint = check(
-  "fact_immunisation_unique_constraint",
-  sql`appointment_immunisation_id IS NOT NULL AND practice_id IS NOT NULL AND per_org_id IS NOT NULL`
+export const factImmunisationUniqueConstraint = uniqueIndex(
+  "fact_immunisation_business_key_idx"
+).on(
+  factImmunisation.appointmentImmunisationId,
+  factImmunisation.practiceId,
+  factImmunisation.perOrgId
 );
 
-export const factInvoiceUniqueConstraint = check(
-  "fact_invoice_unique_constraint",
-  sql`invoice_transaction_id IS NOT NULL AND practice_id IS NOT NULL AND per_org_id IS NOT NULL`
+export const factInvoiceUniqueConstraint = uniqueIndex(
+  "fact_invoice_business_key_idx"
+).on(
+  factInvoice.invoiceTransactionId,
+  factInvoice.practiceId,
+  factInvoice.perOrgId
 );
 
-export const factInvoiceDetailUniqueConstraint = check(
-  "fact_invoice_detail_unique_constraint",
-  sql`invoice_detail_id IS NOT NULL AND practice_id IS NOT NULL AND per_org_id IS NOT NULL`
+export const factInvoiceDetailUniqueConstraint = uniqueIndex(
+  "fact_invoice_detail_business_key_idx"
+).on(
+  factInvoiceDetail.invoiceDetailId,
+  factInvoiceDetail.practiceId,
+  factInvoiceDetail.perOrgId
 );
 
-export const factDiagnosisUniqueConstraint = check(
-  "fact_diagnosis_unique_constraint",
-  sql`diagnosis_id IS NOT NULL AND practice_id IS NOT NULL AND per_org_id IS NOT NULL`
+export const factDiagnosisUniqueConstraint = uniqueIndex(
+  "fact_diagnosis_business_key_idx"
+).on(
+  factDiagnosis.diagnosisId,
+  factDiagnosis.practiceId,
+  factDiagnosis.perOrgId
 );
 
-export const factMeasurementUniqueConstraint = check(
-  "fact_measurement_unique_constraint",
-  sql`patient_id IS NOT NULL AND practice_id IS NOT NULL AND per_org_id IS NOT NULL`
+export const factMeasurementUniqueConstraint = uniqueIndex(
+  "fact_measurement_business_key_idx"
+).on(
+  factMeasurement.patientId,
+  factMeasurement.practiceId,
+  factMeasurement.perOrgId
 );
+
+// Foreign Key constraints for referential integrity
+export const fkAppointmentPatient = foreignKey({
+  columns: [factAppointment.patientKey],
+  foreignColumns: [dimPatient.patientKey],
+  name: "fk_appointment_patient",
+});
+
+export const fkAppointmentProvider = foreignKey({
+  columns: [factAppointment.providerKey],
+  foreignColumns: [dimProvider.providerKey],
+  name: "fk_appointment_provider",
+});
+
+export const fkAppointmentPractice = foreignKey({
+  columns: [factAppointment.practiceKey],
+  foreignColumns: [dimPractice.practiceKey],
+  name: "fk_appointment_practice",
+});
+
+export const fkImmunisationPatient = foreignKey({
+  columns: [factImmunisation.patientKey],
+  foreignColumns: [dimPatient.patientKey],
+  name: "fk_immunisation_patient",
+});
+
+export const fkImmunisationProvider = foreignKey({
+  columns: [factImmunisation.providerKey],
+  foreignColumns: [dimProvider.providerKey],
+  name: "fk_immunisation_provider",
+});
+
+export const fkImmunisationPractice = foreignKey({
+  columns: [factImmunisation.practiceKey],
+  foreignColumns: [dimPractice.practiceKey],
+  name: "fk_immunisation_practice",
+});
+
+export const fkImmunisationVaccine = foreignKey({
+  columns: [factImmunisation.vaccineKey],
+  foreignColumns: [dimVaccine.vaccineKey],
+  name: "fk_immunisation_vaccine",
+});
+
+export const fkInvoicePatient = foreignKey({
+  columns: [factInvoice.patientKey],
+  foreignColumns: [dimPatient.patientKey],
+  name: "fk_invoice_patient",
+});
+
+export const fkInvoiceProvider = foreignKey({
+  columns: [factInvoice.providerKey],
+  foreignColumns: [dimProvider.providerKey],
+  name: "fk_invoice_provider",
+});
+
+export const fkInvoicePractice = foreignKey({
+  columns: [factInvoice.practiceKey],
+  foreignColumns: [dimPractice.practiceKey],
+  name: "fk_invoice_practice",
+});
+
+export const fkInvoiceDetailInvoice = foreignKey({
+  columns: [factInvoiceDetail.invoiceKey],
+  foreignColumns: [factInvoice.invoiceKey],
+  name: "fk_invoice_detail_invoice",
+});
+
+export const fkDiagnosisPatient = foreignKey({
+  columns: [factDiagnosis.patientKey],
+  foreignColumns: [dimPatient.patientKey],
+  name: "fk_diagnosis_patient",
+});
+
+export const fkDiagnosisProvider = foreignKey({
+  columns: [factDiagnosis.providerKey],
+  foreignColumns: [dimProvider.providerKey],
+  name: "fk_diagnosis_provider",
+});
+
+export const fkDiagnosisPractice = foreignKey({
+  columns: [factDiagnosis.practiceKey],
+  foreignColumns: [dimPractice.practiceKey],
+  name: "fk_diagnosis_practice",
+});
+
+export const fkMeasurementPatient = foreignKey({
+  columns: [factMeasurement.patientKey],
+  foreignColumns: [dimPatient.patientKey],
+  name: "fk_measurement_patient",
+});
+
+export const fkMeasurementPractice = foreignKey({
+  columns: [factMeasurement.practiceKey],
+  foreignColumns: [dimPractice.practiceKey],
+  name: "fk_measurement_practice",
+});

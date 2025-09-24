@@ -7,6 +7,7 @@ import {
   decimal,
   serial,
   check,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { createTable } from "../../../utils/create-table.js";
@@ -183,8 +184,7 @@ export const rejectsInvoiceDetail = createTable("etl.rejects_invoice_detail", {
     .defaultNow(),
 });
 
-// Add unique constraint for idempotency
-export const loadRunFilesUniqueConstraint = check(
-  "load_run_files_unique_constraint",
-  sql`s3_version_id IS NOT NULL AND file_hash IS NOT NULL`
-);
+// Unique constraint for idempotency - proper implementation
+export const loadRunFilesUniqueConstraint = uniqueIndex(
+  "load_run_files_unique_idx"
+).on(loadRunFiles.s3VersionId, loadRunFiles.fileHash);

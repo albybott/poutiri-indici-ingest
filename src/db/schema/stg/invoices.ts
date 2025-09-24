@@ -6,6 +6,7 @@ import {
   decimal,
   date,
   check,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { createTable } from "../../../utils/create-table.js";
@@ -58,8 +59,11 @@ export const invoicesStg = createTable("stg.invoices_stg", {
   loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
 });
 
-// Add unique constraint on natural key
-export const invoicesStgUniqueConstraint = check(
-  "invoices_stg_unique_constraint",
-  sql`invoice_transaction_id IS NOT NULL AND practice_id IS NOT NULL AND per_org_id IS NOT NULL`
+// Unique constraint on natural key - proper implementation
+export const invoicesStgUniqueConstraint = uniqueIndex(
+  "invoices_stg_natural_key_idx"
+).on(
+  invoicesStg.invoiceTransactionId,
+  invoicesStg.practiceId,
+  invoicesStg.perOrgId
 );

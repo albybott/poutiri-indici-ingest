@@ -1,27 +1,6 @@
-import { text, timestamp, uuid, pgEnum } from "drizzle-orm/pg-core";
+import { text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { createTable } from "../../../utils/create-table.js";
-
-// Define enum for extract types
-export const extractTypeEnum = pgEnum("extract_type", [
-  "patients",
-  "appointments",
-  "immunisations",
-  "invoices",
-  "invoice_detail",
-  "providers",
-  "practice_info",
-  "measurements",
-  "diagnoses",
-  "recalls",
-  "inbox",
-  "inbox_detail",
-  "medicine",
-  "next_of_kin",
-  "vaccine",
-  "allergies",
-  "appointment_medications",
-  "patient_alerts",
-]);
+import { extractTypeEnum } from "../shared/enums.js";
 
 export const allergiesRaw = createTable("raw.allergies_raw", {
   // Source columns as text (all fields from Allergies extract)
