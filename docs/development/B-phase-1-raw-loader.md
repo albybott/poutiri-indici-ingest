@@ -603,6 +603,50 @@ class LoadMonitor {
 ### **Core Classes and Structure**
 
 ```typescript
+// Main exports structure (similar to discovery service)
+export { RawLoaderService } from "./raw-loader-service";
+
+// Components
+export { IndiciCSVParser } from "./indici-csv-parser";
+export { RawTableLoader } from "./raw-table-loader";
+export { ExtractHandlerFactory } from "./extract-handler-factory";
+export { IdempotencyService } from "./idempotency-service";
+export { LineageService } from "./lineage-service";
+export { ErrorHandler } from "./error-handler";
+export { LoadMonitor } from "./load-monitor";
+
+// Types
+export type {
+  RawLoaderConfig,
+  DatabaseConfig,
+  ProcessingConfig,
+  CSVConfig,
+  ErrorHandlingConfig,
+  MonitoringConfig,
+} from "./types/config";
+
+export type {
+  RawLoadOptions,
+  LoadResult,
+  LoadError,
+  LoadProgress,
+  LoadStatus,
+} from "./types/raw-loader";
+
+export type {
+  CSVParseOptions,
+  CSVRow,
+  ColumnMapping,
+} from "./types/csv";
+
+// Constants
+export {
+  DEFAULT_RAW_LOADER_CONFIG,
+  DEFAULT_DATABASE_CONFIG,
+  DEFAULT_PROCESSING_CONFIG,
+  DEFAULT_CSV_CONFIG,
+} from "./types/config";
+
 // Main service orchestrator
 export class RawLoaderService {
   private csvParser: IndiciCSVParser;
@@ -626,9 +670,28 @@ export class RawLoaderService {
   ): Promise<LoadResult[]>;
 }
 
-// Factory for creating service instances
-export class RawLoaderFactory {
-  static create(config: RawLoaderConfig): RawLoaderService;
+// Factory for creating service instances with dependency injection
+export class RawLoaderContainer {
+  static create(config: RawLoaderConfig): RawLoaderService {
+    const csvParser = new IndiciCSVParser();
+    const tableLoader = new RawTableLoader(config.database);
+    const handlerFactory = new ExtractHandlerFactory();
+    const idempotencyService = new IdempotencyService(config.database);
+    const lineageService = new LineageService();
+    const errorHandler = new ErrorHandler(config.errorHandling);
+    const monitor = new LoadMonitor();
+
+    return new RawLoaderService(
+      csvParser,
+      tableLoader,
+      handlerFactory,
+      idempotencyService,
+      lineageService,
+      errorHandler,
+      monitor,
+      config
+    );
+  }
 }
 ```
 
@@ -637,28 +700,30 @@ export class RawLoaderFactory {
 ```
 src/services/raw-loader/
 ├── index.ts                      # Main exports
-├── RawLoaderService.ts           # Main service class
-├── IndiciCSVParser.ts            # CSV parsing logic
-├── RawTableLoader.ts             # Database loading logic
-├── ExtractHandlerFactory.ts      # Extract type handlers
-├── IdempotencyService.ts         # Duplicate prevention
-├── LineageService.ts             # Lineage data management
-├── ErrorHandler.ts               # Error handling
-├── LoadMonitor.ts                # Monitoring and metrics
+├── raw-loader-service.ts         # Main service class
+├── indici-csv-parser.ts          # CSV parsing logic
+├── raw-table-loader.ts           # Database loading logic
+├── extract-handler-factory.ts    # Extract type handlers
+├── idempotency-service.ts        # Duplicate prevention
+├── lineage-service.ts            # Lineage data management
+├── error-handler.ts              # Error handling
+├── load-monitor.ts               # Monitoring and metrics
 ├── types/
 │   ├── raw-loader.ts             # Service types
 │   ├── csv.ts                    # CSV processing types
+│   ├── config.ts                 # Configuration types
 │   └── errors.ts                 # Error types
 ├── handlers/
-│   ├── BaseExtractHandler.ts     # Base handler class
-│   ├── PatientsHandler.ts        # Patients-specific logic
-│   ├── AppointmentsHandler.ts    # Appointments-specific logic
+│   ├── base-extract-handler.ts   # Base handler class
+│   ├── patients-handler.ts       # Patients-specific logic
+│   ├── appointments-handler.ts   # Appointments-specific logic
 │   └── [Other extract handlers]
 ├── utils/
-│   ├── batchUtils.ts             # Batch processing utilities
-│   ├── validationUtils.ts        # Validation utilities
-│   └── performanceUtils.ts       # Performance utilities
+│   ├── batch-utils.ts            # Batch processing utilities
+│   ├── validation-utils.ts       # Validation utilities
+│   └── performance-utils.ts      # Performance utilities
 └── __tests__/
+    ├── raw-loader-service.test.ts  # Main service tests
     ├── unit/                     # Unit tests
     ├── integration/              # Integration tests
     └── fixtures/                 # Test data
@@ -709,12 +774,80 @@ GRANT USAGE ON SCHEMA raw TO etl_writer;
 
 ## 📋 **Configuration Management**
 
+### **Configuration Interface**
+
+```typescript
+interface RawLoaderConfig {
+  database: {
+    poolSize: number;
+    timeoutMs: number;
+    maxConnections: number;
+  };
+  processing: {
+    batchSize: number;
+    maxConcurrentFiles: number;
+    maxMemoryMB: number;
+    enableStreaming: boolean;
+    bufferSizeMB: number;
+  };
+  csv: {
+    fieldSeparator: string;
+    rowSeparator: string;
+    maxRowLength: number;
+    hasHeaders: boolean;
+  };
+  errorHandling: {
+    maxRetries: number;
+    retryDelayMs: number;
+    continueOnError: boolean;
+  };
+  monitoring: {
+    enableMetrics: boolean;
+    logLevel: string;
+    metricsInterval: number;
+  };
+}
+
+// Default configuration constants
+export const DEFAULT_RAW_LOADER_CONFIG: RawLoaderConfig = {
+  database: {
+    poolSize: 10,
+    timeoutMs: 30000,
+    maxConnections: 20,
+  },
+  processing: {
+    batchSize: 1000,
+    maxConcurrentFiles: 5,
+    maxMemoryMB: 512,
+    enableStreaming: true,
+    bufferSizeMB: 16,
+  },
+  csv: {
+    fieldSeparator: "|~~|",
+    rowSeparator: "|^^|",
+    maxRowLength: 10000,
+    hasHeaders: false,
+  },
+  errorHandling: {
+    maxRetries: 3,
+    retryDelayMs: 1000,
+    continueOnError: true,
+  },
+  monitoring: {
+    enableMetrics: true,
+    logLevel: "info",
+    metricsInterval: 30000,
+  },
+};
+```
+
 ### **Environment Variables**
 
 ```bash
 # Database Configuration
 RAW_LOADER_DB_POOL_SIZE=10
 RAW_LOADER_DB_TIMEOUT_MS=30000
+RAW_LOADER_DB_MAX_CONNECTIONS=20
 
 # Batch Processing
 RAW_LOADER_BATCH_SIZE=1000
@@ -735,6 +868,11 @@ RAW_LOADER_CONTINUE_ON_ERROR=true
 RAW_LOADER_ENABLE_STREAMING=true
 RAW_LOADER_ENABLE_COMPRESSION=false
 RAW_LOADER_BUFFER_SIZE_MB=16
+
+# Monitoring
+RAW_LOADER_ENABLE_METRICS=true
+RAW_LOADER_LOG_LEVEL=info
+RAW_LOADER_METRICS_INTERVAL=30000
 ```
 
 ---
@@ -770,15 +908,42 @@ RAW_LOADER_BUFFER_SIZE_MB=16
 
 ### **Upstream Dependencies**
 
-- **S3 Discovery Service**: Provides `DiscoveredFile[]` and file streams
-- **Configuration Service**: Provides runtime configuration
-- **Audit Manager**: Receives load run information
+- **S3 Discovery Service**: Provides `DiscoveredFile[]` and file streams via `S3FileSystemAdapter`
+- **Database Client**: PostgreSQL connection via `src/db/client.ts`
+- **Configuration Service**: Runtime configuration from environment variables and defaults
 
 ### **Downstream Dependencies**
 
-- **Staging Transformer**: Consumes loaded raw data
-- **Health Monitor**: Receives loading status and metrics
-- **Error Reporting**: Receives detailed error information
+- **Staging Transformer**: Consumes loaded raw data from `raw.*` schema tables
+- **Audit Manager**: Receives load run information via `src/db/schema/etl/audit.ts`
+- **Health Monitor**: Receives loading status and metrics via `src/db/schema/etl/health.ts`
+
+### **Integration with Discovery Service**
+
+```typescript
+import { DiscoveryContainer } from "../discovery";
+import { RawLoaderContainer } from "../raw-loader";
+
+// Discover files and load them
+const discoveryService = DiscoveryContainer.create(discoveryConfig);
+const rawLoader = RawLoaderContainer.create(rawLoaderConfig);
+
+const plan = await discoveryService.discoverLatestFiles();
+const loadRunId = generateLoadRunId();
+
+for (const batch of plan.batches) {
+  const results = await rawLoader.loadMultipleFiles(
+    batch.files,
+    loadRunId,
+    {
+      maxConcurrentFiles: 3,
+      continueOnError: true,
+    }
+  );
+  
+  // Process results and continue with next batch
+}
+```
 
 ---
 
@@ -787,7 +952,43 @@ RAW_LOADER_BUFFER_SIZE_MB=16
 ### **Basic File Loading**
 
 ```typescript
-const rawLoader = RawLoaderFactory.create(config);
+import { RawLoaderContainer } from "./services/raw-loader";
+import type { RawLoaderConfig } from "./services/raw-loader/types/config";
+
+const config: RawLoaderConfig = {
+  database: {
+    poolSize: parseInt(process.env.RAW_LOADER_DB_POOL_SIZE || "10"),
+    timeoutMs: parseInt(process.env.RAW_LOADER_DB_TIMEOUT_MS || "30000"),
+    maxConnections: parseInt(process.env.RAW_LOADER_DB_MAX_CONNECTIONS || "20"),
+  },
+  processing: {
+    batchSize: parseInt(process.env.RAW_LOADER_BATCH_SIZE || "1000"),
+    maxConcurrentFiles: parseInt(process.env.RAW_LOADER_MAX_CONCURRENT_FILES || "5"),
+    maxMemoryMB: parseInt(process.env.RAW_LOADER_MAX_MEMORY_MB || "512"),
+    enableStreaming: process.env.RAW_LOADER_ENABLE_STREAMING === "true",
+    bufferSizeMB: parseInt(process.env.RAW_LOADER_BUFFER_SIZE_MB || "16"),
+  },
+  csv: {
+    fieldSeparator: process.env.RAW_LOADER_FIELD_SEPARATOR || "|~~|",
+    rowSeparator: process.env.RAW_LOADER_ROW_SEPARATOR || "|^^|",
+    maxRowLength: parseInt(process.env.RAW_LOADER_MAX_ROW_LENGTH || "10000"),
+    hasHeaders: false,
+  },
+  errorHandling: {
+    maxRetries: parseInt(process.env.RAW_LOADER_MAX_RETRIES || "3"),
+    retryDelayMs: parseInt(process.env.RAW_LOADER_RETRY_DELAY_MS || "1000"),
+    continueOnError: process.env.RAW_LOADER_CONTINUE_ON_ERROR === "true",
+  },
+  monitoring: {
+    enableMetrics: process.env.RAW_LOADER_ENABLE_METRICS === "true",
+    logLevel: process.env.RAW_LOADER_LOG_LEVEL || "info",
+    metricsInterval: parseInt(process.env.RAW_LOADER_METRICS_INTERVAL || "30000"),
+  },
+};
+
+const rawLoader = RawLoaderContainer.create(config);
+
+// Load single file
 const result = await rawLoader.loadFile(discoveredFile, loadRunId);
 
 if (result.totalRows > 0) {
@@ -798,28 +999,42 @@ if (result.totalRows > 0) {
 ### **Batch File Processing**
 
 ```typescript
+// Load multiple files with custom options
 const results = await rawLoader.loadMultipleFiles(discoveredFiles, loadRunId, {
+  batchSize: 2000,
   maxConcurrentFiles: 3,
+  continueOnError: true,
 });
 
 const totalLoaded = results.reduce((sum, r) => sum + r.totalRows, 0);
+const totalErrors = results.reduce((sum, r) => sum + r.errors.length, 0);
+
 console.log(
-  `Processed ${results.length} files, loaded ${totalLoaded} total rows`
+  `Processed ${results.length} files, loaded ${totalLoaded} total rows with ${totalErrors} errors`
 );
 ```
 
-### **With Error Handling**
+### **With Error Handling and Monitoring**
 
 ```typescript
 const result = await rawLoader.loadFile(discoveredFile, loadRunId, {
   continueOnError: true,
   maxRetries: 3,
+  validateRowCount: true,
 });
 
 if (result.failedBatches > 0) {
   console.log(`Completed with ${result.failedBatches} failed batches`);
   // Handle partial failure scenario
+  
+  // Get detailed error information
+  const errorSummary = await rawLoader.getErrorSummary(result.errors);
+  console.log(`Error breakdown:`, errorSummary.errorsByType);
 }
+
+// Monitor progress for long-running operations
+const progress = await rawLoader.getLoadProgress(discoveredFile.s3Key);
+console.log(`Progress: ${progress.processedRows}/${progress.totalRows} rows`);
 ```
 
 ---
@@ -857,7 +1072,7 @@ if (result.failedBatches > 0) {
 3. **Move to Staging Transformer** implementation plan after completion
 4. **Update progress** in phase-1.md as tasks are completed
 
-**Status**: ✅ **Approved** - Ready for Implementation
-**Start Date**: [Insert start date]
-**Estimated Completion**: [Insert completion date]
-**Owner**: [Insert owner name]
+**Status**: ✅ **Updated & Ready** - Implementation plan aligned with Discovery Service patterns
+**Dependencies**: S3 Discovery Service (Phase 1a) - ✅ Complete
+**Architecture**: Follows established kebab-case naming and container dependency injection patterns
+**Integration**: Verified compatibility with existing discovery service implementation
