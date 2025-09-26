@@ -44,16 +44,16 @@ The **S3 Discovery Service** is the foundational component of the ETL pipeline r
 
 ### **Task 1: AWS S3 Client Setup**
 
-**Duration**: 4 hours
+**Duration**: 3 hours
 **Priority**: Must Have
 
 #### **Subtasks:**
 
-- [ ] Install and configure AWS SDK v3 (`@aws-sdk/client-s3`)
-- [ ] Create S3 client with proper credentials management
-- [ ] Set up region configuration (ap-southeast-2 Sydney)
-- [ ] Implement credential loading from environment variables
-- [ ] Add connection testing and error handling
+- [ ] Install and configure AWS SDK v3 packages (`@aws-sdk/client-s3`, `@aws-sdk/lib-storage`, `@aws-sdk/credential-providers`)
+- [ ] Create S3 client with proper credentials management and credential providers
+- [ ] Set up region configuration (ap-southeast-2 Sydney) with retry and timeout settings
+- [ ] Implement credential loading from environment variables or IAM roles
+- [ ] Add connection testing, health checks, and comprehensive error handling
 
 #### **Technical Requirements:**
 
@@ -62,13 +62,16 @@ interface S3Config {
   bucket: string; // "poutiri-datacraft-data"
   region: string; // "ap-southeast-2"
   prefix?: string; // Optional prefix for file filtering
-  maxKeys?: number; // Limit for listObjects calls
+  maxKeys?: number; // Limit for listObjects calls (default: 1000)
+  maxConcurrency?: number; // For lib-storage operations (default: 4)
+  partSize?: number; // Multipart upload part size (default: 5MB)
 }
 
 interface S3Client {
-  listObjects(prefix?: string): Promise<S3Object[]>;
+  listObjectsV2(prefix?: string): Promise<S3Object[]>;
   getObjectMetadata(key: string): Promise<S3ObjectMetadata>;
   downloadObject(key: string): Promise<NodeJS.ReadableStream>;
+  uploadObject(key: string, body: any): Promise<UploadResult>;
 }
 ```
 
@@ -80,22 +83,45 @@ AWS_ACCESS_KEY_ID=<access-key>
 AWS_SECRET_ACCESS_KEY=<secret-key>
 S3_BUCKET_NAME=poutiri-datacraft-data
 S3_BUCKET_PREFIX=<optional-prefix>
+AWS_PROFILE=<optional-profile-name>
+```
+
+#### **AWS SDK Configuration:**
+
+```typescript
+import { S3Client } from "@aws-sdk/client-s3";
+import { Upload } from "@aws-sdk/lib-storage";
+import {
+  fromEnv,
+  fromIni,
+  fromInstanceMetadata,
+} from "@aws-sdk/credential-providers";
+
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION || "ap-southeast-2",
+  credentials: fromEnv(), // Environment variables
+  // credentials: fromIni({ profile: process.env.AWS_PROFILE }), // AWS profile
+  // credentials: fromInstanceMetadata(), // EC2/ECS instance metadata
+  maxAttempts: 3, // Retry attempts
+  requestTimeout: 30000, // 30 seconds timeout
+});
 ```
 
 ---
 
 ### **Task 2: Filename Parser Implementation**
 
-**Duration**: 6 hours
+**Duration**: 4 hours
 **Priority**: Must Have
 
 #### **Subtasks:**
 
-- [ ] Implement filename convention parser
+- [ ] Implement filename convention parser using regex patterns
 - [ ] Extract and validate all filename components
 - [ ] Handle date parsing for DateFrom, DateTo, DateExtracted
-- [ ] Validate PerOrgID and PracticeID
-- [ ] Create strongly typed metadata objects
+- [ ] Validate PerOrgID and PracticeID against known values
+- [ ] Create strongly typed metadata objects with validation
+- [ ] Add comprehensive error handling for malformed filenames
 
 #### **Filename Convention:**
 
@@ -115,6 +141,7 @@ interface ParsedFilename {
   dateExtracted: Date; // 2025-08-19 08:50
   isFullLoad: boolean; // Determined by filename pattern
   isDelta: boolean; // Determined by filename pattern
+  batchId: string; // Formatted dateExtracted for batch grouping
 }
 
 type ExtractType =
@@ -156,17 +183,18 @@ class FilenameParser {
 
 ### **Task 3: File Discovery Engine**
 
-**Duration**: 8 hours
+**Duration**: 6 hours
 **Priority**: Must Have
 
 #### **Subtasks:**
 
-- [ ] Implement S3 file listing with pagination
-- [ ] Filter files by naming convention
-- [ ] Group files by DateExtracted batch
-- [ ] Identify full vs delta files
-- [ ] Sort files by priority and timestamp
-- [ ] Handle S3 versioning metadata
+- [ ] Implement S3 file listing with pagination and continuation tokens
+- [ ] Filter files by naming convention using regex patterns
+- [ ] Group files by DateExtracted batch efficiently
+- [ ] Identify full vs delta files based on filename patterns
+- [ ] Sort files by priority and timestamp for optimal processing
+- [ ] Handle S3 versioning metadata and ETags
+- [ ] Implement intelligent caching for discovery results
 
 #### **Discovery Implementation:**
 
@@ -178,16 +206,18 @@ interface DiscoveredFile {
   lastModified: Date;
   etag: string;
   parsed: ParsedFilename;
-  fileHash?: string; // Calculated later
+  fileHash?: string; // Calculated later for integrity checks
+  checksum?: string; // S3 checksum for quick comparison
 }
 
 interface FileBatch {
   dateExtracted: Date;
-  batchId: string; // Formatted dateExtracted
+  batchId: string; // Formatted dateExtracted for unique identification
   files: DiscoveredFile[];
   totalFiles: number;
   totalSize: number;
   extractTypes: ExtractType[];
+  isComplete: boolean; // Whether all expected files are present
 }
 
 class FileDiscovery {
@@ -198,6 +228,7 @@ class FileDiscovery {
   async findFilesByExtractType(
     extractType: ExtractType
   ): Promise<DiscoveredFile[]>;
+  async validateBatchCompleteness(batch: FileBatch): Promise<boolean>;
 }
 
 interface DiscoveryOptions {
@@ -218,31 +249,51 @@ interface DiscoveryOptions {
 
 #### **Subtasks:**
 
-- [ ] Calculate file hashes (SHA-256) for integrity
-- [ ] Track S3 version IDs for idempotency
-- [ ] Implement file metadata caching
-- [ ] Add file size validation
-- [ ] Handle S3 object versioning
+- [ ] Calculate file hashes (SHA-256) for integrity using Node.js crypto
+- [ ] Track S3 version IDs and ETags for idempotency
+- [ ] Implement file metadata caching with TTL
+- [ ] Add file size validation and checksum verification
+- [ ] Handle S3 object versioning and concurrent modification detection
 
 #### **Integrity Implementation:**
 
 ```typescript
+import { createHash } from "node:crypto";
+
 interface FileIntegrity {
   s3VersionId: string;
-  fileHash: string; // SHA-256 hash
+  etag: string; // S3 ETag for quick comparison
+  fileHash?: string; // SHA-256 hash for content integrity
   fileSize: number;
   checksumValidated: boolean;
   lastChecked: Date;
+  checksumAlgorithm?: string; // S3 checksum algorithm (SHA256, SHA1, etc.)
 }
 
 class FileIntegrityService {
-  async calculateHash(s3Key: string): Promise<string>;
-  async validateIntegrity(file: DiscoveredFile): Promise<boolean>;
+  async calculateHash(stream: NodeJS.ReadableStream): Promise<string> {
+    const hash = createHash("sha256");
+    for await (const chunk of stream) {
+      hash.update(chunk);
+    }
+    return hash.digest("hex");
+  }
+
+  async validateIntegrity(
+    file: DiscoveredFile,
+    contentStream: NodeJS.ReadableStream
+  ): Promise<boolean> {
+    const calculatedHash = await this.calculateHash(contentStream);
+    return calculatedHash === file.fileHash;
+  }
+
   async getFileMetadata(s3Key: string): Promise<FileIntegrity>;
   async compareVersions(
     file1: DiscoveredFile,
     file2: DiscoveredFile
-  ): Promise<boolean>;
+  ): Promise<boolean> {
+    return file1.s3VersionId === file2.s3VersionId || file1.etag === file2.etag;
+  }
 }
 ```
 
@@ -250,16 +301,17 @@ class FileIntegrityService {
 
 ### **Task 5: Batch Processing Logic**
 
-**Duration**: 6 hours
+**Duration**: 5 hours
 **Priority**: Should Have
 
 #### **Subtasks:**
 
-- [ ] Implement batch selection algorithms
-- [ ] Handle full vs delta processing logic
-- [ ] Support backfill operations
-- [ ] Add batch priority management
-- [ ] Create batch validation rules
+- [ ] Implement batch selection algorithms with dependency resolution
+- [ ] Handle full vs delta processing logic based on file patterns
+- [ ] Support backfill operations with date range filtering
+- [ ] Add batch priority management based on extract type importance
+- [ ] Create batch validation rules and completeness checks
+- [ ] Implement processing order optimization
 
 #### **Batch Processing:**
 
@@ -270,6 +322,7 @@ interface BatchProcessingOptions {
   dateRange?: { from: Date; to: Date };
   specificBatch?: string;
   priorityOrder?: ExtractType[];
+  skipValidation?: boolean; // For performance in large backfills
 }
 
 interface ProcessingPlan {
@@ -278,6 +331,7 @@ interface ProcessingPlan {
   estimatedDuration: number;
   dependencies: ExtractTypeDependency[];
   processingOrder: DiscoveredFile[];
+  warnings: string[]; // Non-critical issues found
 }
 
 class BatchProcessor {
@@ -288,12 +342,16 @@ class BatchProcessor {
   async validateBatch(batch: FileBatch): Promise<ValidationResult>;
   async markBatchStarted(batch: FileBatch): Promise<void>;
   async markBatchCompleted(batch: FileBatch): Promise<void>;
+  async optimizeProcessingOrder(
+    files: DiscoveredFile[]
+  ): Promise<DiscoveredFile[]>;
 }
 
 interface ExtractTypeDependency {
   extractType: ExtractType;
   dependsOn: ExtractType[];
   priority: number;
+  estimatedProcessingTime: number; // Minutes
 }
 ```
 
@@ -588,23 +646,23 @@ export class DiscoveryContainer {
 ```
 src/services/discovery/
 ├── index.ts                    # Main exports
-├── S3DiscoveryService.ts      # Main service class
-├── FilenameParser.ts          # Filename parsing logic
-├── FileDiscovery.ts           # File discovery engine
-├── BatchProcessor.ts          # Batch processing logic
-├── FileIntegrityService.ts    # File integrity checks
-├── DiscoveryMonitor.ts        # Monitoring and metrics
+├── s3-discovery-service.ts     # Main service class
+├── filename-parser.ts         # Filename parsing logic
+├── file-discovery.ts          # File discovery engine
+├── batch-processor.ts         # Batch processing logic
+├── file-integrity-service.ts  # File integrity checks
+├── discovery-monitor.ts       # Monitoring and metrics
 ├── adapters/
-│   ├── S3FileSystemAdapter.ts # S3 adapter implementation
-│   └── FileSystemAdapter.ts   # Interface definition
+│   ├── s3-file-system-adapter.ts    # S3 adapter implementation
+│   └── file-system-adapter.ts       # Interface definition
 ├── types/
 │   ├── discovery.ts           # Discovery-related types
 │   ├── files.ts              # File-related types
 │   └── config.ts             # Configuration types
 ├── utils/
-│   ├── dateUtils.ts          # Date parsing utilities
-│   ├── hashUtils.ts          # File hashing utilities
-│   └── retryUtils.ts         # Retry logic utilities
+│   ├── date-utils.ts          # Date parsing utilities
+│   ├── hash-utils.ts          # File hashing utilities
+│   └── retry-utils.ts         # Retry logic utilities
 └── __tests__/
     ├── unit/                 # Unit tests
     ├── integration/          # Integration tests
@@ -615,28 +673,33 @@ src/services/discovery/
 
 ## 🚀 **Implementation Timeline**
 
-### **Week 1 - Days 1-2 (16 hours total)**
+### **Week 1 - Core Implementation (18 hours total)**
 
-- **Day 1 (8 hours)**:
-  - Task 1: AWS S3 Client Setup (4 hours)
-  - Task 2: Filename Parser Implementation (4 hours)
+- **Day 1 (6 hours)**:
+  - Task 1: AWS S3 Client Setup (3 hours)
+  - Task 2: Filename Parser Implementation (3 hours)
 
-- **Day 2 (8 hours)**:
-  - Task 2: Complete Filename Parser (2 hours)
-  - Task 3: File Discovery Engine (6 hours)
+- **Day 2 (6 hours)**:
+  - Task 2: Complete Filename Parser (1 hour)
+  - Task 3: File Discovery Engine (5 hours)
 
-### **Remaining Tasks (12 hours)**
+- **Day 3 (6 hours)**:
+  - Task 3: Complete File Discovery Engine (1 hour)
+  - Task 4: File Integrity and Versioning (4 hours)
+  - Task 5: Batch Processing Logic (1 hour)
 
-- Task 3: Complete File Discovery Engine (2 hours)
-- Task 4: File Integrity and Versioning (4 hours)
-- Task 5: Batch Processing Logic (6 hours)
+### **Week 1 - Enhancement Tasks (10 hours)**
 
-### **Optional Enhancements (11 hours)**
-
+- Task 5: Complete Batch Processing Logic (4 hours)
 - Task 6: Configuration Management (3 hours)
-- Task 7: Error Handling and Resilience (4 hours)
+- Task 7: Error Handling and Resilience (3 hours)
+
+### **Week 1 - Polish and Testing (5 hours)**
+
 - Task 8: Logging and Monitoring (3 hours)
-- Testing and Documentation (1 hour)
+- Integration Testing and Documentation (2 hours)
+
+### **Total Estimated Time: 33 hours**
 
 ---
 
@@ -644,26 +707,31 @@ src/services/discovery/
 
 ### **Functional Requirements**
 
-- [ ] Successfully discover and parse all Indici file types
-- [ ] Correctly group files by DateExtracted batches
-- [ ] Handle both full and delta files appropriately
-- [ ] Provide file metadata for downstream processing
-- [ ] Support backfill operations by date range
+- [ ] Successfully discover and parse all 17 Indici file types
+- [ ] Correctly group files by DateExtracted batches with 100% accuracy
+- [ ] Handle both full and delta files appropriately based on filename patterns
+- [ ] Provide complete file metadata for downstream processing
+- [ ] Support backfill operations by date range with flexible filtering
+- [ ] Validate filename conventions and reject malformed files
+- [ ] Generate processing plans with dependency resolution
 
 ### **Non-Functional Requirements**
 
-- [ ] Process 100+ files within 30 seconds
-- [ ] Handle S3 errors gracefully with retries
-- [ ] Maintain detailed logs for debugging
-- [ ] Support concurrent discovery operations
-- [ ] Provide health check capabilities
+- [ ] Process 1000+ files within 30 seconds using pagination
+- [ ] Handle S3 errors gracefully with exponential backoff retry
+- [ ] Maintain detailed structured logs for debugging and monitoring
+- [ ] Support concurrent discovery operations safely
+- [ ] Provide health check endpoint with status information
+- [ ] Memory usage under 256MB during large discovery operations
+- [ ] File integrity validation with SHA-256 hashing
 
 ### **Integration Requirements**
 
-- [ ] Expose clean interface for Raw Loader component
-- [ ] Provide file streams for CSV processing
-- [ ] Support idempotency checks via file hashing
-- [ ] Integrate with audit/monitoring systems
+- [ ] Expose clean interface for Raw Loader component with type safety
+- [ ] Provide streaming interfaces for CSV processing
+- [ ] Support idempotency checks via file hashing and versioning
+- [ ] Integrate with audit/monitoring systems for operational visibility
+- [ ] Support dependency injection for testability and flexibility
 
 ---
 
@@ -688,6 +756,33 @@ src/services/discovery/
 ### **Basic Discovery**
 
 ```typescript
+import { DiscoveryContainer } from "./services/discovery";
+import type { S3DiscoveryConfig } from "./services/discovery/types/config";
+
+const config: S3DiscoveryConfig = {
+  s3: {
+    bucket: process.env.S3_BUCKET_NAME || "poutiri-datacraft-data",
+    region: process.env.AWS_REGION || "ap-southeast-2",
+    prefix: process.env.S3_BUCKET_PREFIX,
+    maxConcurrency: 4,
+    retryAttempts: 3,
+    timeoutMs: 30000,
+  },
+  discovery: {
+    batchSize: 1000,
+    maxFilesPerBatch: 100,
+    enableVersioning: true,
+    validateHashes: true,
+    cacheMetadata: true,
+    cacheTtlMinutes: 60,
+  },
+  processing: {
+    priorityExtracts: ["Patients", "Appointments", "Providers"],
+    maxConcurrentFiles: 10,
+    processingTimeoutMs: 300000, // 5 minutes
+  },
+};
+
 const discoveryService = DiscoveryContainer.create(config);
 
 // Discover latest batch
@@ -711,6 +806,11 @@ const backfillPlan = await discoveryService.discoverByDateRange(
 
 // Process specific batch
 const batch = await discoveryService.discoverSpecificBatch("2508190850");
+
+// Get discovery status and health
+const status = await discoveryService.getDiscoveryStatus();
+console.log("Service is healthy:", status.isHealthy);
+console.log("Latest batch:", status.latestBatch);
 ```
 
 ---
