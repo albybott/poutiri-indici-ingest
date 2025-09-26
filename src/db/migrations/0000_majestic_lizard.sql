@@ -2786,3 +2786,16 @@ CREATE TABLE "etl"."health" (
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
+--> statement-breakpoint
+CREATE UNIQUE INDEX "dim_medicine_business_key_current_idx" ON "core"."medicine" USING btree ("medicine_id","practice_id","per_org_id","is_current");--> statement-breakpoint
+CREATE UNIQUE INDEX "dim_patient_business_key_current_idx" ON "core"."patient" USING btree ("patient_id","practice_id","per_org_id","is_current");--> statement-breakpoint
+CREATE UNIQUE INDEX "dim_practice_business_key_current_idx" ON "core"."practice" USING btree ("practice_id","per_org_id","is_current");--> statement-breakpoint
+CREATE UNIQUE INDEX "dim_provider_business_key_current_idx" ON "core"."provider" USING btree ("provider_id","practice_id","per_org_id","is_current");--> statement-breakpoint
+CREATE UNIQUE INDEX "dim_vaccine_business_key_current_idx" ON "core"."vaccine" USING btree ("vaccine_id","practice_id","per_org_id","is_current");--> statement-breakpoint
+CREATE UNIQUE INDEX "fact_appointment_business_key_idx" ON "core"."fact_appointment" USING btree ("appointment_id","practice_id","per_org_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "fact_diagnosis_business_key_idx" ON "core"."fact_diagnosis" USING btree ("diagnosis_id","practice_id","per_org_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "fact_immunisation_business_key_idx" ON "core"."fact_immunisation" USING btree ("appointment_immunisation_id","practice_id","per_org_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "fact_invoice_business_key_idx" ON "core"."fact_invoice" USING btree ("invoice_transaction_id","practice_id","per_org_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "fact_invoice_detail_business_key_idx" ON "core"."fact_invoice_detail" USING btree ("invoice_detail_id","practice_id","per_org_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "fact_measurement_business_key_idx" ON "core"."fact_measurement" USING btree ("patient_id","practice_id","per_org_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "load_run_files_unique_idx" ON "etl"."load_run_files" USING btree ("s3_version_id","file_hash");

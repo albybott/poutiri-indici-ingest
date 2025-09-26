@@ -111,14 +111,14 @@ export const factAppointment = createTable(
     loadRunId: uuid("load_run_id").notNull(),
     loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => ({
+  (table) => [
     // Unique constraint - ensure only one record per business key
-    businessKeyIdx: uniqueIndex("fact_appointment_business_key_idx").on(
+    uniqueIndex("fact_appointment_business_key_idx").on(
       table.appointmentId,
       table.practiceId,
       table.perOrgId
     ),
-  })
+  ]
 );
 
 // Immunisation fact table
@@ -206,14 +206,14 @@ export const factImmunisation = createTable(
     loadRunId: uuid("load_run_id").notNull(),
     loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => ({
+  (table) => [
     // Unique constraint - ensure only one record per business key
-    businessKeyIdx: uniqueIndex("fact_immunisation_business_key_idx").on(
+    uniqueIndex("fact_immunisation_business_key_idx").on(
       table.appointmentImmunisationId,
       table.practiceId,
       table.perOrgId
     ),
-  })
+  ]
 );
 
 // Invoice fact table
@@ -277,14 +277,14 @@ export const factInvoice = createTable(
     loadRunId: uuid("load_run_id").notNull(),
     loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => ({
+  (table) => [
     // Unique constraint - ensure only one record per business key
-    businessKeyIdx: uniqueIndex("fact_invoice_business_key_idx").on(
+    uniqueIndex("fact_invoice_business_key_idx").on(
       table.invoiceTransactionId,
       table.practiceId,
       table.perOrgId
     ),
-  })
+  ]
 );
 
 // Invoice detail fact table
@@ -369,14 +369,14 @@ export const factInvoiceDetail = createTable(
     loadRunId: uuid("load_run_id").notNull(),
     loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => ({
+  (table) => [
     // Unique constraint - ensure only one record per business key
-    businessKeyIdx: uniqueIndex("fact_invoice_detail_business_key_idx").on(
+    uniqueIndex("fact_invoice_detail_business_key_idx").on(
       table.invoiceDetailId,
       table.practiceId,
       table.perOrgId
     ),
-  })
+  ]
 );
 
 // Diagnosis fact table
@@ -460,14 +460,14 @@ export const factDiagnosis = createTable(
     loadRunId: uuid("load_run_id").notNull(),
     loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => ({
+  (table) => [
     // Unique constraint - ensure only one record per business key
-    businessKeyIdx: uniqueIndex("fact_diagnosis_business_key_idx").on(
+    uniqueIndex("fact_diagnosis_business_key_idx").on(
       table.diagnosisId,
       table.practiceId,
       table.perOrgId
     ),
-  })
+  ]
 );
 
 // Measurement fact table
@@ -552,14 +552,14 @@ export const factMeasurement = createTable(
     loadRunId: uuid("load_run_id").notNull(),
     loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => ({
+  (table) => [
     // Unique constraint - ensure only one record per business key
-    businessKeyIdx: uniqueIndex("fact_measurement_business_key_idx").on(
+    uniqueIndex("fact_measurement_business_key_idx").on(
       table.patientId,
       table.practiceId,
       table.perOrgId
     ),
-  })
+  ]
 );
 
 // Foreign Key constraints for referential integrity

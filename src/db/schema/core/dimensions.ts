@@ -7,7 +7,6 @@ import {
   date,
   serial,
   uniqueIndex,
-  index,
 } from "drizzle-orm/pg-core";
 import { createTable } from "../../../utils/create-table";
 
@@ -78,12 +77,15 @@ export const dimPatient = createTable(
     loadRunId: uuid("load_run_id").notNull(),
     loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => ({
+  (table) => [
     // SCD2 unique constraint - ensure only one current record per business key
-    businessKeyCurrentIdx: uniqueIndex(
-      "dim_patient_business_key_current_idx"
-    ).on(table.patientId, table.practiceId, table.perOrgId, table.isCurrent),
-  })
+    uniqueIndex("dim_patient_business_key_current_idx").on(
+      table.patientId,
+      table.practiceId,
+      table.perOrgId,
+      table.isCurrent
+    ),
+  ]
 );
 
 // Provider dimension with SCD2
@@ -140,12 +142,15 @@ export const dimProvider = createTable(
     loadRunId: uuid("load_run_id").notNull(),
     loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => ({
+  (table) => [
     // SCD2 unique constraint - ensure only one current record per business key
-    businessKeyCurrentIdx: uniqueIndex(
-      "dim_provider_business_key_current_idx"
-    ).on(table.providerId, table.practiceId, table.perOrgId, table.isCurrent),
-  })
+    uniqueIndex("dim_provider_business_key_current_idx").on(
+      table.providerId,
+      table.practiceId,
+      table.perOrgId,
+      table.isCurrent
+    ),
+  ]
 );
 
 // Practice dimension with SCD1/2 as needed
@@ -204,12 +209,14 @@ export const dimPractice = createTable(
     loadRunId: uuid("load_run_id").notNull(),
     loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => ({
+  (table) => [
     // SCD2 unique constraint - ensure only one current record per business key
-    businessKeyCurrentIdx: uniqueIndex(
-      "dim_practice_business_key_current_idx"
-    ).on(table.practiceId, table.perOrgId, table.isCurrent),
-  })
+    uniqueIndex("dim_practice_business_key_current_idx").on(
+      table.practiceId,
+      table.perOrgId,
+      table.isCurrent
+    ),
+  ]
 );
 
 // Medicine dimension with SCD2
@@ -249,12 +256,15 @@ export const dimMedicine = createTable(
     loadRunId: uuid("load_run_id").notNull(),
     loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => ({
+  (table) => [
     // SCD2 unique constraint - ensure only one current record per business key
-    businessKeyCurrentIdx: uniqueIndex(
-      "dim_medicine_business_key_current_idx"
-    ).on(table.medicineId, table.practiceId, table.perOrgId, table.isCurrent),
-  })
+    uniqueIndex("dim_medicine_business_key_current_idx").on(
+      table.medicineId,
+      table.practiceId,
+      table.perOrgId,
+      table.isCurrent
+    ),
+  ]
 );
 
 // Vaccine dimension with SCD2
@@ -295,10 +305,13 @@ export const dimVaccine = createTable(
     loadRunId: uuid("load_run_id").notNull(),
     loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => ({
+  (table) => [
     // SCD2 unique constraint - ensure only one current record per business key
-    businessKeyCurrentIdx: uniqueIndex(
-      "dim_vaccine_business_key_current_idx"
-    ).on(table.vaccineId, table.practiceId, table.perOrgId, table.isCurrent),
-  })
+    uniqueIndex("dim_vaccine_business_key_current_idx").on(
+      table.vaccineId,
+      table.practiceId,
+      table.perOrgId,
+      table.isCurrent
+    ),
+  ]
 );

@@ -62,13 +62,13 @@ export const loadRunFiles = createTable(
       .notNull()
       .defaultNow(),
   },
-  (table) => ({
+  (table) => [
     // Unique constraint for idempotency - ensure only one record per file
-    fileIdempotencyIdx: uniqueIndex("load_run_files_unique_idx").on(
+    uniqueIndex("load_run_files_unique_idx").on(
       table.s3VersionId,
       table.fileHash
     ),
-  })
+  ]
 );
 
 // Data quality results - per-run metrics
