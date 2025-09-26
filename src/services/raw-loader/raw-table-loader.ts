@@ -327,9 +327,6 @@ export class RawTableLoader {
           VALUES ${placeholders}
         `;
 
-        console.log(`📋 Query:`, query);
-        console.log(`📋 Flat values:`, batch.values.flat());
-
         const flatValues = batch.values.flat();
         return await client.query(query, flatValues);
       });
