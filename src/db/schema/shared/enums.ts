@@ -1,25 +1,25 @@
 import { pgEnum } from "drizzle-orm/pg-core";
 
-// Define enum for extract types
+// Define enum for extract types - matches filename format from S3
 export const extractTypeEnum = pgEnum("extract_type", [
-  "patients",
-  "appointments",
-  "immunisations",
-  "invoices",
-  "invoice_detail",
-  "providers",
-  "practice_info",
-  "measurements",
-  "diagnoses",
-  "recalls",
-  "inbox",
-  "inbox_detail",
-  "medicine",
-  "next_of_kin",
-  "vaccine",
-  "allergies",
-  "appointment_medications",
-  "patient_alerts",
+  "Patient",
+  "Appointments",
+  "Immunisation",
+  "Invoices",
+  "InvoiceDetail",
+  "Provider",
+  "PracticeInfo",
+  "Measurements",
+  "Diagnosis",
+  "Recalls",
+  "Inbox",
+  "InboxDetail",
+  "Medicine",
+  "NextOfKin",
+  "Vaccine",
+  "Allergies",
+  "AppointmentMedications",
+  "PatientAlerts",
 ]);
 
 // Define enum for appointment status mapping

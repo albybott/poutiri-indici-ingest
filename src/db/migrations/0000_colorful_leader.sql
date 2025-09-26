@@ -7,7 +7,7 @@ CREATE SCHEMA "raw";
 CREATE SCHEMA "stg";
 --> statement-breakpoint
 CREATE TYPE "public"."appointment_status" AS ENUM('scheduled', 'confirmed', 'arrived', 'in_progress', 'completed', 'cancelled', 'no_show', 'rescheduled');--> statement-breakpoint
-CREATE TYPE "public"."extract_type" AS ENUM('patients', 'appointments', 'immunisations', 'invoices', 'invoice_detail', 'providers', 'practice_info', 'measurements', 'diagnoses', 'recalls', 'inbox', 'inbox_detail', 'medicine', 'next_of_kin', 'vaccine', 'allergies', 'appointment_medications', 'patient_alerts');--> statement-breakpoint
+CREATE TYPE "public"."extract_type" AS ENUM('Patient', 'Appointments', 'Immunisation', 'Invoices', 'InvoiceDetail', 'Provider', 'PracticeInfo', 'Measurements', 'Diagnosis', 'Recalls', 'Inbox', 'InboxDetail', 'Medicine', 'NextOfKin', 'Vaccine', 'Allergies', 'AppointmentMedications', 'PatientAlerts');--> statement-breakpoint
 CREATE TYPE "public"."immunisation_status" AS ENUM('completed', 'pending', 'overdue', 'cancelled', 'not_required');--> statement-breakpoint
 CREATE TYPE "public"."status_group" AS ENUM('active', 'completed', 'cancelled', 'no_show');--> statement-breakpoint
 CREATE TABLE "raw"."patients" (

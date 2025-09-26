@@ -6,6 +6,12 @@ export default defineConfig({
   out: "./src/db/migrations",
   dialect: "postgresql",
   dbCredentials: {
-    url: process.env.DATABASE_URL!,
+    user: process.env.DB_USER!,
+    password: process.env.DB_PASSWORD!,
+    host: process.env.DB_HOST!,
+    port: parseInt(process.env.DB_PORT!),
+    database: process.env.DB_NAME!,
+    ssl:
+      process.env.PGSSL === "disable" ? false : { rejectUnauthorized: false },
   },
 });

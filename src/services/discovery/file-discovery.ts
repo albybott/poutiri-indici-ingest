@@ -11,7 +11,8 @@ import type { DiscoveredFile, FileBatch } from "./types/files";
 export class FileDiscovery {
   constructor(
     private fileSystemAdapter: FileSystemAdapter,
-    private filenameParser: FilenameParser
+    private filenameParser: FilenameParser,
+    private s3Bucket: string = "poutiri-datacraft-data"
   ) {}
 
   /**
@@ -53,6 +54,7 @@ export class FileDiscovery {
         const discoveredFile: DiscoveredFile = {
           s3Key: file.key,
           s3VersionId: file.versionId ?? "",
+          s3Bucket: this.s3Bucket,
           fileSize: file.size,
           lastModified: file.lastModified,
           etag: file.etag,

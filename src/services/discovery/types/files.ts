@@ -17,6 +17,7 @@ export interface ParsedFilename {
 export interface DiscoveredFile {
   s3Key: string;
   s3VersionId: string;
+  s3Bucket: string;
   fileSize: number;
   lastModified: Date;
   etag: string;

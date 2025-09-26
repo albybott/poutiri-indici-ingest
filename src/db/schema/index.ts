@@ -89,26 +89,26 @@ export const etlSchemas = {
   health: () => import("./etl/health"),
 };
 
-// Extract types enum for type safety
+// Extract types enum for type safety - matches filename format from S3
 export const EXTRACT_TYPES = {
-  PATIENTS: "patients",
-  APPOINTMENTS: "appointments",
-  IMMUNISATIONS: "immunisations",
-  INVOICES: "invoices",
-  INVOICE_DETAIL: "invoice_detail",
-  PROVIDERS: "providers",
-  PRACTICE_INFO: "practice_info",
-  MEASUREMENTS: "measurements",
-  DIAGNOSES: "diagnoses",
-  RECALLS: "recalls",
-  INBOX: "inbox",
-  INBOX_DETAIL: "inbox_detail",
-  MEDICINE: "medicine",
-  NEXT_OF_KIN: "next_of_kin",
-  VACCINE: "vaccine",
-  ALLERGIES: "allergies",
-  APPOINTMENT_MEDICATIONS: "appointment_medications",
-  PATIENT_ALERTS: "patient_alerts",
+  PATIENT: "Patient",
+  APPOINTMENTS: "Appointments",
+  IMMUNISATION: "Immunisation",
+  INVOICES: "Invoices",
+  INVOICE_DETAIL: "InvoiceDetail",
+  PROVIDER: "Provider",
+  PRACTICE_INFO: "PracticeInfo",
+  MEASUREMENTS: "Measurements",
+  DIAGNOSIS: "Diagnosis",
+  RECALLS: "Recalls",
+  INBOX: "Inbox",
+  INBOX_DETAIL: "InboxDetail",
+  MEDICINE: "Medicine",
+  NEXT_OF_KIN: "NextOfKin",
+  VACCINE: "Vaccine",
+  ALLERGIES: "Allergies",
+  APPOINTMENT_MEDICATIONS: "AppointmentMedications",
+  PATIENT_ALERTS: "PatientAlerts",
 } as const;
 
 export type ExtractType = (typeof EXTRACT_TYPES)[keyof typeof EXTRACT_TYPES];

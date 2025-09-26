@@ -1,5 +1,9 @@
 import "dotenv/config";
+import { randomUUID } from "crypto";
 import { S3DiscoveryService } from "./services/discovery";
+import { RawLoaderContainer } from "./services/raw-loader";
+import type { RawLoaderConfig } from "./services/raw-loader/types/config";
+import type { DiscoveredFile } from "./services/discovery/types/files";
 
 interface AppConfig {
   databaseUrl: string;
@@ -9,7 +13,7 @@ interface AppConfig {
 }
 
 const config: AppConfig = {
-  databaseUrl: process.env.DATABASE_URL!,
+  databaseUrl: `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
   s3Bucket: process.env.S3_BUCKET_NAME,
   awsRegion: process.env.AWS_REGION,
   testMode: process.env.NODE_ENV !== "production",
@@ -23,124 +27,154 @@ async function main(): Promise<void> {
   console.log(`🌍 AWS Region: ${config.awsRegion || "Not configured"}`);
   console.log(`🧪 Test Mode: ${config.testMode ? "Enabled" : "Disabled"}`);
 
-  // Test S3 Discovery Service
-  await testS3DiscoveryService();
+  // Test Raw Loader Service
+  await testRawLoaderService();
 
   console.log("✅ Application started successfully!");
 }
 
-async function testS3DiscoveryService(): Promise<void> {
-  console.log("\n🔍 Testing S3 Discovery Service...");
+async function testRawLoaderService(): Promise<void> {
+  console.log("\n📦 Testing Raw Loader Service...");
 
   try {
-    // Test 1: Initialize service with default configuration
-    console.log("\n1️⃣  Testing service initialization...");
-    const service = new S3DiscoveryService();
-    console.log("✅ Service initialized successfully");
+    const rawLoaderConfig: RawLoaderConfig = {
+      database: {
+        poolSize: 10,
+        timeoutMs: 30000,
+        maxConnections: 20,
+      },
+      processing: {
+        batchSize: 1000,
+        maxConcurrentFiles: 5,
+        maxMemoryMB: 512,
+        enableStreaming: true,
+        bufferSizeMB: 16,
+        continueOnError: true,
+      },
+      csv: {
+        fieldSeparator: "|~~|",
+        rowSeparator: "|^^|",
+        maxRowLength: 10000,
+        hasHeaders: false,
+        skipEmptyRows: true,
+      },
+      errorHandling: {
+        maxRetries: 3,
+        retryDelayMs: 1000,
+        continueOnError: true,
+        logErrors: true,
+        errorThreshold: 0.1,
+      },
+      monitoring: {
+        enableMetrics: true,
+        logLevel: "info",
+        metricsInterval: 30000,
+        enableProgressTracking: true,
+        progressUpdateInterval: 5000,
+      },
+    };
+    const rawLoader = RawLoaderContainer.create(rawLoaderConfig);
 
-    // Test 2: Get and display configuration
-    console.log("\n2️⃣  Testing configuration...");
-    const serviceConfig = service.getConfig();
-    console.log("📋 Current configuration:", {
-      bucket: serviceConfig.s3.bucket,
-      region: serviceConfig.s3.region,
-      maxKeys: serviceConfig.s3.maxKeys,
-      enableVersioning: serviceConfig.discovery.enableVersioning,
-      validateHashes: serviceConfig.discovery.validateHashes,
-    });
-
-    // Test 3: Health check
-    console.log("\n3️⃣  Testing health check...");
-    const isHealthy = await service.healthCheck();
+    const isHealthy = await rawLoader.healthCheck();
     console.log(
       `🏥 Service health: ${isHealthy ? "✅ Healthy" : "❌ Unhealthy"}`
     );
 
-    // Test 4: Configuration update
-    console.log("\n4️⃣  Testing configuration update...");
-    const originalMaxKeys = service.getConfig().s3.maxKeys;
-    service.updateConfig({
-      s3: {
-        ...service.getConfig().s3,
-        maxKeys: 500,
-      },
-    });
-    console.log(
-      `📝 Updated maxKeys from ${originalMaxKeys} to ${service.getConfig().s3.maxKeys}`
-    );
-
-    // Test 5: Custom configuration (if S3 credentials are available)
     if (config.s3Bucket && config.awsRegion) {
-      console.log("\n5️⃣  Testing custom configuration...");
-      const customService = new S3DiscoveryService({
-        s3: {
-          bucket: config.s3Bucket,
-          region: config.awsRegion,
-          maxConcurrency: 2,
-          retryAttempts: 2,
-        },
-        discovery: {
-          ...service.getConfig().discovery,
-          batchSize: 500,
-          maxFilesPerBatch: 50,
-          cacheTtlMinutes: 30,
-        },
-        processing: {
-          priorityExtracts: ["Patient", "Appointments"],
-          maxConcurrentFiles: 5,
-          processingTimeoutMs: 120000,
-        },
-      });
-
-      console.log("✅ Custom service created with:", {
-        bucket: customService.getConfig().s3.bucket,
-        maxConcurrency: customService.getConfig().s3.maxConcurrency,
-        batchSize: customService.getConfig().discovery.batchSize,
-      });
-
-      // Test 6: Get service status
-      console.log("\n6️⃣  Testing service status...");
-      const status = await customService.getDiscoveryStatus();
-      console.log("📊 Service status:", {
-        healthy: status.isHealthy,
-        availableBatches: status.availableBatches,
-        pendingFiles: status.pendingFiles,
-        metrics: {
-          filesDiscovered: status.metrics.filesDiscovered,
-          batchesFound: status.metrics.batchesFound,
-          totalSizeBytes: status.metrics.totalSizeBytes,
-        },
-      });
-
-      // Test 7: Discovery with options (commented out to avoid actual S3 calls)
-      if (config.testMode) {
-        const processingPlan = await customService.discoverLatestFiles({
-          extractTypes: ["Patient", "Appointments"],
-          maxBatches: 3,
+      try {
+        const discoveryService = new S3DiscoveryService({
+          s3: {
+            bucket: config.s3Bucket,
+            region: config.awsRegion,
+            maxConcurrency: 1,
+            retryAttempts: 2,
+          },
+          discovery: {
+            batchSize: 1,
+            maxFilesPerBatch: 1,
+            enableVersioning: true,
+            validateHashes: false,
+            cacheMetadata: false,
+            cacheTtlMinutes: 5,
+          },
+          processing: {
+            priorityExtracts: ["Patient"],
+            maxConcurrentFiles: 1,
+            processingTimeoutMs: 60000,
+          },
         });
 
-        console.log("📦 Processing plan created:", {
-          totalFiles: processingPlan.totalFiles,
-          batches: processingPlan.batches.length,
-          estimatedDuration: processingPlan.estimatedDuration,
+        const processingPlan = await discoveryService.discoverLatestFiles({
+          extractTypes: ["Patient"],
+          maxBatches: 1,
         });
 
-        console.log("⏭️  Skipping actual S3 calls in test mode");
+        if (
+          processingPlan.batches.length > 0 &&
+          processingPlan.batches[0].files.length > 0
+        ) {
+          console.log(
+            `📁 Found ${processingPlan.batches[0].files.length} files in latest batch`
+          );
+
+          const loadRunId = randomUUID();
+          console.log(`🏃 Starting load run: ${loadRunId}`);
+
+          const loadResults = await rawLoader.loadMultipleFiles(
+            processingPlan.batches[0].files,
+            loadRunId,
+            {
+              batchSize: 500,
+              continueOnError: true,
+              maxConcurrentFiles: 1,
+            }
+          );
+
+          console.log("✅ Load completed!", {
+            filesProcessed: loadResults.length,
+            totalRows: loadResults.reduce((sum, r) => sum + r.totalRows, 0),
+            successfulBatches: loadResults.reduce(
+              (sum, r) => sum + r.successfulBatches,
+              0
+            ),
+            failedBatches: loadResults.reduce(
+              (sum, r) => sum + r.failedBatches,
+              0
+            ),
+            errors: loadResults.reduce((sum, r) => sum + r.errors.length, 0),
+          });
+
+          // Show detailed results for the first file
+          if (loadResults.length > 0) {
+            const firstResult = loadResults[0];
+            console.log("📊 First file details:", {
+              totalRows: firstResult.totalRows,
+              successfulBatches: firstResult.successfulBatches,
+              failedBatches: firstResult.failedBatches,
+              durationMs: firstResult.durationMs,
+              rowsPerSecond: Math.round(firstResult.rowsPerSecond),
+              memoryUsageMB: firstResult.memoryUsageMB,
+              errors: firstResult.errors.length,
+            });
+          }
+        } else {
+          console.log("⚠️  No files found in the latest batch");
+        }
+      } catch (error) {
+        console.error("❌ Error loading real data:", error);
+        console.log(
+          "💡 This is expected if database connection is not available"
+        );
       }
     } else {
       console.log(
-        "\n⚠️  S3 credentials not configured, skipping S3 operations"
+        "⚠️  Cannot load real data - missing S3 credentials or not in test mode"
       );
-      console.log("💡 To enable S3 testing, set:");
-      console.log("   - S3_BUCKET_NAME: your-bucket-name");
-      console.log("   - AWS_REGION: your-region");
-      console.log("   - AWS_ACCESS_KEY_ID: your-access-key");
-      console.log("   - AWS_SECRET_ACCESS_KEY: your-secret-key");
     }
 
-    console.log("\n✅ S3 Discovery Service tests completed successfully!");
+    console.log("\n✅ Raw Loader Service tests completed successfully!");
   } catch (error) {
-    console.error("❌ S3 Discovery Service test failed:", error);
+    console.error("❌ Raw Loader Service test failed:", error);
 
     if (error instanceof Error) {
       console.error("🔍 Error details:", {

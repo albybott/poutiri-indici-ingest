@@ -51,7 +51,8 @@ export class S3DiscoveryService {
     this.filenameParser = new FilenameParser();
     this.fileDiscovery = new FileDiscovery(
       this.fileSystemAdapter,
-      this.filenameParser
+      this.filenameParser,
+      this.config.s3.bucket
     );
     this.batchProcessor = new BatchProcessor(this.fileDiscovery);
     this.integrityService = new FileIntegrityService(this.fileSystemAdapter);
