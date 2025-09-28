@@ -7,6 +7,8 @@ import type {
   LineageData,
   LoadError,
   LoadErrorType,
+  RawLoadOptions,
+  LoadResult,
 } from "./types/raw-loader";
 import type { DatabaseConfig } from "./types/config";
 import type { CSVRow } from "./indici-csv-parser";
@@ -112,8 +114,12 @@ export class RawTableLoader {
   async loadFromStream(
     stream: Readable,
     fileMetadata: any,
-    options: any
-  ): Promise<any> {
+    options: RawLoadOptions & {
+      extractType: string;
+      tableName: string;
+      columnMapping: string[];
+    }
+  ): Promise<LoadResult> {
     const startTime = Date.now();
     let totalRows = 0;
     let successfulBatches = 0;
@@ -129,8 +135,8 @@ export class RawTableLoader {
       const streamContent = await this.readStreamContent(stream);
       const actualColumns = this.extractColumnsFromCSV(
         streamContent,
-        options.fieldSeparator || "|~~|",
-        options.rowSeparator || "|^^|",
+        options.fieldSeparator || "|",
+        options.rowSeparator || "\n",
         options.extractType
       );
 
@@ -140,11 +146,13 @@ export class RawTableLoader {
 
       // Create a new CSV parser with the correct column mapping
       const dynamicParser = new IndiciCSVParser({
-        fieldSeparator: options.fieldSeparator || "|~~|",
-        rowSeparator: options.rowSeparator || "|^^|",
+        fieldSeparator: options.fieldSeparator || "|",
+        rowSeparator: options.rowSeparator || "\n",
         hasHeaders: false,
         columnMapping: actualColumns,
         skipEmptyRows: true,
+        maxRowLength: 1000000,
+        maxFieldLength: 5000,
       });
 
       // Parse CSV data into rows with the correct column mapping
@@ -167,16 +175,16 @@ export class RawTableLoader {
       );
 
       console.log(`📊 Processing ${csvRows.length} rows from CSV data`);
-      console.log(`📋 First row sample:`, csvRows[0]);
-      console.log(`📋 Second row sample:`, csvRows[1]);
-      console.log(`📋 Third row sample:`, csvRows[2]);
-      console.log(`📋 Fourth row sample:`, csvRows[3]);
-      console.log(`📋 Fifth row sample:`, csvRows[4]);
-      console.log(`📋 Sixth row sample:`, csvRows[5]);
-      console.log(`📋 Seventh row sample:`, csvRows[6]);
-      console.log(`📋 Eighth row sample:`, csvRows[7]);
-      console.log(`📋 Ninth row sample:`, csvRows[8]);
-      console.log(`📋 Tenth row sample:`, csvRows[9]);
+      // console.log(`📋 First row sample:`, csvRows[0]);
+      // console.log(`📋 Second row sample:`, csvRows[1]);
+      // console.log(`📋 Third row sample:`, csvRows[2]);
+      // console.log(`📋 Fourth row sample:`, csvRows[3]);
+      // console.log(`📋 Fifth row sample:`, csvRows[4]);
+      // console.log(`📋 Sixth row sample:`, csvRows[5]);
+      // console.log(`📋 Seventh row sample:`, csvRows[6]);
+      // console.log(`📋 Eighth row sample:`, csvRows[7]);
+      // console.log(`📋 Ninth row sample:`, csvRows[8]);
+      // console.log(`📋 Tenth row sample:`, csvRows[9]);
 
       // Process rows in batches
       const batches = this.createBatches(
@@ -629,9 +637,37 @@ export class RawTableLoader {
     }
 
     const firstRow = rows[0].trim();
+
+    // Debug: Check what separators are actually in the data
+    console.log(`🔍 Debug - Field separator: "${fieldSeparator}"`);
+    console.log(`🔍 Debug - Row separator: "${rowSeparator}"`);
+    console.log(`🔍 Debug - First row length: ${firstRow.length}`);
+    console.log(`🔍 Debug - Looking for field separator in first row...`);
+
+    // Check if field separator exists in the data
+    const fieldSeparatorIndex = firstRow.indexOf(fieldSeparator);
+    console.log(
+      `🔍 Debug - Field separator "${fieldSeparator}" found at position: ${fieldSeparatorIndex}`
+    );
+
+    if (fieldSeparatorIndex === -1) {
+      console.log(
+        `🔍 Debug - Field separator not found! Trying alternative separators...`
+      );
+      // Try to detect the actual separator
+      const possibleSeparators = ["|", "|~~|", "\t", ",", ";", "|^^|"];
+      for (const sep of possibleSeparators) {
+        if (firstRow.includes(sep)) {
+          console.log(
+            `🔍 Debug - Found potential separator: "${sep}" at position ${firstRow.indexOf(sep)}`
+          );
+        }
+      }
+    }
+
     const fieldCount = firstRow.split(fieldSeparator).length;
 
-    console.log(`📊 First CSV row: ${firstRow.substring(0, 100)}...`);
+    console.log(`📊 First CSV row: ${firstRow.substring(0, 200)}...`);
     console.log(`📊 Detected ${fieldCount} fields in CSV`);
 
     // Map field positions to column names based on extract type

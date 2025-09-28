@@ -11,6 +11,7 @@ import { IdempotencyService } from "../idempotency-service";
 import { LineageService } from "../lineage-service";
 import { ErrorHandler } from "../error-handler";
 import { LoadMonitor } from "../load-monitor";
+import type { FileSystemAdapter } from "../../discovery/adapters/file-system-adapter";
 import type { DiscoveredFile } from "../../discovery/types/files";
 
 // Mock implementations for testing
@@ -74,6 +75,14 @@ const mockMonitor = {
   recordRetry: vi.fn(),
 };
 
+const mockFileSystemAdapter = {
+  listFiles: vi.fn(),
+  getFileStream: vi.fn(),
+  getFileMetadata: vi.fn(),
+  fileExists: vi.fn(),
+  getFileSize: vi.fn(),
+};
+
 const mockConfig = {
   database: {
     poolSize: 10,
@@ -89,9 +98,10 @@ const mockConfig = {
     continueOnError: true,
   },
   csv: {
-    fieldSeparator: "|~~|",
-    rowSeparator: "|^^|",
-    maxRowLength: 10000,
+    fieldSeparator: "|", // Updated to match actual data format
+    rowSeparator: "\n", // Updated to standard newline
+    maxRowLength: 1000000,
+    maxFieldLength: 5000,
     hasHeaders: false,
     skipEmptyRows: true,
   },
@@ -124,6 +134,7 @@ describe("RawLoaderService", () => {
       mockLineageService as any,
       mockErrorHandler as any,
       mockMonitor as any,
+      mockFileSystemAdapter as any,
       mockConfig
     );
   });
@@ -192,9 +203,7 @@ describe("RawLoaderService", () => {
         pipe: vi.fn(),
         destroy: vi.fn(),
       };
-      vi.spyOn(service as any, "getFileStream").mockResolvedValue(
-        mockStream as any
-      );
+      mockFileSystemAdapter.getFileStream.mockResolvedValue(mockStream as any);
 
       // Make sure buildLoadOptions returns the expected options
       const mockLoadOptions = {
@@ -222,6 +231,9 @@ describe("RawLoaderService", () => {
       expect(mockLineageService.generateLineageData).toHaveBeenCalledWith(
         mockFileMetadata,
         "run-123"
+      );
+      expect(mockFileSystemAdapter.getFileStream).toHaveBeenCalledWith(
+        mockFileMetadata.s3Key
       );
       expect(mockTableLoader.loadFromStream).toHaveBeenCalled();
       expect(mockIdempotencyService.markFileCompleted).toHaveBeenCalledWith(
@@ -264,9 +276,7 @@ describe("RawLoaderService", () => {
         pipe: vi.fn(),
         destroy: vi.fn(),
       };
-      vi.spyOn(service as any, "getFileStream").mockResolvedValue(
-        mockStream as any
-      );
+      mockFileSystemAdapter.getFileStream.mockResolvedValue(mockStream as any);
 
       const result = await service.loadFile(
         mockFileMetadata as DiscoveredFile,
@@ -308,9 +318,7 @@ describe("RawLoaderService", () => {
         pipe: vi.fn(),
         destroy: vi.fn(),
       };
-      vi.spyOn(service as any, "getFileStream").mockResolvedValue(
-        mockStream as any
-      );
+      mockFileSystemAdapter.getFileStream.mockResolvedValue(mockStream as any);
 
       const result = await service.loadFile(
         mockFileMetadata as DiscoveredFile,
@@ -320,6 +328,7 @@ describe("RawLoaderService", () => {
       expect(result.totalRows).toBe(0);
       expect(result.failedBatches).toBe(1);
       expect(result.errors).toContain(mockLoadError);
+      // Note: getFileStream is not called when checkFileProcessed fails
     });
   });
 

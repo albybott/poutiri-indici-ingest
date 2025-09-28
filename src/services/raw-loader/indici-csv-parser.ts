@@ -10,6 +10,7 @@ export interface CSVParseOptions {
   hasHeaders: boolean; // false for Indici extracts
   columnMapping: string[]; // Predefined column names by position
   maxRowLength?: number; // Safety limit for row size
+  maxFieldLength?: number; // Safety limit for individual field size
   skipEmptyRows: boolean; // Skip completely empty rows
 }
 
@@ -39,13 +40,15 @@ export class IndiciCSVParser {
   private readonly rowSeparator: string;
   private readonly columnMapping: string[];
   private readonly maxRowLength: number;
+  private readonly maxFieldLength: number;
   private readonly skipEmptyRows: boolean;
 
   constructor(options: CSVParseOptions) {
     this.fieldSeparator = options.fieldSeparator;
     this.rowSeparator = options.rowSeparator;
     this.columnMapping = options.columnMapping;
-    this.maxRowLength = options.maxRowLength || 10000;
+    this.maxRowLength = options.maxRowLength || 1000000; // Increased to handle extremely long rows
+    this.maxFieldLength = options.maxFieldLength || 5000; // Default field limit
     this.skipEmptyRows = options.skipEmptyRows;
   }
 
@@ -198,6 +201,7 @@ export class IndiciCSVParser {
       hasHeaders: false,
       columnMapping: this.columnMapping,
       maxRowLength: this.maxRowLength,
+      maxFieldLength: this.maxFieldLength,
       skipEmptyRows: this.skipEmptyRows,
     };
   }
@@ -229,6 +233,27 @@ export class IndiciCSVParser {
     }
 
     const fields = rowText.split(this.fieldSeparator);
+
+    // Validate and clean individual field values
+    for (let i = 0; i < fields.length; i++) {
+      let fieldValue =
+        typeof fields[i] === "string" ? fields[i].trim() : String(fields[i]);
+
+      // Clean null bytes and other invalid UTF-8 characters
+      fieldValue = fieldValue
+        .replace(/\0/g, "")
+        .replace(/[\x01-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+
+      // Check for length after cleaning
+      if (fieldValue.length > this.maxFieldLength) {
+        console.warn(
+          `⚠️  Field ${i} in row ${rowNumber} exceeds maximum length of ${this.maxFieldLength} characters (${fieldValue.length} chars). Truncating.`
+        );
+        fieldValue = fieldValue.substring(0, this.maxFieldLength);
+      }
+
+      fields[i] = fieldValue;
+    }
 
     // Create row object with column mapping
     const row: CSVRow = {

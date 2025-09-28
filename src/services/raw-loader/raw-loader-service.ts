@@ -1,4 +1,10 @@
 import { Readable } from "node:stream";
+import { S3Client } from "@aws-sdk/client-s3";
+import {
+  fromEnv,
+  fromIni,
+  fromInstanceMetadata,
+} from "@aws-sdk/credential-providers";
 import type {
   RawLoadOptions,
   LoadResult,
@@ -10,6 +16,9 @@ import type {
   LoadStatus,
 } from "./types/raw-loader";
 import type { DiscoveredFile } from "../../services/discovery/types/files";
+import type { FileSystemAdapter } from "../../services/discovery/adapters/file-system-adapter";
+import { S3FileSystemAdapter } from "../../services/discovery/adapters/s3-file-system-adapter";
+import type { S3Config } from "../../services/discovery/types/config";
 import type { RawLoaderConfig } from "./types/config";
 import { IndiciCSVParser } from "./indici-csv-parser";
 import { RawTableLoader } from "./raw-table-loader";
@@ -31,6 +40,7 @@ export class RawLoaderService {
   private lineageService: LineageService;
   private errorHandler: ErrorHandler;
   private monitor: LoadMonitor;
+  private fileSystemAdapter: FileSystemAdapter;
 
   constructor(
     csvParser: IndiciCSVParser,
@@ -40,6 +50,7 @@ export class RawLoaderService {
     lineageService: LineageService,
     errorHandler: ErrorHandler,
     monitor: LoadMonitor,
+    fileSystemAdapter: FileSystemAdapter,
     config: RawLoaderConfig
   ) {
     this.config = config;
@@ -50,6 +61,7 @@ export class RawLoaderService {
     this.lineageService = lineageService;
     this.errorHandler = errorHandler;
     this.monitor = monitor;
+    this.fileSystemAdapter = fileSystemAdapter;
   }
 
   /**
@@ -60,13 +72,17 @@ export class RawLoaderService {
     loadRunId: string,
     options?: Partial<RawLoadOptions>
   ): Promise<LoadResult> {
+    // Build load options ensuring defaults are set if not provided
     const loadOptions = this.buildLoadOptions(loadRunId, options);
 
+    console.log(`🔍 Load options:`, options);
+
     try {
-      // Check idempotency
+      // Check idempotency, this is to ensure we don't load the same file multiple times
       const idempotencyCheck =
         await this.idempotencyService.checkFileProcessed(fileMetadata);
       if (idempotencyCheck.isProcessed && loadOptions.skipValidation !== true) {
+        // If the file has already been loaded, return an empty result
         return {
           totalRows: 0,
           successfulBatches: 0,
@@ -80,12 +96,13 @@ export class RawLoaderService {
         };
       }
 
-      // Get extract handler
+      // Get extract handler, a handler is a function that will be used to load the data into the database
       const handler = await this.handlerFactory.getHandler(
         fileMetadata.parsed.extractType
       );
 
       // Generate lineage data
+      // Lineage data is used to track the data lineage through the ETL process
       const lineageData = await this.lineageService.generateLineageData(
         fileMetadata,
         loadRunId
@@ -103,6 +120,8 @@ export class RawLoaderService {
           extractType: fileMetadata.parsed.extractType,
           tableName: handler.tableName,
           columnMapping: handler.columnMapping,
+          fieldSeparator: this.config.csv.fieldSeparator,
+          rowSeparator: this.config.csv.rowSeparator,
         }
       );
 
@@ -145,17 +164,29 @@ export class RawLoaderService {
     loadRunId: string,
     options?: Partial<RawLoadOptions>
   ): Promise<LoadResult[]> {
+    console.log(`🔍 loadMultipleFiles - Private vars = `, {
+      ...this,
+    });
+
+    // Build load options ensuring defaults are set if not provided
     const loadOptions = this.buildLoadOptions(loadRunId, options);
+
+    // Get max concurrent files from options or config
     const maxConcurrent =
       loadOptions.maxConcurrentFiles ??
       this.config.processing.maxConcurrentFiles;
 
-    // Process files in batches to control concurrency
+    // Initialize results array, this will store the results of each file load
     const results: LoadResult[] = [];
 
+    // Process files in batches to control concurrency
     for (let i = 0; i < files.length; i += maxConcurrent) {
+      // Get the batch of files to process, we process in batches to control concurrency
       const batch = files.slice(i, i + maxConcurrent);
+
+      // Create an array of promises for each file in the batch, this will allow us to process the files in parallel
       const batchPromises = batch.map((file) =>
+        // This function is where we load the file into the database
         this.loadFile(file, loadRunId, loadOptions)
       );
 
@@ -328,65 +359,29 @@ export class RawLoaderService {
   }
 
   private async getFileStream(fileMetadata: DiscoveredFile): Promise<Readable> {
-    // This would be implemented to get the actual file stream from S3
-    // For now, return a mock stream with sample data for testing
     console.log(`📁 Attempting to get file stream for: ${fileMetadata.s3Key}`);
     console.log(`🔍 Extract type: ${fileMetadata.parsed.extractType}`);
+    console.log(`📦 Bucket: ${fileMetadata.s3Bucket}`);
 
-    // Create a mock CSV stream for testing
-    const sampleData = this.generateSampleCSVData(
-      fileMetadata.parsed.extractType
-    );
-    return Readable.from([sampleData]);
-  }
+    try {
+      // Get the actual file stream from S3 using the file system adapter
+      const stream = await this.fileSystemAdapter.getFileStream(
+        fileMetadata.s3Key
+      );
+      console.log(`✅ Successfully retrieved file stream from S3`);
 
-  private generateSampleCSVData(extractType: string): string {
-    console.log(`📊 Generating sample data for extract type: ${extractType}`);
-
-    // For Patient extract, these are the actual columns in the CSV
-    const patientColumns = [
-      "patient_id",
-      "practice_id",
-      "nhi_number",
-      "first_name",
-      "last_name",
-      "date_of_birth",
-      "gender",
-    ];
-
-    // For other extracts
-    const appointmentColumns = [
-      "appointment_id",
-      "patient_id",
-      "provider_id",
-      "appointment_date",
-      "appointment_time",
-      "duration",
-    ];
-
-    const columns =
-      extractType === "Patient" ? patientColumns : appointmentColumns;
-    const headers = columns.join("|~~|") + "|^^|";
-
-    const sampleRows =
-      extractType === "Patient"
-        ? [
-            "12345|~~|535|~~|ABC1234|~~|John|~~|Doe|~~|1985-06-15|~~|M",
-            "67890|~~|535|~~|DEF5678|~~|Jane|~~|Smith|~~|1990-08-20|~~|F",
-            "11111|~~|535|~~|GHI9012|~~|Bob|~~|Johnson|~~|1978-12-10|~~|M",
-          ]
-        : [
-            "A001|~~|12345|~~|P001|~~|2025-01-15|~~|10:00|~~|30",
-            "A002|~~|67890|~~|P002|~~|2025-01-16|~~|14:30|~~|45",
-            "A003|~~|11111|~~|P001|~~|2025-01-17|~~|09:15|~~|60",
-          ];
-
-    const csvData = headers + sampleRows.join("|^^|");
-    console.log(`📄 Generated CSV data: ${csvData.substring(0, 100)}...`);
-    console.log(`📏 CSV data length: ${csvData.length} characters`);
-    console.log(`📄 CSV columns: ${columns.join(", ")}`);
-
-    return csvData;
+      // Convert NodeJS.ReadableStream to web Readable if needed
+      // Note: This assumes the S3 adapter returns NodeJS.ReadableStream
+      // If we need web Readable, we might need to wrap it
+      return stream as Readable;
+    } catch (error) {
+      console.error(`❌ Failed to get file stream from S3:`, error);
+      throw new Error(
+        `Failed to retrieve file stream for ${fileMetadata.s3Key}: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    }
   }
 }
 
@@ -395,7 +390,29 @@ export class RawLoaderService {
  * Creates and wires up all Raw Loader dependencies
  */
 export class RawLoaderContainer {
-  static create(config: RawLoaderConfig): RawLoaderService {
+  static create(
+    config: RawLoaderConfig,
+    s3Config?: S3Config
+  ): RawLoaderService {
+    // Create S3 client and adapter if S3 config is provided
+    let fileSystemAdapter: FileSystemAdapter;
+
+    if (s3Config) {
+      // Initialize AWS S3 Client with proper credential management
+      const s3Client = new S3Client({
+        region: s3Config.region,
+        credentials: this.getCredentialProvider(),
+        maxAttempts: s3Config.retryAttempts || 3,
+      });
+
+      // Create S3 file system adapter
+      fileSystemAdapter = new S3FileSystemAdapter(s3Client, s3Config);
+    } else {
+      // For testing or when no S3 config is provided, create a mock adapter
+      // This would need to be implemented or use a test adapter
+      throw new Error("S3 configuration is required for RawLoaderService");
+    }
+
     // Create CSV parser options from config (columnMapping will be provided by handler)
     const csvOptions = {
       fieldSeparator: config.csv.fieldSeparator,
@@ -427,7 +444,31 @@ export class RawLoaderContainer {
       lineageService,
       errorHandler,
       monitor,
+      fileSystemAdapter,
       config
     );
+  }
+
+  /**
+   * Determine the appropriate credential provider based on environment
+   */
+  private static getCredentialProvider() {
+    // Try environment variables first
+    if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
+      return fromEnv();
+    }
+
+    // Try AWS profile
+    if (process.env.AWS_PROFILE) {
+      return fromIni({ profile: process.env.AWS_PROFILE });
+    }
+
+    // Try EC2/ECS instance metadata (for production)
+    try {
+      return fromInstanceMetadata();
+    } catch {
+      // Fall back to environment variables
+      return fromEnv();
+    }
   }
 }

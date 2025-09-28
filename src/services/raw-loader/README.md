@@ -109,7 +109,8 @@ const rawLoader = RawLoaderContainer.create({
   csv: {
     fieldSeparator: "|~~|",
     rowSeparator: "|^^|",
-    maxRowLength: 10000,
+    maxRowLength: 100000,
+    maxFieldLength: 5000,
     hasHeaders: false,
     skipEmptyRows: true,
   },
@@ -154,7 +155,8 @@ const config = {
   csv: {
     fieldSeparator: "|~~|", // Indici field separator
     rowSeparator: "|^^|", // Indici row separator
-    maxRowLength: 10000, // Maximum row length
+    maxRowLength: 100000,
+    maxFieldLength: 5000, // Maximum row length
     hasHeaders: false, // Indici files are headerless
     skipEmptyRows: true, // Skip empty rows
   },

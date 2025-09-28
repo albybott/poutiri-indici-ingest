@@ -8,6 +8,7 @@ export interface CSVParseOptions {
   hasHeaders: boolean; // false for Indici extracts
   columnMapping: string[]; // Predefined column names by position
   maxRowLength?: number; // Safety limit for row size
+  maxFieldLength?: number; // Safety limit for individual field size
   skipEmptyRows: boolean; // Skip completely empty rows
 }
 

@@ -69,9 +69,10 @@ export const DEFAULT_RAW_LOADER_CONFIG: RawLoaderConfig = {
     continueOnError: true,
   },
   csv: {
-    fieldSeparator: "|~~|",
-    rowSeparator: "|^^|",
-    maxRowLength: 10000,
+    fieldSeparator: "|", // Updated to match actual data format
+    rowSeparator: "\n", // Updated to standard newline
+    maxRowLength: 1000000,
+    maxFieldLength: 5000,
     hasHeaders: false,
     skipEmptyRows: true,
   },

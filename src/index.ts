@@ -37,12 +37,15 @@ async function testRawLoaderService(): Promise<void> {
   console.log("\n📦 Testing Raw Loader Service...");
 
   try {
+    // Raw loader configuration
     const rawLoaderConfig: RawLoaderConfig = {
+      // Database configuration
       database: {
         poolSize: 10,
         timeoutMs: 30000,
         maxConnections: 20,
       },
+      // Processing configuration
       processing: {
         batchSize: 1000,
         maxConcurrentFiles: 5,
@@ -51,13 +54,16 @@ async function testRawLoaderService(): Promise<void> {
         bufferSizeMB: 16,
         continueOnError: true,
       },
+      // CSV configuration
       csv: {
-        fieldSeparator: "|~~|",
-        rowSeparator: "|^^|",
-        maxRowLength: 10000,
+        fieldSeparator: "|~~|", // Updated to match actual data format
+        rowSeparator: "|^^|", // Updated to standard newline
+        maxRowLength: 1000000, // Increased to handle extremely long data rows
+        // maxFieldLength: 5000, // Limit individual field lengths
         hasHeaders: false,
         skipEmptyRows: true,
       },
+      // Error handling configuration
       errorHandling: {
         maxRetries: 3,
         retryDelayMs: 1000,
@@ -65,6 +71,7 @@ async function testRawLoaderService(): Promise<void> {
         logErrors: true,
         errorThreshold: 0.1,
       },
+      // Monitoring configuration
       monitoring: {
         enableMetrics: true,
         logLevel: "info",
@@ -73,7 +80,17 @@ async function testRawLoaderService(): Promise<void> {
         progressUpdateInterval: 5000,
       },
     };
-    const rawLoader = RawLoaderContainer.create(rawLoaderConfig);
+    const rawLoader = RawLoaderContainer.create(
+      rawLoaderConfig,
+      config.s3Bucket && config.awsRegion
+        ? {
+            bucket: config.s3Bucket,
+            region: config.awsRegion,
+            maxConcurrency: 1,
+            retryAttempts: 2,
+          }
+        : undefined
+    );
 
     const isHealthy = await rawLoader.healthCheck();
     console.log(
@@ -104,6 +121,8 @@ async function testRawLoaderService(): Promise<void> {
           },
         });
 
+        // Create a processing plan for this run
+        // A processing plan is a list of files to load into the database
         const processingPlan = await discoveryService.discoverLatestFiles({
           extractTypes: ["Patient"],
           maxBatches: 1,
@@ -120,6 +139,7 @@ async function testRawLoaderService(): Promise<void> {
           const loadRunId = randomUUID();
           console.log(`🏃 Starting load run: ${loadRunId}`);
 
+          // This is where we would load the files into the database using the raw loader service
           const loadResults = await rawLoader.loadMultipleFiles(
             processingPlan.batches[0].files,
             loadRunId,

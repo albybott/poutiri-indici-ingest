@@ -340,6 +340,8 @@ export class ExtractHandlerFactory {
       `📋 Available handlers: [${Array.from(this.handlers.keys()).join(", ")}]`
     );
 
+    // A handler is a function that will be used to load the data into the database
+    // It contains the column mapping, validation rules, and other metadata needed to load the data into the database
     const handler = this.handlers.get(extractType);
 
     if (!handler) {
