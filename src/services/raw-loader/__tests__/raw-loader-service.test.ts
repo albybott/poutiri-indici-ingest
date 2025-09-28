@@ -98,9 +98,9 @@ const mockConfig = {
     continueOnError: true,
   },
   csv: {
-    fieldSeparator: "|", // Updated to match actual data format
-    rowSeparator: "\n", // Updated to standard newline
-    maxRowLength: 1000000,
+    fieldSeparator: "|^^|", // Indici field separator
+    rowSeparator: "|~~|", // Indici row separator
+    maxRowLength: 10000000, // Increased to handle long patient records
     maxFieldLength: 5000,
     hasHeaders: false,
     skipEmptyRows: true,

@@ -107,8 +107,8 @@ const rawLoader = RawLoaderContainer.create({
     continueOnError: true,
   },
   csv: {
-    fieldSeparator: "|~~|",
-    rowSeparator: "|^^|",
+    fieldSeparator: "|^^|",
+    rowSeparator: "|~~|",
     maxRowLength: 100000,
     maxFieldLength: 5000,
     hasHeaders: false,
@@ -153,8 +153,8 @@ const config = {
     continueOnError: true, // Continue on individual errors
   },
   csv: {
-    fieldSeparator: "|~~|", // Indici field separator
-    rowSeparator: "|^^|", // Indici row separator
+    fieldSeparator: "|^^|", // Indici field separator
+    rowSeparator: "|~~|", // Indici row separator
     maxRowLength: 100000,
     maxFieldLength: 5000, // Maximum row length
     hasHeaders: false, // Indici files are headerless
@@ -311,8 +311,8 @@ const rawLoader = RawLoaderContainer.create(config);
 
 | Option           | Default    | Description                     |
 | ---------------- | ---------- | ------------------------------- |
-| `fieldSeparator` | `"\|~~\|"` | Indici field separator          |
-| `rowSeparator`   | `"\|^^\|"` | Indici row separator            |
+| `fieldSeparator` | `"\|^^\|"` | Indici field separator          |
+| `rowSeparator`   | `"\|~~\|"` | Indici row separator            |
 | `maxRowLength`   | `10000`    | Maximum row length in characters|
 | `hasHeaders`     | `false`    | Indici files are headerless     |
 | `skipEmptyRows`  | `true`     | Skip completely empty rows      |
@@ -679,8 +679,8 @@ Progress Monitoring
    // Verify CSV configuration matches file format
    const config = {
      csv: {
-       fieldSeparator: "|~~|",
-       rowSeparator: "|^^|",
+       fieldSeparator: "|^^|",
+       rowSeparator: "|~~|",
        hasHeaders: false,
      },
    };

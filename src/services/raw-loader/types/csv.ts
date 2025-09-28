@@ -3,8 +3,8 @@
  */
 
 export interface CSVParseOptions {
-  fieldSeparator: string; // "|~~|"
-  rowSeparator: string; // "|^^|"
+  fieldSeparator: string; // "|^^|"
+  rowSeparator: string; // "|~~|"
   hasHeaders: boolean; // false for Indici extracts
   columnMapping: string[]; // Predefined column names by position
   maxRowLength?: number; // Safety limit for row size

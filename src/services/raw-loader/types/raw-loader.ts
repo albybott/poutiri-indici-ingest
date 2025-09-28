@@ -13,6 +13,8 @@ export interface RawLoadOptions {
   validateRowCount?: boolean; // Validate expected vs actual row counts
   skipValidation?: boolean; // Skip row validation for performance
   maxConcurrentFiles?: number; // Maximum concurrent file processing
+  fieldSeparator?: string; // CSV field separator
+  rowSeparator?: string; // CSV row separator
 }
 
 export interface LoadResult {
@@ -101,6 +103,7 @@ export interface BatchResult {
   batchNumber: number;
   rowsInserted: number;
   errors: LoadError[];
+  warnings: LoadWarning[];
   durationMs: number;
   success: boolean;
 }

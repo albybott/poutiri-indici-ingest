@@ -56,9 +56,9 @@ async function testRawLoaderService(): Promise<void> {
       },
       // CSV configuration
       csv: {
-        fieldSeparator: "|~~|", // Updated to match actual data format
-        rowSeparator: "|^^|", // Updated to standard newline
-        maxRowLength: 1000000, // Increased to handle extremely long data rows
+        fieldSeparator: "|^^|", // Indici field separator
+        rowSeparator: "|~~|", // Indici row separator
+        maxRowLength: 10000000, // Increased to handle extremely long patient records (10M chars)
         // maxFieldLength: 5000, // Limit individual field lengths
         hasHeaders: false,
         skipEmptyRows: true,
