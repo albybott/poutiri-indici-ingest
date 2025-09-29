@@ -1,5 +1,6 @@
-import { text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { text, integer, foreignKey } from "drizzle-orm/pg-core";
 import { createTable } from "../../../utils/create-table";
+import { loadRunFiles } from "../etl/audit";
 
 export const appointmentsRaw = createTable("raw.appointments", {
   // Source columns as text (all fields from Appointments extract)
@@ -68,13 +69,13 @@ export const appointmentsRaw = createTable("raw.appointments", {
   perOrgId: text("per_org_id"),
   loadedDateTime: text("loaded_date_time"),
 
-  // Lineage columns
-  s3Bucket: text("s3_bucket").notNull(),
-  s3Key: text("s3_key").notNull(),
-  s3VersionId: text("s3_version_id").notNull(),
-  fileHash: text("file_hash").notNull(),
-  dateExtracted: text("date_extracted").notNull(),
-  extractType: text("extract_type").notNull(),
-  loadRunId: uuid("load_run_id").notNull(),
-  loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
+  // Foreign key to load_run_files for lineage data
+  loadRunFileId: integer("load_run_file_id").notNull(),
+});
+
+// Foreign key constraint to etl.load_run_files
+export const fkAppointmentsLoadRunFile = foreignKey({
+  columns: [appointmentsRaw.loadRunFileId],
+  foreignColumns: [loadRunFiles.loadRunFileId],
+  name: "fk_appointments_load_run_file",
 });

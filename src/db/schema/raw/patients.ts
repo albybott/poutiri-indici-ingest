@@ -1,7 +1,7 @@
-import { text, timestamp, uuid, check } from "drizzle-orm/pg-core";
-import { sql } from "drizzle-orm";
+import { text, integer, foreignKey } from "drizzle-orm/pg-core";
 import { extractTypeEnum } from "../shared/enums";
 import { createTable } from "../../../utils/create-table";
+import { loadRunFiles } from "../etl/audit";
 
 export const patientsRaw = createTable("raw.patients", {
   // Source columns as text (all fields from Patient extract)
@@ -236,13 +236,13 @@ export const patientsRaw = createTable("raw.patients", {
   residentialStatusId: text("residential_status_id"),
   visaExpiry: text("visa_expiry"),
 
-  // Lineage columns
-  s3Bucket: text("s3_bucket").notNull(),
-  s3Key: text("s3_key").notNull(),
-  s3VersionId: text("s3_version_id").notNull(),
-  fileHash: text("file_hash").notNull(),
-  dateExtracted: text("date_extracted").notNull(),
-  extractType: extractTypeEnum("extract_type").notNull(),
-  loadRunId: uuid("load_run_id").notNull(),
-  loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
+  // Foreign key to load_run_files for lineage data
+  loadRunFileId: integer("load_run_file_id").notNull(),
+});
+
+// Foreign key constraint to etl.load_run_files
+export const fkPatientsLoadRunFile = foreignKey({
+  columns: [patientsRaw.loadRunFileId],
+  foreignColumns: [loadRunFiles.loadRunFileId],
+  name: "fk_patients_load_run_file",
 });

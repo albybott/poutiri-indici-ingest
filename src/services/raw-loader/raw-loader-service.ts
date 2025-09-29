@@ -10,9 +10,6 @@ import type {
   LoadResult,
   LoadProgress,
   LoadMetrics,
-  RawTableRow,
-  InsertBatch,
-  BatchResult,
   LoadStatus,
 } from "./types/raw-loader";
 import type { DiscoveredFile } from "../../services/discovery/types/files";
@@ -77,34 +74,41 @@ export class RawLoaderService {
 
     try {
       // Check idempotency, this is to ensure we don't load the same file multiple times
-      // const idempotencyCheck =
-      //   await this.idempotencyService.checkFileProcessed(fileMetadata);
-      // if (idempotencyCheck.isProcessed && loadOptions.skipValidation !== true) {
-      //   // If the file has already been loaded, return an empty result
-      //   return {
-      //     totalRows: 0,
-      //     successfulBatches: 0,
-      //     failedBatches: 0,
-      //     errors: [],
-      //     warnings: [],
-      //     durationMs: 0,
-      //     bytesProcessed: 0,
-      //     rowsPerSecond: 0,
-      //     memoryUsageMB: 0,
-      //   };
-      // }
+      const idempotencyCheck =
+        await this.idempotencyService.checkFileProcessed(fileMetadata);
+
+      if (idempotencyCheck.isProcessed && loadOptions.skipValidation !== true) {
+        // If the file has already been loaded, return the previous result
+        return {
+          totalRows: idempotencyCheck.rowCount || 0,
+          successfulBatches: 1,
+          failedBatches: 0,
+          errors: [],
+          warnings: [
+            {
+              message: `File was already processed in load run ${idempotencyCheck.loadRunId}`,
+              fileKey: fileMetadata.s3Key,
+              timestamp: new Date(),
+              severity: "low",
+            },
+          ],
+          durationMs: 0,
+          bytesProcessed: 0,
+          rowsPerSecond: 0,
+          memoryUsageMB: 0,
+        };
+      }
+
+      // Mark file as being processed and get the loadRunFileId for foreign key relationships
+      const loadRunFileId = await this.idempotencyService.markFileProcessing(
+        fileMetadata,
+        loadRunId
+      );
 
       // Get extract handler, a handler is a function that will be used to load the data into the database
       const handler = await this.handlerFactory.getHandler(
         fileMetadata.parsed.extractType
       );
-
-      // Generate lineage data
-      // Lineage data is used to track the data lineage through the ETL process
-      // const lineageData = await this.lineageService.generateLineageData(
-      //   fileMetadata,
-      //   loadRunId
-      // );
 
       // Get file stream (this would come from S3 adapter)
       const stream = await this.getFileStream(fileMetadata);
@@ -120,6 +124,7 @@ export class RawLoaderService {
           columnMapping: handler.columnMapping,
           fieldSeparator: this.config.csv.fieldSeparator,
           rowSeparator: this.config.csv.rowSeparator,
+          loadRunFileId, // Pass the foreign key for lineage relationship
         }
       );
 
@@ -139,6 +144,20 @@ export class RawLoaderService {
         fileMetadata,
         loadOptions,
       });
+
+      // Mark file as failed in idempotency service
+      try {
+        await this.idempotencyService.markFileError(
+          fileMetadata,
+          loadRunId,
+          loadError.message
+        );
+      } catch (idempotencyError) {
+        console.error(
+          "Failed to mark file as failed in idempotency service:",
+          idempotencyError
+        );
+      }
 
       return {
         totalRows: 0,

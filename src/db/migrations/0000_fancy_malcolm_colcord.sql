@@ -231,14 +231,7 @@ CREATE TABLE "raw"."patients" (
 	"pharmacy_id" text,
 	"residential_status_id" text,
 	"visa_expiry" text,
-	"s3_bucket" text NOT NULL,
-	"s3_key" text NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
-	"extract_type" "extract_type" NOT NULL,
-	"load_run_id" uuid NOT NULL,
-	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
+	"load_run_file_id" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "raw"."appointments" (
@@ -306,14 +299,7 @@ CREATE TABLE "raw"."appointments" (
 	"is_consent_to_share" text,
 	"per_org_id" text,
 	"loaded_date_time" text,
-	"s3_bucket" text NOT NULL,
-	"s3_key" text NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
-	"extract_type" text NOT NULL,
-	"load_run_id" uuid NOT NULL,
-	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
+	"load_run_file_id" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "raw"."immunisations" (
@@ -382,14 +368,7 @@ CREATE TABLE "raw"."immunisations" (
 	"vaccine_group" text,
 	"per_org_id" text,
 	"loaded_date_time" text,
-	"s3_bucket" text NOT NULL,
-	"s3_key" text NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
-	"extract_type" text NOT NULL,
-	"load_run_id" uuid NOT NULL,
-	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
+	"load_run_file_id" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "raw"."invoices" (
@@ -421,14 +400,7 @@ CREATE TABLE "raw"."invoices" (
 	"notes" text,
 	"per_org_id" text,
 	"loaded_date_time" text,
-	"s3_bucket" text NOT NULL,
-	"s3_key" text NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
-	"extract_type" text NOT NULL,
-	"load_run_id" uuid NOT NULL,
-	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
+	"load_run_file_id" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "raw"."invoice_detail" (
@@ -481,14 +453,7 @@ CREATE TABLE "raw"."invoice_detail" (
 	"practice_id" text,
 	"per_org_id" text,
 	"loaded_date_time" text,
-	"s3_bucket" text NOT NULL,
-	"s3_key" text NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
-	"extract_type" text NOT NULL,
-	"load_run_id" uuid NOT NULL,
-	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
+	"load_run_file_id" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "raw"."providers" (
@@ -613,14 +578,7 @@ CREATE TABLE "raw"."providers" (
 	"provider_permanent_address_longitude" text,
 	"per_org_id" text,
 	"loaded_date_time" text,
-	"s3_bucket" text NOT NULL,
-	"s3_key" text NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
-	"extract_type" text NOT NULL,
-	"load_run_id" uuid NOT NULL,
-	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
+	"load_run_file_id" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "raw"."practice_info" (
@@ -665,14 +623,7 @@ CREATE TABLE "raw"."practice_info" (
 	"is_deleted" text,
 	"per_org_id" text,
 	"loaded_date_time" text,
-	"s3_bucket" text NOT NULL,
-	"s3_key" text NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
-	"extract_type" text NOT NULL,
-	"load_run_id" uuid NOT NULL,
-	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
+	"load_run_file_id" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "raw"."measurements" (
@@ -821,14 +772,7 @@ CREATE TABLE "raw"."measurements" (
 	"screening_type_id" text,
 	"per_org_id" text,
 	"loaded_date_time" text,
-	"s3_bucket" text NOT NULL,
-	"s3_key" text NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
-	"extract_type" text NOT NULL,
-	"load_run_id" uuid NOT NULL,
-	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
+	"load_run_file_id" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "raw"."diagnoses" (
@@ -882,14 +826,7 @@ CREATE TABLE "raw"."diagnoses" (
 	"concept_id" text,
 	"per_org_id" text,
 	"loaded_date_time" text,
-	"s3_bucket" text NOT NULL,
-	"s3_key" text NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
-	"extract_type" text NOT NULL,
-	"load_run_id" uuid NOT NULL,
-	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
+	"load_run_file_id" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "raw"."recalls" (
@@ -923,14 +860,7 @@ CREATE TABLE "raw"."recalls" (
 	"scn_code" text,
 	"per_org_id" text,
 	"loaded_date_time" text,
-	"s3_bucket" text NOT NULL,
-	"s3_key" text NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
-	"extract_type" text NOT NULL,
-	"load_run_id" uuid NOT NULL,
-	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
+	"load_run_file_id" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "raw"."inbox" (
@@ -985,14 +915,7 @@ CREATE TABLE "raw"."inbox" (
 	"filed_at" text,
 	"per_org_id" text,
 	"loaded_date_time" text,
-	"s3_bucket" text NOT NULL,
-	"s3_key" text NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
-	"extract_type" text NOT NULL,
-	"load_run_id" uuid NOT NULL,
-	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
+	"load_run_file_id" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "raw"."inbox_detail" (
@@ -1015,14 +938,7 @@ CREATE TABLE "raw"."inbox_detail" (
 	"is_deleted" text,
 	"per_org_id" text,
 	"loaded_date_time" text,
-	"s3_bucket" text NOT NULL,
-	"s3_key" text NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
-	"extract_type" text NOT NULL,
-	"load_run_id" uuid NOT NULL,
-	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
+	"load_run_file_id" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "raw"."medicine" (
@@ -1037,14 +953,7 @@ CREATE TABLE "raw"."medicine" (
 	"per_org_id" text,
 	"practice_id" text,
 	"loaded_date_time" text,
-	"s3_bucket" text NOT NULL,
-	"s3_key" text NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
-	"extract_type" text NOT NULL,
-	"load_run_id" uuid NOT NULL,
-	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
+	"load_run_file_id" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "raw"."next_of_kin" (
@@ -1076,14 +985,7 @@ CREATE TABLE "raw"."next_of_kin" (
 	"practice_id" text,
 	"per_org_id" text,
 	"loaded_date_time" text,
-	"s3_bucket" text NOT NULL,
-	"s3_key" text NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
-	"extract_type" text NOT NULL,
-	"load_run_id" uuid NOT NULL,
-	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
+	"load_run_file_id" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "raw"."vaccine" (
@@ -1100,14 +1002,7 @@ CREATE TABLE "raw"."vaccine" (
 	"per_org_id" text,
 	"practice_id" text,
 	"loaded_date_time" text,
-	"s3_bucket" text NOT NULL,
-	"s3_key" text NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
-	"extract_type" text NOT NULL,
-	"load_run_id" uuid NOT NULL,
-	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
+	"load_run_file_id" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "raw"."allergies" (
@@ -1167,14 +1062,7 @@ CREATE TABLE "raw"."allergies" (
 	"location_name" text,
 	"per_org_id" text,
 	"loaded_date_time" text,
-	"s3_bucket" text NOT NULL,
-	"s3_key" text NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
-	"extract_type" "extract_type" NOT NULL,
-	"load_run_id" uuid NOT NULL,
-	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
+	"load_run_file_id" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "raw"."appointment_medications" (
@@ -1269,14 +1157,7 @@ CREATE TABLE "raw"."appointment_medications" (
 	"substance_name" text,
 	"per_org_id" text,
 	"loaded_date_time" text,
-	"s3_bucket" text NOT NULL,
-	"s3_key" text NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
-	"extract_type" text NOT NULL,
-	"load_run_id" uuid NOT NULL,
-	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
+	"load_run_file_id" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "raw"."patient_alerts" (
@@ -1312,14 +1193,7 @@ CREATE TABLE "raw"."patient_alerts" (
 	"provider_id" text,
 	"per_org_id" text,
 	"loaded_date_time" text,
-	"s3_bucket" text NOT NULL,
-	"s3_key" text NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
-	"extract_type" text NOT NULL,
-	"load_run_id" uuid NOT NULL,
-	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
+	"load_run_file_id" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "stg"."patients" (
