@@ -130,10 +130,7 @@ export class RawTableLoader {
     const batchSize = options.batchSize || 1000;
 
     try {
-      // For Indici CSV format, we need to determine the actual columns from the CSV structure
-      // Since Indici CSVs don't have headers, we need to extract column info from the data
-
-      // Create parser with default settings (we'll update column mapping after first row)
+      // Create parser with default settings to determine the actual columns from the CSV structure
       const dynamicParser = new IndiciCSVParser({
         fieldSeparator:
           options.fieldSeparator || INDICI_CSV_SEPARATORS.FIELD_SEPARATOR,
@@ -148,48 +145,16 @@ export class RawTableLoader {
 
       // Parse CSV data into rows, letting the parser handle streaming
       const allCsvRows = await dynamicParser.parseStream(stream);
-
-      console.log(`🤖 Debug - First CSV row: `, allCsvRows[0]);
-
-      // Determine column structure from the first actual row
-      let actualColumns: string[] = [];
-      if (allCsvRows.length > 0) {
-        // const firstRow = allCsvRows[0];
-        // actualColumns = this.extractColumnsFromCSV(
-        //   firstRow.rawText,
-        //   options.fieldSeparator || INDICI_CSV_SEPARATORS.FIELD_SEPARATOR,
-        //   options.rowSeparator || INDICI_CSV_SEPARATORS.ROW_SEPARATOR,
-        //   options.extractType
-        // );
-        // console.log(
-        //   `📊 Detected ${actualColumns.length} columns in CSV: ${actualColumns.join(", ")}`
-        // );
-        // Note: Column mapping is determined after parsing for validation purposes
-        // The parser uses the first row's field count to determine column names
-      }
-
-      // Skip the first row if it contains column headers
-      // const csvRows = this.skipHeaderRowIfPresent(allCsvRows, actualColumns);
-      // console.log(
-      //   `📊 Filtered ${allCsvRows.length - csvRows.length} header rows, processing ${csvRows.length} data rows`
-      // );
-
       totalRows = allCsvRows.length;
 
-      // Generate lineage data
-      const lineageData = await this.lineageService.generateLineageData(
-        fileMetadata,
-        options.loadRunId
-      );
-
-      console.log(`📊 Processing ${allCsvRows.length} rows from CSV data`);
-      console.log(`📋 First row sample:`, allCsvRows[0]);
-
-      // Process rows in batches
+      // Process rows in batches using loadRunFileId from options
+      if (!options.loadRunFileId) {
+        throw new Error("loadRunFileId is required for raw table loading");
+      }
       const batches = this.createBatches(
         allCsvRows,
         batchSize,
-        lineageData,
+        options.loadRunFileId,
         options
       );
 
@@ -257,14 +222,16 @@ export class RawTableLoader {
     const batchSize = options.batchSize || 1000;
 
     try {
-      // Generate lineage data
-      const lineageData = await this.lineageService.generateLineageData(
-        fileMetadata,
-        options.loadRunId
+      // Process rows in batches using loadRunFileId from options
+      if (!options.loadRunFileId) {
+        throw new Error("loadRunFileId is required for raw table loading");
+      }
+      const batches = this.createBatches(
+        rows,
+        batchSize,
+        options.loadRunFileId,
+        options
       );
-
-      // Process rows in batches
-      const batches = this.createBatches(rows, batchSize, lineageData, options);
 
       // Execute batches
       const batchResults = await this.executeBatches(batches, options);
@@ -513,7 +480,7 @@ export class RawTableLoader {
   private createBatches(
     rows: CSVRow[],
     batchSize: number,
-    lineageData: LineageData,
+    loadRunFileId: number,
     options: any
   ): InsertBatch[] {
     const batches: InsertBatch[] = [];
@@ -534,7 +501,7 @@ export class RawTableLoader {
 
       const batch = this.prepareBatch(
         batchRows,
-        lineageData,
+        loadRunFileId,
         options,
         Math.floor(i / optimalBatchSize) + 1
       );
@@ -550,7 +517,7 @@ export class RawTableLoader {
    */
   private prepareBatch(
     rows: CSVRow[],
-    lineageData: LineageData,
+    loadRunFileId: number,
     options: any,
     batchNumber: number
   ): InsertBatch {
@@ -564,12 +531,15 @@ export class RawTableLoader {
 
     for (const row of rows) {
       // Transform the row to the database row containing columns and values
-      const transformedRow = this.transformRow(row, lineageData, options);
+      const transformedRow = this.transformRow(row, loadRunFileId, options);
 
-      // Map values for all columns in the column mapping
-      const rowValues = options.columnMapping.map(
-        (col: string) => transformedRow[col] ?? ""
-      );
+      // Map values for all columns (load_run_file_id first, then business columns)
+      const rowValues = [
+        transformedRow.load_run_file_id,
+        ...options.columnMapping.map(
+          (col: string) => transformedRow[col] ?? ""
+        ),
+      ];
 
       // Add all rows to preserve raw data integrity
       values.push(rowValues);
@@ -577,21 +547,21 @@ export class RawTableLoader {
 
     return {
       tableName,
-      columns: options.columnMapping,
+      columns: ["load_run_file_id", ...options.columnMapping],
       values,
       rowCount: rows.length,
       batchNumber,
-      fileKey: lineageData.s3Key,
-      loadRunId: lineageData.loadRunId,
+      fileKey: options.loadRunFileId.toString(), // Use loadRunFileId as fileKey for compatibility
+      loadRunId: options.loadRunId,
     };
   }
 
   /**
-   * Transform CSV row to database row with lineage data
+   * Transform CSV row to database row with loadRunFileId reference
    */
   private transformRow(
     csvRow: CSVRow,
-    lineageData: LineageData,
+    loadRunFileId: number,
     options: any
   ): RawTableRow {
     // Here we need link each column to the corresponding column in the database
@@ -599,14 +569,8 @@ export class RawTableLoader {
     const rowData = csvRow.rawText;
     const rowDataArray = rowData.split(options.fieldSeparator);
 
-    //TODO: Create a db relationship for the lineage columns and use that instead of hardcoding the columns here
-    const lineageColumns = this.getLineageColumns();
-
-    const nonLineageColumns = columnMapping.filter(
-      (col: string) => !lineageColumns.includes(col)
-    );
-
-    const transformedRow = nonLineageColumns.reduce(
+    // Transform CSV columns to database columns
+    const transformedRow = columnMapping.reduce(
       (acc: any, col: string, index: number) => {
         const value = rowDataArray[index];
         acc[col] = value ?? ""; // Convert undefined/null to empty string for raw data integrity
@@ -615,39 +579,13 @@ export class RawTableLoader {
       {}
     );
 
-    //TODO: Add a check to ensure the transformed row has the same length as the non-lineage columns
-    // rowDataArray.length === nonLineageColumns.length
-
-    // Create row with required lineage columns first
+    // Create row with foreign key reference to load_run_files
     const row: RawTableRow = {
-      s3_bucket: lineageData.s3Bucket,
-      s3_key: lineageData.s3Key,
-      s3_version_id: lineageData.s3VersionId,
-      file_hash: lineageData.fileHash,
-      date_extracted: lineageData.dateExtracted,
-      extract_type: lineageData.extractType,
-      load_run_id: lineageData.loadRunId,
-      load_ts: lineageData.loadTs,
+      load_run_file_id: loadRunFileId,
       ...transformedRow,
     };
 
     return row;
-  }
-
-  /**
-   * Get the lineage columns
-   */
-  private getLineageColumns(): string[] {
-    return [
-      "s3_bucket",
-      "s3_key",
-      "s3_version_id",
-      "file_hash",
-      "date_extracted",
-      "extract_type",
-      "load_run_id",
-      "load_ts",
-    ];
   }
 
   /**

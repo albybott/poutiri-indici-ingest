@@ -7,6 +7,7 @@ import type { CSVRow } from "./csv";
 export interface RawLoadOptions {
   extractType: string;
   loadRunId: string; // Load run ID for tracking
+  loadRunFileId?: number; // Foreign key to etl.load_run_files for lineage data
   batchSize?: number; // Rows per batch insert
   maxRetries?: number; // Retry attempts for failed batches
   continueOnError?: boolean; // Continue processing other batches on error
@@ -130,6 +131,7 @@ export interface IdempotencyCheck {
   extractType: string;
   isProcessed: boolean;
   loadRunId?: string;
+  loadRunFileId?: number; // Added for foreign key relationship to etl.load_run_files
   processedAt?: Date;
   rowCount?: number;
   lastError?: string;

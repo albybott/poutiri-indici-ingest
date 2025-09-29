@@ -50,31 +50,15 @@ export class IndiciCSVParser {
     this.maxRowLength = options.maxRowLength || 10000000; // Increased to handle extremely long rows
     this.maxFieldLength = options.maxFieldLength || 5000; // Default field limit
     this.skipEmptyRows = options.skipEmptyRows;
-
-    console.log(`🔍 Debug - IndiciCSVParser created with:`);
-    console.log(
-      `🔍 Debug - fieldSeparator: "${this.fieldSeparator}" (length: ${this.fieldSeparator.length})`
-    );
-    console.log(
-      `🔍 Debug - rowSeparator: "${this.rowSeparator}" (length: ${this.rowSeparator.length})`
-    );
-    console.log(`🔍 Debug - maxRowLength: ${this.maxRowLength}`);
   }
 
   /**
    * Parse CSV content from a Node.js readable stream
    */
-  async parseStream(
-    stream: Readable,
-    options?: Partial<CSVParseOptions>
-  ): Promise<CSVRow[]> {
+  async parseStream(stream: Readable): Promise<CSVRow[]> {
     const rows: CSVRow[] = [];
     let rowNumber = 1;
     let buffer = "";
-
-    // Get updated options if provided
-    const parseOptions = { ...this.getDefaultOptions(), ...options };
-
     return new Promise((resolve, reject) => {
       stream.on("data", (chunk: Buffer) => {
         try {
@@ -103,37 +87,13 @@ export class IndiciCSVParser {
 
       stream.on("end", () => {
         try {
-          // console.log(
-          //   `🔍 Debug - Stream ended. Final buffer length: ${buffer.length}`
-          // );
-          // console.log(
-          //   `🔍 Debug - Final buffer content (first 200 chars): "${buffer.substring(0, 200)}..."`
-          // );
-          // console.log(
-          //   `🔍 Debug - Final buffer content (last 200 chars): "...${buffer.substring(buffer.length - 200)}"`
-          // );
-
           // Process any remaining data in buffer
           if (buffer.trim()) {
-            console.log(
-              `🔍 Debug - Processing final buffer as row ${rowNumber}`
-            );
             const parsedRow = this.parseRow(buffer.trim(), rowNumber);
             if (parsedRow) {
               rows.push(parsedRow);
-              console.log(
-                `🔍 Debug - Added final row to results. Total rows: ${rows.length}`
-              );
             }
-          } else {
-            console.log(
-              `🔍 Debug - Final buffer is empty, no final row to process`
-            );
           }
-
-          console.log(
-            `🔍 Debug - Final result: ${rows.length} total rows processed`
-          );
           resolve(rows);
         } catch (error) {
           reject(new Error(`Error processing final buffer: ${error}`));
@@ -149,12 +109,9 @@ export class IndiciCSVParser {
   /**
    * Parse CSV content from a file path
    */
-  async parseFile(
-    filePath: string,
-    options?: Partial<CSVParseOptions>
-  ): Promise<CSVRow[]> {
+  async parseFile(filePath: string): Promise<CSVRow[]> {
     const stream = createReadStream(filePath, { encoding: "utf8" });
-    return this.parseStream(stream, options);
+    return this.parseStream(stream);
   }
 
   /**
@@ -201,10 +158,7 @@ export class IndiciCSVParser {
   /**
    * Count total rows in a stream (for progress tracking)
    */
-  async countRows(
-    stream: Readable,
-    options?: Partial<CSVParseOptions>
-  ): Promise<number> {
+  async countRows(stream: Readable): Promise<number> {
     let count = 0;
     let buffer = "";
 
@@ -228,65 +182,14 @@ export class IndiciCSVParser {
     });
   }
 
-  // Private helper methods
-
-  private getDefaultOptions(): CSVParseOptions {
-    return {
-      fieldSeparator: this.fieldSeparator,
-      rowSeparator: this.rowSeparator,
-      hasHeaders: false,
-      columnMapping: this.columnMapping,
-      maxRowLength: this.maxRowLength,
-      maxFieldLength: this.maxFieldLength,
-      skipEmptyRows: this.skipEmptyRows,
-    };
-  }
-
   private processBuffer(buffer: string): {
     completeRows: string[];
     remainingBuffer: string;
   } {
-    // console.log(
-    //   `🔍 Debug - processBuffer called with buffer length: ${buffer.length}`
-    // );
-    // console.log(`🔍 Debug - Looking for row separator: "${this.rowSeparator}"`);
-    // console.log(
-    //   `🔍 Debug - Row separator found at positions:`,
-    //   this.findAllOccurrences(buffer, this.rowSeparator)
-    // );
-
     const rows = buffer.split(this.rowSeparator);
     const completeRows = rows.slice(0, -1); // All complete rows
     const remainingBuffer = rows[rows.length - 1]; // Incomplete row at end
-
-    // console.log(`🔍 Debug - Split into ${rows.length} parts`);
-    // console.log(`🔍 Debug - Complete rows: ${completeRows.length}`);
-    // console.log(
-    //   `🔍 Debug - Remaining buffer length: ${remainingBuffer.length}`
-    // );
-
-    // if (completeRows.length > 0) {
-    //   console.log(
-    //     `🔍 Debug - First complete row length: ${completeRows[0].length}`
-    //   );
-    //   console.log(
-    //     `🔍 Debug - Last complete row length: ${completeRows[completeRows.length - 1].length}`
-    //   );
-    // }
-
-    // console.log(`🔍 Debug - First complete row: ${completeRows[0]}`);
-
     return { completeRows, remainingBuffer };
-  }
-
-  private findAllOccurrences(str: string, searchStr: string): number[] {
-    const positions: number[] = [];
-    let index = str.indexOf(searchStr);
-    while (index !== -1) {
-      positions.push(index);
-      index = str.indexOf(searchStr, index + 1);
-    }
-    return positions;
   }
 
   /**
@@ -395,18 +298,6 @@ export class IndiciCSVParser {
       const fieldValue =
         typeof fields[i] === "string" ? fields[i].trim() : String(fields[i]);
       row[this.columnMapping[i]] = fieldValue;
-    }
-
-    // Log column mapping info for first row only
-    if (rowNumber === 1) {
-      console.log(`📊 CSV Parser: Found ${fields.length} fields in CSV data`);
-      console.log(
-        `📊 CSV Parser: Column mapping has ${this.columnMapping.length} columns`
-      );
-      console.log(`📊 CSV Parser: Mapping ${maxFields} columns to data`);
-      console.log(
-        `📊 CSV Parser: Mapped columns: ${this.columnMapping.slice(0, maxFields).join(", ")}`
-      );
     }
 
     return row;

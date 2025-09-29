@@ -232,15 +232,6 @@ export class PatientsSchemaHandler extends BaseSchemaDrivenHandler {
     "pharmacy_id",
     "residential_status_id",
     "visa_expiry",
-    // Lineage columns (added automatically by loader)
-    "s3_bucket",
-    "s3_key",
-    "s3_version_id",
-    "file_hash",
-    "date_extracted",
-    "extract_type",
-    "load_run_id",
-    "load_ts",
   ];
 
   validationRules: ValidationRule[] = [

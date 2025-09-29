@@ -78,6 +78,9 @@ export class RawLoaderService {
         await this.idempotencyService.checkFileProcessed(fileMetadata);
 
       if (idempotencyCheck.isProcessed && loadOptions.skipValidation !== true) {
+        console.log(
+          `✅ File already processed, skipping: ${fileMetadata.s3Key}`
+        );
         // If the file has already been loaded, return the previous result
         return {
           totalRows: idempotencyCheck.rowCount || 0,
