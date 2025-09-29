@@ -316,6 +316,7 @@ export class RawTableLoader {
 
   /**
    * Calculate optimal batch size based on column count to avoid PostgreSQL parameter limits
+   * If the requested batch is too large, reduce it to the optimal batch size
    */
   private calculateOptimalBatchSize(
     columnCount: number,
@@ -358,6 +359,7 @@ export class RawTableLoader {
           (row) => Array.isArray(row) && row.length === batch.columns.length
         );
 
+        // Check if there are any valid rows
         if (validRows.length === 0) {
           throw new Error(
             `No valid rows found in batch. Original rows: ${batch.values.length}`
@@ -516,14 +518,13 @@ export class RawTableLoader {
   ): InsertBatch[] {
     const batches: InsertBatch[] = [];
 
-    // Get column count to calculate optimal batch size
-    const columnMapping =
-      options.columnMapping ||
-      this.getColumnsForExtractType(options.extractType);
+    if (!options.columnMapping || options.columnMapping.length === 0) {
+      throw new Error("Column mapping is required");
+    }
 
     // Calculate optimal batch size based on column count to ensure we don't exceed the PostgreSQL parameter limit
     const optimalBatchSize = this.calculateOptimalBatchSize(
-      columnMapping.length,
+      options.columnMapping.length,
       batchSize
     );
 
@@ -555,11 +556,6 @@ export class RawTableLoader {
   ): InsertBatch {
     const tableName = options.tableName || `raw.${options.extractType}`;
 
-    // Get the full column mapping from the handler
-    const fullColumnMapping =
-      options.columnMapping ||
-      this.getColumnsForExtractType(options.extractType);
-
     if (rows.length === 0) {
       throw new Error("Cannot prepare batch: no rows provided");
     }
@@ -571,7 +567,7 @@ export class RawTableLoader {
       const transformedRow = this.transformRow(row, lineageData, options);
 
       // Map values for all columns in the column mapping
-      const rowValues = fullColumnMapping.map(
+      const rowValues = options.columnMapping.map(
         (col: string) => transformedRow[col] ?? ""
       );
 
@@ -581,7 +577,7 @@ export class RawTableLoader {
 
     return {
       tableName,
-      columns: fullColumnMapping, // Use only available columns
+      columns: options.columnMapping,
       values,
       rowCount: rows.length,
       batchNumber,
@@ -652,199 +648,6 @@ export class RawTableLoader {
       "load_run_id",
       "load_ts",
     ];
-  }
-
-  /**
-   * Get column names for a specific extract type
-   */
-  private getColumnsForExtractType(extractType: string): string[] {
-    // This would be populated from schema definitions
-    const baseColumns = this.getLineageColumns();
-
-    // Add extract-specific columns
-    const extractColumns = this.getExtractTypeColumns(extractType);
-    return [...baseColumns, ...extractColumns];
-  }
-
-  /**
-   * Get extract type specific columns
-   */
-  private getExtractTypeColumns(extractType: string): string[] {
-    // This would be populated from schema metadata
-    // For now, return common columns
-    return [
-      "patient_id",
-      "practice_id",
-      "created_date",
-      "modified_date",
-      "data",
-    ];
-  }
-
-  /**
-   * Read stream content into a string
-   */
-  private async readStreamContent(stream: Readable): Promise<string> {
-    const chunks: string[] = [];
-
-    return new Promise((resolve, reject) => {
-      stream.on("data", (chunk) => {
-        // Handle both string and Buffer chunks
-        const chunkStr = typeof chunk === "string" ? chunk : chunk.toString();
-        chunks.push(chunkStr);
-      });
-      stream.on("end", () => resolve(chunks.join("")));
-      stream.on("error", reject);
-    });
-  }
-
-  /**
-   * Extract column names from CSV content based on extract type
-   */
-  private extractColumnsFromCSV(
-    content: string,
-    fieldSeparator: string,
-    rowSeparator: string,
-    extractType: string
-  ): string[] {
-    // Split into rows and get the first row to determine column count
-    const rows = content.split(rowSeparator);
-    if (rows.length === 0) {
-      return [];
-    }
-
-    const firstRow = rows[0].trim();
-
-    // Debug: Check what separators are actually in the data
-    // console.log(`🔍 Debug - Field separator: "${fieldSeparator}"`);
-    // console.log(`🔍 Debug - Row separator: "${rowSeparator}"`);
-    // console.log(`🔍 Debug - First row length: ${firstRow.length}`);
-    // console.log(`🔍 Debug - Looking for field separator in first row...`);
-
-    // Check if field separator exists in the data
-    const fieldSeparatorIndex = firstRow.indexOf(fieldSeparator);
-    // console.log(
-    //   `🔍 Debug - Field separator "${fieldSeparator}" found at position: ${fieldSeparatorIndex}`
-    // );
-
-    if (fieldSeparatorIndex === -1) {
-      // console.log(
-      //   `🔍 Debug - Field separator not found! Trying alternative separators...`
-      // );
-      // Try to detect the actual separator
-      const possibleSeparators = ["|^^|", "|~~|", "|", "\t", ",", ";"];
-      for (const sep of possibleSeparators) {
-        if (firstRow.includes(sep)) {
-          console.log(
-            `🔍 Debug - Found potential separator: "${sep}" at position ${firstRow.indexOf(sep)}`
-          );
-        }
-      }
-    }
-
-    const fieldCount = firstRow.split(fieldSeparator).length;
-
-    console.log(`📊 First CSV row: ${firstRow.substring(0, 200)}...`);
-    console.log(`📊 Detected ${fieldCount} fields in CSV`);
-
-    // Map field positions to column names based on extract type
-    return this.getColumnNamesForExtractType(extractType, fieldCount);
-  }
-
-  /**
-   * Skip the first row if it contains column headers
-   */
-  private skipHeaderRowIfPresent(
-    rows: CSVRow[],
-    expectedColumns: string[]
-  ): CSVRow[] {
-    if (rows.length === 0) {
-      return rows;
-    }
-
-    const firstRow = rows[0];
-
-    // Check if the first row contains column names by comparing values to expected column names
-    const isHeaderRow = expectedColumns.some((colName) => {
-      const firstRowValue = firstRow[colName];
-      // If the value in the first row matches the column name, it's likely a header
-      return (
-        typeof firstRowValue === "string" &&
-        firstRowValue.toLowerCase() === colName.toLowerCase()
-      );
-    });
-
-    if (isHeaderRow) {
-      console.log(`📊 Detected header row, skipping first row`);
-      console.log(
-        `📊 Header row values: ${Object.values(firstRow)
-          .filter(
-            (v) =>
-              typeof v === "string" &&
-              v !== firstRow.rawText &&
-              typeof v !== "number"
-          )
-          .join(", ")}`
-      );
-      return rows.slice(1); // Skip the first row
-    }
-
-    console.log(`📊 First row appears to be data, keeping all rows`);
-    return rows;
-  }
-
-  /**
-   * Get column names for extract type with specific field count
-   */
-  private getColumnNamesForExtractType(
-    extractType: string,
-    fieldCount: number
-  ): string[] {
-    // Define the expected column order for each extract type
-    // These must match the database schema column names exactly
-    const columnDefinitions: Record<string, string[]> = {
-      Patient: [
-        "patientId", // patient_id in CSV -> patientId in DB
-        "practiceId", // practice_id in CSV -> practiceId in DB
-        "nhiNumber", // nhi_number in CSV -> nhiNumber in DB
-        "firstName", // first_name in CSV -> firstName in DB
-        "familyName", // last_name in CSV -> familyName in DB (note: schema has familyName, not lastName)
-        "dob", // date_of_birth in CSV -> dob in DB
-        "gender", // gender in CSV -> gender in DB
-        "title", // title in CSV -> title in DB
-        "middleName", // middle_name in CSV -> middleName in DB
-        "fullName", // full_name in CSV -> fullName in DB
-        "preferredName", // preferred_name in CSV -> preferredName in DB
-        "otherMaidenName", // other_maiden_name in CSV -> otherMaidenName in DB
-        "maritalStatusId", // marital_status_id in CSV -> maritalStatusId in DB
-        "maritalStatus", // marital_status in CSV -> maritalStatus in DB
-        "genderId", // gender_id in CSV -> genderId in DB
-        "age", // age in CSV -> age in DB
-        // Add more as needed based on actual CSV structure
-      ],
-      Appointments: [
-        "appointmentId", // appointment_id in CSV -> appointmentId in DB
-        "patientId", // patient_id in CSV -> patientId in DB
-        "providerId", // provider_id in CSV -> providerId in DB
-        "appointmentDate", // appointment_date in CSV -> appointmentDate in DB
-        "appointmentTime", // appointment_time in CSV -> appointmentTime in DB
-        "duration", // duration in CSV -> duration in DB
-        "type", // type in CSV -> type in DB
-        "status", // status in CSV -> status in DB
-        "notes", // notes in CSV -> notes in DB
-      ],
-    };
-
-    const availableColumns = columnDefinitions[extractType] || [];
-
-    // Return only the number of columns that match the field count
-    const selectedColumns = availableColumns.slice(0, fieldCount);
-
-    console.log(
-      `📊 Selected columns for ${extractType} (${fieldCount} fields): ${selectedColumns.join(", ")}`
-    );
-
-    return selectedColumns;
   }
 
   /**
