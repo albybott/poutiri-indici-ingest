@@ -7,6 +7,7 @@ import type { FileSystemAdapter } from "./adapters/file-system-adapter";
 import type { FilenameParser } from "./filename-parser";
 import type { DiscoveryOptions } from "./types/discovery";
 import type { DiscoveredFile, FileBatch } from "./types/files";
+import { createHash } from "node:crypto";
 
 export class FileDiscovery {
   constructor(
@@ -50,6 +51,10 @@ export class FileDiscovery {
           }
         }
 
+        // Generate a unique hash for the file based on its metadata
+        // This provides idempotency without needing to read the entire file
+        const fileHash = this.generateFileHash(file);
+
         // Create discovered file using the correct interface
         const discoveredFile: DiscoveredFile = {
           s3Key: file.key,
@@ -60,6 +65,7 @@ export class FileDiscovery {
           etag: file.etag,
           parsed: parsedFilename,
           checksum: file.checksum?.[0] ?? "",
+          fileHash,
         };
 
         discoveredFiles.push(discoveredFile);
@@ -118,6 +124,15 @@ export class FileDiscovery {
     );
 
     return batches;
+  }
+
+  /**
+   * Generate a unique hash for a file based on its metadata
+   * This provides idempotency without reading the entire file content
+   */
+  private generateFileHash(file: any): string {
+    const hashInput = `${file.key}|${file.size}|${file.etag}|${file.lastModified?.toISOString()}`;
+    return createHash("sha256").update(hashInput).digest("hex");
   }
 
   async findLatestBatch(): Promise<FileBatch | null> {
