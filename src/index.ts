@@ -125,49 +125,93 @@ async function testRawLoaderService(): Promise<void> {
         // A processing plan is a list of files to load into the database
         const processingPlan = await discoveryService.discoverLatestFiles({
           extractTypes: ["Patient"],
-          maxBatches: 1,
+          // Remove maxBatches limit to process all available batches
         });
 
-        if (
-          processingPlan.batches.length > 0 &&
-          processingPlan.batches[0].files.length > 0
-        ) {
+        if (processingPlan.batches.length > 0) {
           console.log(
-            `📁 Found ${processingPlan.batches[0].files.length} files in latest batch`
+            `📁 Found ${processingPlan.batches.length} batches with ${processingPlan.totalFiles} total files`
           );
 
-          const loadRunId = randomUUID();
-          console.log(`🏃 Starting load run: ${loadRunId}`);
+          // Process all batches
+          const allLoadResults = [];
+          let totalBatchesProcessed = 0;
+          let totalFilesProcessed = 0;
 
-          // This is where we would load the files into the database using the raw loader service
-          const loadResults = await rawLoader.loadMultipleFiles(
-            processingPlan.batches[0].files,
-            loadRunId,
-            {
-              batchSize: 500,
-              continueOnError: true,
-              maxConcurrentFiles: 1,
+          for (
+            let batchIndex = 0;
+            batchIndex < processingPlan.batches.length;
+            batchIndex++
+          ) {
+            const batch = processingPlan.batches[batchIndex];
+
+            if (batch.files.length === 0) {
+              console.log(`⚠️  Batch ${batchIndex + 1} has no files, skipping`);
+              continue;
             }
-          );
 
-          console.log("✅ Load completed!", {
-            filesProcessed: loadResults.length,
-            totalRows: loadResults.reduce((sum, r) => sum + r.totalRows, 0),
-            successfulBatches: loadResults.reduce(
+            console.log(
+              `📦 Processing batch ${batchIndex + 1}/${processingPlan.batches.length} with ${batch.files.length} files`
+            );
+
+            const loadRunId = randomUUID();
+            console.log(
+              `🏃 Starting load run: ${loadRunId} for batch ${batchIndex + 1}`
+            );
+
+            // Load the files for this batch into the database using the raw loader service
+            const loadResults = await rawLoader.loadMultipleFiles(
+              batch.files,
+              loadRunId,
+              {
+                batchSize: 500,
+                continueOnError: true,
+                maxConcurrentFiles: 1,
+              }
+            );
+
+            allLoadResults.push(...loadResults);
+            totalBatchesProcessed++;
+            totalFilesProcessed += loadResults.length;
+
+            console.log(`✅ Batch ${batchIndex + 1} completed!`, {
+              filesProcessed: loadResults.length,
+              totalRows: loadResults.reduce((sum, r) => sum + r.totalRows, 0),
+              successfulBatches: loadResults.reduce(
+                (sum, r) => sum + r.successfulBatches,
+                0
+              ),
+              failedBatches: loadResults.reduce(
+                (sum, r) => sum + r.failedBatches,
+                0
+              ),
+              errors: loadResults.reduce((sum, r) => sum + r.errors.length, 0),
+            });
+          }
+
+          // Overall summary
+          console.log("🎉 All batches processing completed!", {
+            batchesProcessed: totalBatchesProcessed,
+            totalFilesProcessed,
+            totalRows: allLoadResults.reduce((sum, r) => sum + r.totalRows, 0),
+            totalSuccessfulBatches: allLoadResults.reduce(
               (sum, r) => sum + r.successfulBatches,
               0
             ),
-            failedBatches: loadResults.reduce(
+            totalFailedBatches: allLoadResults.reduce(
               (sum, r) => sum + r.failedBatches,
               0
             ),
-            errors: loadResults.reduce((sum, r) => sum + r.errors.length, 0),
+            totalErrors: allLoadResults.reduce(
+              (sum, r) => sum + r.errors.length,
+              0
+            ),
           });
 
-          // Show detailed results for the first file
-          if (loadResults.length > 0) {
-            const firstResult = loadResults[0];
-            console.log("📊 First file details:", {
+          // Show detailed results for the first file across all batches
+          if (allLoadResults.length > 0) {
+            const firstResult = allLoadResults[0];
+            console.log("📊 Sample file details:", {
               totalRows: firstResult.totalRows,
               successfulBatches: firstResult.successfulBatches,
               failedBatches: firstResult.failedBatches,
@@ -178,7 +222,7 @@ async function testRawLoaderService(): Promise<void> {
             });
           }
         } else {
-          console.log("⚠️  No files found in the latest batch");
+          console.log("⚠️  No batches found in the processing plan");
         }
       } catch (error) {
         console.error("❌ Error loading real data:", error);
