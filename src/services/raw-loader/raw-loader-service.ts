@@ -75,26 +75,24 @@ export class RawLoaderService {
     // Build load options ensuring defaults are set if not provided
     const loadOptions = this.buildLoadOptions(loadRunId, options);
 
-    console.log(`🔍 Load options:`, options);
-
     try {
       // Check idempotency, this is to ensure we don't load the same file multiple times
-      const idempotencyCheck =
-        await this.idempotencyService.checkFileProcessed(fileMetadata);
-      if (idempotencyCheck.isProcessed && loadOptions.skipValidation !== true) {
-        // If the file has already been loaded, return an empty result
-        return {
-          totalRows: 0,
-          successfulBatches: 0,
-          failedBatches: 0,
-          errors: [],
-          warnings: [],
-          durationMs: 0,
-          bytesProcessed: 0,
-          rowsPerSecond: 0,
-          memoryUsageMB: 0,
-        };
-      }
+      // const idempotencyCheck =
+      //   await this.idempotencyService.checkFileProcessed(fileMetadata);
+      // if (idempotencyCheck.isProcessed && loadOptions.skipValidation !== true) {
+      //   // If the file has already been loaded, return an empty result
+      //   return {
+      //     totalRows: 0,
+      //     successfulBatches: 0,
+      //     failedBatches: 0,
+      //     errors: [],
+      //     warnings: [],
+      //     durationMs: 0,
+      //     bytesProcessed: 0,
+      //     rowsPerSecond: 0,
+      //     memoryUsageMB: 0,
+      //   };
+      // }
 
       // Get extract handler, a handler is a function that will be used to load the data into the database
       const handler = await this.handlerFactory.getHandler(
@@ -103,15 +101,15 @@ export class RawLoaderService {
 
       // Generate lineage data
       // Lineage data is used to track the data lineage through the ETL process
-      const lineageData = await this.lineageService.generateLineageData(
-        fileMetadata,
-        loadRunId
-      );
+      // const lineageData = await this.lineageService.generateLineageData(
+      //   fileMetadata,
+      //   loadRunId
+      // );
 
       // Get file stream (this would come from S3 adapter)
       const stream = await this.getFileStream(fileMetadata);
 
-      // Load the data
+      // Load the data into the database from the stream
       const result = await this.tableLoader.loadFromStream(
         stream,
         fileMetadata,
@@ -164,10 +162,6 @@ export class RawLoaderService {
     loadRunId: string,
     options?: Partial<RawLoadOptions>
   ): Promise<LoadResult[]> {
-    console.log(`🔍 loadMultipleFiles - Private vars = `, {
-      ...this,
-    });
-
     // Build load options ensuring defaults are set if not provided
     const loadOptions = this.buildLoadOptions(loadRunId, options);
 
@@ -179,7 +173,7 @@ export class RawLoaderService {
     // Initialize results array, this will store the results of each file load
     const results: LoadResult[] = [];
 
-    // Process files in batches to control concurrency
+    // Take all the files and put them into batches of maxConcurrent so that we can process them in parallel
     for (let i = 0; i < files.length; i += maxConcurrent) {
       // Get the batch of files to process, we process in batches to control concurrency
       const batch = files.slice(i, i + maxConcurrent);

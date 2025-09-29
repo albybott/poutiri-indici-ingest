@@ -5,8 +5,8 @@ import { createReadStream } from "node:fs";
  * CSV Processing Options for Indici format
  */
 export interface CSVParseOptions {
-  fieldSeparator: string; // "|~~|"
-  rowSeparator: string; // "|^^|"
+  fieldSeparator: string; // "|^^|"
+  rowSeparator: string; // "|~~|"
   hasHeaders: boolean; // false for Indici extracts
   columnMapping: string[]; // Predefined column names by position
   maxRowLength?: number; // Safety limit for row size
@@ -47,9 +47,18 @@ export class IndiciCSVParser {
     this.fieldSeparator = options.fieldSeparator;
     this.rowSeparator = options.rowSeparator;
     this.columnMapping = options.columnMapping;
-    this.maxRowLength = options.maxRowLength || 1000000; // Increased to handle extremely long rows
+    this.maxRowLength = options.maxRowLength || 10000000; // Increased to handle extremely long rows
     this.maxFieldLength = options.maxFieldLength || 5000; // Default field limit
     this.skipEmptyRows = options.skipEmptyRows;
+
+    console.log(`🔍 Debug - IndiciCSVParser created with:`);
+    console.log(
+      `🔍 Debug - fieldSeparator: "${this.fieldSeparator}" (length: ${this.fieldSeparator.length})`
+    );
+    console.log(
+      `🔍 Debug - rowSeparator: "${this.rowSeparator}" (length: ${this.rowSeparator.length})`
+    );
+    console.log(`🔍 Debug - maxRowLength: ${this.maxRowLength}`);
   }
 
   /**
@@ -69,7 +78,9 @@ export class IndiciCSVParser {
     return new Promise((resolve, reject) => {
       stream.on("data", (chunk: Buffer) => {
         try {
-          buffer += chunk.toString();
+          // Handle UTF-16/UTF-8 encoding issue by converting buffer properly
+          const chunkStr = this.decodeBuffer(chunk);
+          buffer += chunkStr;
           const { completeRows, remainingBuffer } = this.processBuffer(buffer);
           buffer = remainingBuffer;
 
@@ -92,13 +103,37 @@ export class IndiciCSVParser {
 
       stream.on("end", () => {
         try {
+          // console.log(
+          //   `🔍 Debug - Stream ended. Final buffer length: ${buffer.length}`
+          // );
+          // console.log(
+          //   `🔍 Debug - Final buffer content (first 200 chars): "${buffer.substring(0, 200)}..."`
+          // );
+          // console.log(
+          //   `🔍 Debug - Final buffer content (last 200 chars): "...${buffer.substring(buffer.length - 200)}"`
+          // );
+
           // Process any remaining data in buffer
           if (buffer.trim()) {
+            console.log(
+              `🔍 Debug - Processing final buffer as row ${rowNumber}`
+            );
             const parsedRow = this.parseRow(buffer.trim(), rowNumber);
             if (parsedRow) {
               rows.push(parsedRow);
+              console.log(
+                `🔍 Debug - Added final row to results. Total rows: ${rows.length}`
+              );
             }
+          } else {
+            console.log(
+              `🔍 Debug - Final buffer is empty, no final row to process`
+            );
           }
+
+          console.log(
+            `🔍 Debug - Final result: ${rows.length} total rows processed`
+          );
           resolve(rows);
         } catch (error) {
           reject(new Error(`Error processing final buffer: ${error}`));
@@ -175,7 +210,8 @@ export class IndiciCSVParser {
 
     return new Promise((resolve, reject) => {
       stream.on("data", (chunk: Buffer) => {
-        buffer += chunk.toString();
+        const chunkStr = this.decodeBuffer(chunk);
+        buffer += chunkStr;
         const lines = buffer.split(this.rowSeparator);
         count += lines.length - 1; // Don't count the incomplete line at the end
         buffer = lines[lines.length - 1]; // Keep incomplete line
@@ -210,11 +246,101 @@ export class IndiciCSVParser {
     completeRows: string[];
     remainingBuffer: string;
   } {
+    // console.log(
+    //   `🔍 Debug - processBuffer called with buffer length: ${buffer.length}`
+    // );
+    // console.log(`🔍 Debug - Looking for row separator: "${this.rowSeparator}"`);
+    // console.log(
+    //   `🔍 Debug - Row separator found at positions:`,
+    //   this.findAllOccurrences(buffer, this.rowSeparator)
+    // );
+
     const rows = buffer.split(this.rowSeparator);
     const completeRows = rows.slice(0, -1); // All complete rows
     const remainingBuffer = rows[rows.length - 1]; // Incomplete row at end
 
+    // console.log(`🔍 Debug - Split into ${rows.length} parts`);
+    // console.log(`🔍 Debug - Complete rows: ${completeRows.length}`);
+    // console.log(
+    //   `🔍 Debug - Remaining buffer length: ${remainingBuffer.length}`
+    // );
+
+    // if (completeRows.length > 0) {
+    //   console.log(
+    //     `🔍 Debug - First complete row length: ${completeRows[0].length}`
+    //   );
+    //   console.log(
+    //     `🔍 Debug - Last complete row length: ${completeRows[completeRows.length - 1].length}`
+    //   );
+    // }
+
+    // console.log(`🔍 Debug - First complete row: ${completeRows[0]}`);
+
     return { completeRows, remainingBuffer };
+  }
+
+  private findAllOccurrences(str: string, searchStr: string): number[] {
+    const positions: number[] = [];
+    let index = str.indexOf(searchStr);
+    while (index !== -1) {
+      positions.push(index);
+      index = str.indexOf(searchStr, index + 1);
+    }
+    return positions;
+  }
+
+  /**
+   * Decode buffer to handle UTF-16/UTF-8 encoding issues
+   */
+  public decodeBuffer(chunk: Buffer): string {
+    // Check for UTF-16LE BOM (Byte Order Mark)
+    if (chunk.length >= 2 && chunk[0] === 0xff && chunk[1] === 0xfe) {
+      return chunk.toString("utf16le");
+    }
+
+    // Check for UTF-16BE BOM (swap bytes and use utf16le)
+    if (chunk.length >= 2 && chunk[0] === 0xfe && chunk[1] === 0xff) {
+      return chunk.toString("utf16le");
+    }
+
+    // Check if this looks like UTF-16LE encoded data (null bytes in odd positions for LE)
+    if (chunk.length > 2 && chunk.length % 2 === 0) {
+      let nullByteCount = 0;
+      let oddPositionNulls = 0;
+
+      for (let i = 1; i < chunk.length; i += 2) {
+        if (chunk[i] === 0x00) {
+          nullByteCount++;
+          if (i % 2 === 1) oddPositionNulls++; // null bytes in odd positions for UTF-16LE
+        }
+      }
+
+      // If we have many null bytes in odd positions, this is likely UTF-16LE
+      if (
+        nullByteCount > chunk.length / 4 &&
+        oddPositionNulls > nullByteCount / 2
+      ) {
+        try {
+          const utf16String = chunk.toString("utf16le" as any);
+          // console.log(
+          //   `🔍 Debug - Detected UTF-16LE buffer (${chunk.length} bytes) -> "${utf16String.substring(0, 50)}..."`
+          // );
+          return utf16String;
+        } catch (error) {
+          console.warn(
+            `⚠️ Failed to decode as UTF-16LE, falling back to UTF-8:`,
+            error
+          );
+        }
+      }
+    }
+
+    // Default to UTF-8
+    const utf8String = chunk.toString("utf8");
+    // console.log(
+    //   `🔍 Debug - Using UTF-8: "${utf8String.substring(0, 50)}${utf8String.length > 50 ? '...' : ''}"`
+    // );
+    return utf8String;
   }
 
   private shouldSkipRow(rowText: string): boolean {
@@ -241,8 +367,10 @@ export class IndiciCSVParser {
 
       // Clean null bytes and other invalid UTF-8 characters
       fieldValue = fieldValue
-        .replace(/\0/g, "")
-        .replace(/[\x01-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+        .replace(/\0/g, "") // Remove null bytes
+        .replace(/[\x01-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "") // Remove control characters
+        .replace(/\uFFFD/g, "") // Remove replacement characters (�)
+        .replace(/\uFEFF/g, ""); // Remove BOM characters
 
       // Check for length after cleaning
       if (fieldValue.length > this.maxFieldLength) {

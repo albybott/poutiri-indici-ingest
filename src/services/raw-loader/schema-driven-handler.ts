@@ -43,31 +43,6 @@ export class SchemaDrivenHandlerGenerator {
       columnMapping: allColumns,
       validationRules: customValidationRules,
 
-      async validateRow(row: CSVRow): Promise<any> {
-        const errors: string[] = [];
-        const warnings: string[] = [];
-
-        // Run custom validation rules
-        for (const rule of customValidationRules) {
-          const value = row[rule.columnName];
-          if (rule.ruleType === "required" && (!value || value === "")) {
-            errors.push(`${rule.columnName}: ${rule.errorMessage}`);
-          } else if (
-            rule.ruleType === "format" &&
-            value &&
-            !rule.validator(value)
-          ) {
-            errors.push(`${rule.columnName}: ${rule.errorMessage}`);
-          }
-        }
-
-        return {
-          isValid: errors.length === 0,
-          errors,
-          warnings,
-        };
-      },
-
       async transformRow(row: CSVRow): Promise<any> {
         // Base transformation - just return the row as-is
         // Custom transformations can be added per extract type
@@ -97,31 +72,6 @@ export abstract class BaseSchemaDrivenHandler implements ExtractHandler {
   abstract tableName: string;
   abstract columnMapping: string[];
   abstract validationRules: ValidationRule[];
-
-  async validateRow(row: CSVRow): Promise<any> {
-    const errors: string[] = [];
-    const warnings: string[] = [];
-
-    // Run validation rules
-    for (const rule of this.validationRules) {
-      const value = row[rule.columnName];
-      if (rule.ruleType === "required" && (!value || value === "")) {
-        errors.push(`${rule.columnName}: ${rule.errorMessage}`);
-      } else if (
-        rule.ruleType === "format" &&
-        value &&
-        !rule.validator(value)
-      ) {
-        errors.push(`${rule.columnName}: ${rule.errorMessage}`);
-      }
-    }
-
-    return {
-      isValid: errors.length === 0,
-      errors,
-      warnings,
-    };
-  }
 
   async transformRow(row: CSVRow): Promise<any> {
     return { ...row };

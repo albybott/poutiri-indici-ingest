@@ -11,10 +11,12 @@ import type {
   LoadResult,
 } from "./types/raw-loader";
 import type { DatabaseConfig } from "./types/config";
+import { INDICI_CSV_SEPARATORS } from "./types/config";
 import type { CSVRow } from "./indici-csv-parser";
 import { IndiciCSVParser } from "./indici-csv-parser";
 import type { LineageService } from "./lineage-service";
 import type { ErrorHandler } from "./error-handler";
+import { ConsoleLogWriter } from "drizzle-orm";
 
 /**
  * Database connection pool wrapper
@@ -131,42 +133,48 @@ export class RawTableLoader {
       // For Indici CSV format, we need to determine the actual columns from the CSV structure
       // Since Indici CSVs don't have headers, we need to extract column info from the data
 
-      // First, let's get a sample of the data to determine column count
-      const streamContent = await this.readStreamContent(stream);
-      const actualColumns = this.extractColumnsFromCSV(
-        streamContent,
-        options.fieldSeparator || "|",
-        options.rowSeparator || "\n",
-        options.extractType
-      );
-
-      console.log(
-        `📊 Detected ${actualColumns.length} columns in CSV: ${actualColumns.join(", ")}`
-      );
-
-      // Create a new CSV parser with the correct column mapping
+      // Create parser with default settings (we'll update column mapping after first row)
       const dynamicParser = new IndiciCSVParser({
-        fieldSeparator: options.fieldSeparator || "|",
-        rowSeparator: options.rowSeparator || "\n",
+        fieldSeparator:
+          options.fieldSeparator || INDICI_CSV_SEPARATORS.FIELD_SEPARATOR,
+        rowSeparator:
+          options.rowSeparator || INDICI_CSV_SEPARATORS.ROW_SEPARATOR,
         hasHeaders: false,
-        columnMapping: actualColumns,
+        columnMapping: [], // Will be determined dynamically from first row
         skipEmptyRows: true,
-        maxRowLength: 1000000,
+        maxRowLength: 10000000,
         maxFieldLength: 5000,
       });
 
-      // Parse CSV data into rows with the correct column mapping
-      const allCsvRows = await dynamicParser.parseStream(
-        Readable.from([streamContent])
-      );
+      // Parse CSV data into rows, letting the parser handle streaming
+      const allCsvRows = await dynamicParser.parseStream(stream);
+
+      console.log(`🤖 Debug - First CSV row: `, allCsvRows[0]);
+
+      // Determine column structure from the first actual row
+      let actualColumns: string[] = [];
+      if (allCsvRows.length > 0) {
+        // const firstRow = allCsvRows[0];
+        // actualColumns = this.extractColumnsFromCSV(
+        //   firstRow.rawText,
+        //   options.fieldSeparator || INDICI_CSV_SEPARATORS.FIELD_SEPARATOR,
+        //   options.rowSeparator || INDICI_CSV_SEPARATORS.ROW_SEPARATOR,
+        //   options.extractType
+        // );
+        // console.log(
+        //   `📊 Detected ${actualColumns.length} columns in CSV: ${actualColumns.join(", ")}`
+        // );
+        // Note: Column mapping is determined after parsing for validation purposes
+        // The parser uses the first row's field count to determine column names
+      }
 
       // Skip the first row if it contains column headers
-      const csvRows = this.skipHeaderRowIfPresent(allCsvRows, actualColumns);
-      console.log(
-        `📊 Filtered ${allCsvRows.length - csvRows.length} header rows, processing ${csvRows.length} data rows`
-      );
+      // const csvRows = this.skipHeaderRowIfPresent(allCsvRows, actualColumns);
+      // console.log(
+      //   `📊 Filtered ${allCsvRows.length - csvRows.length} header rows, processing ${csvRows.length} data rows`
+      // );
 
-      totalRows = csvRows.length;
+      totalRows = allCsvRows.length;
 
       // Generate lineage data
       const lineageData = await this.lineageService.generateLineageData(
@@ -174,21 +182,12 @@ export class RawTableLoader {
         options.loadRunId
       );
 
-      console.log(`📊 Processing ${csvRows.length} rows from CSV data`);
-      // console.log(`📋 First row sample:`, csvRows[0]);
-      // console.log(`📋 Second row sample:`, csvRows[1]);
-      // console.log(`📋 Third row sample:`, csvRows[2]);
-      // console.log(`📋 Fourth row sample:`, csvRows[3]);
-      // console.log(`📋 Fifth row sample:`, csvRows[4]);
-      // console.log(`📋 Sixth row sample:`, csvRows[5]);
-      // console.log(`📋 Seventh row sample:`, csvRows[6]);
-      // console.log(`📋 Eighth row sample:`, csvRows[7]);
-      // console.log(`📋 Ninth row sample:`, csvRows[8]);
-      // console.log(`📋 Tenth row sample:`, csvRows[9]);
+      console.log(`📊 Processing ${allCsvRows.length} rows from CSV data`);
+      console.log(`📋 First row sample:`, allCsvRows[0]);
 
       // Process rows in batches
       const batches = this.createBatches(
-        csvRows,
+        allCsvRows,
         batchSize,
         lineageData,
         options
@@ -216,6 +215,7 @@ export class RawTableLoader {
         successfulBatches,
         failedBatches,
         errors,
+        warnings: [],
         durationMs: Date.now() - startTime,
         bytesProcessed: 0, // Would calculate from stream size
         rowsPerSecond: totalRows / ((Date.now() - startTime) / 1000),
@@ -233,6 +233,7 @@ export class RawTableLoader {
         successfulBatches: 0,
         failedBatches: 1,
         errors: [loadError],
+        warnings: [],
         durationMs: Date.now() - startTime,
         bytesProcessed: 0,
         rowsPerSecond: 0,
@@ -304,12 +305,34 @@ export class RawTableLoader {
         successfulBatches: 0,
         failedBatches: 1,
         errors: [loadError],
+        warnings: [],
         durationMs: Date.now() - startTime,
         bytesProcessed: 0,
         rowsPerSecond: 0,
         memoryUsageMB: process.memoryUsage().heapUsed / 1024 / 1024,
       };
     }
+  }
+
+  /**
+   * Calculate optimal batch size based on column count to avoid PostgreSQL parameter limits
+   */
+  private calculateOptimalBatchSize(
+    columnCount: number,
+    requestedBatchSize: number
+  ): number {
+    const maxParams = 60000; // PostgreSQL limit is 65,535, leave buffer
+    const maxRowsForColumns = Math.floor(maxParams / columnCount);
+    const optimalBatchSize = Math.min(requestedBatchSize, maxRowsForColumns);
+
+    if (requestedBatchSize < optimalBatchSize) {
+      return requestedBatchSize;
+    }
+
+    console.log(
+      `📊 Reducing batch size from ${requestedBatchSize} to ${optimalBatchSize} due to ${columnCount} columns`
+    );
+    return optimalBatchSize;
   }
 
   /**
@@ -321,7 +344,27 @@ export class RawTableLoader {
     try {
       // Use transaction for batch insert
       const result = await this.dbPool.transaction(async (client) => {
-        const placeholders = batch.values
+        // Validate batch data first
+        if (!batch.values || batch.values.length === 0) {
+          throw new Error(`Batch has no values to insert`);
+        }
+
+        if (!batch.columns || batch.columns.length === 0) {
+          throw new Error(`Batch has no columns defined`);
+        }
+
+        // Filter out any empty or invalid rows
+        const validRows = batch.values.filter(
+          (row) => Array.isArray(row) && row.length === batch.columns.length
+        );
+
+        if (validRows.length === 0) {
+          throw new Error(
+            `No valid rows found in batch. Original rows: ${batch.values.length}`
+          );
+        }
+
+        const placeholders = validRows
           .map((_, index) => {
             const paramIndex = index * batch.columns.length + 1;
             return `(${batch.columns
@@ -335,7 +378,21 @@ export class RawTableLoader {
           VALUES ${placeholders}
         `;
 
-        const flatValues = batch.values.flat();
+        const flatValues = validRows.flat();
+
+        // Final safety check
+        if (flatValues.length === 0) {
+          throw new Error(`No values to insert after flattening`);
+        }
+
+        // Verify parameter count matches
+        const expectedParamCount = validRows.length * batch.columns.length;
+        if (flatValues.length !== expectedParamCount) {
+          throw new Error(
+            `Parameter count mismatch: expected ${expectedParamCount}, got ${flatValues.length}`
+          );
+        }
+
         return await client.query(query, flatValues);
       });
 
@@ -343,6 +400,7 @@ export class RawTableLoader {
         batchNumber: batch.batchNumber,
         rowsInserted: result.rowCount || 0,
         errors: [],
+        warnings: [],
         durationMs: Date.now() - startTime,
         success: true,
       };
@@ -371,6 +429,7 @@ export class RawTableLoader {
         batchNumber: batch.batchNumber,
         rowsInserted: 0,
         errors: [loadError],
+        warnings: [],
         durationMs: Date.now() - startTime,
         success: false,
       };
@@ -436,6 +495,7 @@ export class RawTableLoader {
           batchNumber: batch.batchNumber,
           rowsInserted: 0,
           errors: [lastError],
+          warnings: [],
           durationMs: 0,
           success: false,
         });
@@ -456,14 +516,28 @@ export class RawTableLoader {
   ): InsertBatch[] {
     const batches: InsertBatch[] = [];
 
-    for (let i = 0; i < rows.length; i += batchSize) {
-      const batchRows = rows.slice(i, i + batchSize);
+    // Get column count to calculate optimal batch size
+    const columnMapping =
+      options.columnMapping ||
+      this.getColumnsForExtractType(options.extractType);
+
+    // Calculate optimal batch size based on column count to ensure we don't exceed the PostgreSQL parameter limit
+    const optimalBatchSize = this.calculateOptimalBatchSize(
+      columnMapping.length,
+      batchSize
+    );
+
+    // Create batches for processing
+    for (let i = 0; i < rows.length; i += optimalBatchSize) {
+      const batchRows = rows.slice(i, i + optimalBatchSize);
+
       const batch = this.prepareBatch(
         batchRows,
         lineageData,
         options,
-        i / batchSize + 1
+        Math.floor(i / optimalBatchSize) + 1
       );
+
       batches.push(batch);
     }
 
@@ -486,51 +560,28 @@ export class RawTableLoader {
       options.columnMapping ||
       this.getColumnsForExtractType(options.extractType);
 
-    // Determine which columns actually have data by checking the first row
     if (rows.length === 0) {
       throw new Error("Cannot prepare batch: no rows provided");
     }
 
-    const firstTransformedRow = this.transformRow(
-      rows[0],
-      lineageData,
-      options
-    );
-
-    // Debug: Let's see what's in the first CSV row and transformed row
-    console.log(`🔍 First CSV row:`, rows[0]);
-    console.log(`🔍 First transformed row:`, firstTransformedRow);
-    console.log(
-      `🔍 First transformed row keys:`,
-      Object.keys(firstTransformedRow)
-    );
-
-    const availableColumns = fullColumnMapping.filter(
-      (col: string) =>
-        firstTransformedRow.hasOwnProperty(col) &&
-        firstTransformedRow[col] !== undefined
-    );
-
-    console.log(
-      `📋 Full column mapping has ${fullColumnMapping.length} columns`
-    );
-    console.log(`📋 Available columns with data: ${availableColumns.length}`);
-    console.log(`📋 Available columns: ${availableColumns.join(", ")}`);
-
     const values: any[][] = [];
 
     for (const row of rows) {
+      // Transform the row to the database row containing columns and values
       const transformedRow = this.transformRow(row, lineageData, options);
-      // Only map values for columns that actually exist in the data
-      const rowValues = availableColumns.map(
-        (col: string) => transformedRow[col]
+
+      // Map values for all columns in the column mapping
+      const rowValues = fullColumnMapping.map(
+        (col: string) => transformedRow[col] ?? ""
       );
+
+      // Add all rows to preserve raw data integrity
       values.push(rowValues);
     }
 
     return {
       tableName,
-      columns: availableColumns, // Use only available columns
+      columns: fullColumnMapping, // Use only available columns
       values,
       rowCount: rows.length,
       batchNumber,
@@ -547,6 +598,30 @@ export class RawTableLoader {
     lineageData: LineageData,
     options: any
   ): RawTableRow {
+    // Here we need link each column to the corresponding column in the database
+    const columnMapping = options.columnMapping;
+    const rowData = csvRow.rawText;
+    const rowDataArray = rowData.split(options.fieldSeparator);
+
+    //TODO: Create a db relationship for the lineage columns and use that instead of hardcoding the columns here
+    const lineageColumns = this.getLineageColumns();
+
+    const nonLineageColumns = columnMapping.filter(
+      (col: string) => !lineageColumns.includes(col)
+    );
+
+    const transformedRow = nonLineageColumns.reduce(
+      (acc: any, col: string, index: number) => {
+        const value = rowDataArray[index];
+        acc[col] = value ?? ""; // Convert undefined/null to empty string for raw data integrity
+        return acc;
+      },
+      {}
+    );
+
+    //TODO: Add a check to ensure the transformed row has the same length as the non-lineage columns
+    // rowDataArray.length === nonLineageColumns.length
+
     // Create row with required lineage columns first
     const row: RawTableRow = {
       s3_bucket: lineageData.s3Bucket,
@@ -557,23 +632,17 @@ export class RawTableLoader {
       extract_type: lineageData.extractType,
       load_run_id: lineageData.loadRunId,
       load_ts: lineageData.loadTs,
-      // Add CSV data, excluding metadata fields
-      ...Object.fromEntries(
-        Object.entries(csvRow).filter(
-          ([key]) => key !== "rowNumber" && key !== "rawText"
-        )
-      ),
+      ...transformedRow,
     };
 
     return row;
   }
 
   /**
-   * Get column names for a specific extract type
+   * Get the lineage columns
    */
-  private getColumnsForExtractType(extractType: string): string[] {
-    // This would be populated from schema definitions
-    const baseColumns = [
+  private getLineageColumns(): string[] {
+    return [
       "s3_bucket",
       "s3_key",
       "s3_version_id",
@@ -583,6 +652,14 @@ export class RawTableLoader {
       "load_run_id",
       "load_ts",
     ];
+  }
+
+  /**
+   * Get column names for a specific extract type
+   */
+  private getColumnsForExtractType(extractType: string): string[] {
+    // This would be populated from schema definitions
+    const baseColumns = this.getLineageColumns();
 
     // Add extract-specific columns
     const extractColumns = this.getExtractTypeColumns(extractType);
@@ -639,23 +716,23 @@ export class RawTableLoader {
     const firstRow = rows[0].trim();
 
     // Debug: Check what separators are actually in the data
-    console.log(`🔍 Debug - Field separator: "${fieldSeparator}"`);
-    console.log(`🔍 Debug - Row separator: "${rowSeparator}"`);
-    console.log(`🔍 Debug - First row length: ${firstRow.length}`);
-    console.log(`🔍 Debug - Looking for field separator in first row...`);
+    // console.log(`🔍 Debug - Field separator: "${fieldSeparator}"`);
+    // console.log(`🔍 Debug - Row separator: "${rowSeparator}"`);
+    // console.log(`🔍 Debug - First row length: ${firstRow.length}`);
+    // console.log(`🔍 Debug - Looking for field separator in first row...`);
 
     // Check if field separator exists in the data
     const fieldSeparatorIndex = firstRow.indexOf(fieldSeparator);
-    console.log(
-      `🔍 Debug - Field separator "${fieldSeparator}" found at position: ${fieldSeparatorIndex}`
-    );
+    // console.log(
+    //   `🔍 Debug - Field separator "${fieldSeparator}" found at position: ${fieldSeparatorIndex}`
+    // );
 
     if (fieldSeparatorIndex === -1) {
-      console.log(
-        `🔍 Debug - Field separator not found! Trying alternative separators...`
-      );
+      // console.log(
+      //   `🔍 Debug - Field separator not found! Trying alternative separators...`
+      // );
       // Try to detect the actual separator
-      const possibleSeparators = ["|", "|~~|", "\t", ",", ";", "|^^|"];
+      const possibleSeparators = ["|^^|", "|~~|", "|", "\t", ",", ";"];
       for (const sep of possibleSeparators) {
         if (firstRow.includes(sep)) {
           console.log(
@@ -724,38 +801,37 @@ export class RawTableLoader {
     fieldCount: number
   ): string[] {
     // Define the expected column order for each extract type
+    // These must match the database schema column names exactly
     const columnDefinitions: Record<string, string[]> = {
       Patient: [
-        "patient_id",
-        "practice_id",
-        "nhi_number",
-        "first_name",
-        "last_name",
-        "date_of_birth",
-        "gender",
-        "title",
-        "middle_name",
-        "family_name",
-        "full_name",
-        "preferred_name",
-        "other_maiden_name",
-        "marital_status_id",
-        "marital_status",
-        "gender_id",
-        "dob",
-        "age",
+        "patientId", // patient_id in CSV -> patientId in DB
+        "practiceId", // practice_id in CSV -> practiceId in DB
+        "nhiNumber", // nhi_number in CSV -> nhiNumber in DB
+        "firstName", // first_name in CSV -> firstName in DB
+        "familyName", // last_name in CSV -> familyName in DB (note: schema has familyName, not lastName)
+        "dob", // date_of_birth in CSV -> dob in DB
+        "gender", // gender in CSV -> gender in DB
+        "title", // title in CSV -> title in DB
+        "middleName", // middle_name in CSV -> middleName in DB
+        "fullName", // full_name in CSV -> fullName in DB
+        "preferredName", // preferred_name in CSV -> preferredName in DB
+        "otherMaidenName", // other_maiden_name in CSV -> otherMaidenName in DB
+        "maritalStatusId", // marital_status_id in CSV -> maritalStatusId in DB
+        "maritalStatus", // marital_status in CSV -> maritalStatus in DB
+        "genderId", // gender_id in CSV -> genderId in DB
+        "age", // age in CSV -> age in DB
         // Add more as needed based on actual CSV structure
       ],
       Appointments: [
-        "appointment_id",
-        "patient_id",
-        "provider_id",
-        "appointment_date",
-        "appointment_time",
-        "duration",
-        "type",
-        "status",
-        "notes",
+        "appointmentId", // appointment_id in CSV -> appointmentId in DB
+        "patientId", // patient_id in CSV -> patientId in DB
+        "providerId", // provider_id in CSV -> providerId in DB
+        "appointmentDate", // appointment_date in CSV -> appointmentDate in DB
+        "appointmentTime", // appointment_time in CSV -> appointmentTime in DB
+        "duration", // duration in CSV -> duration in DB
+        "type", // type in CSV -> type in DB
+        "status", // status in CSV -> status in DB
+        "notes", // notes in CSV -> notes in DB
       ],
     };
 

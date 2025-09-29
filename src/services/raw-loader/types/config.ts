@@ -2,6 +2,12 @@
  * Raw Loader Configuration Types
  */
 
+// Indici CSV Format Constants
+export const INDICI_CSV_SEPARATORS = {
+  FIELD_SEPARATOR: "|^^|",
+  ROW_SEPARATOR: "|~~|",
+} as const;
+
 export interface RawLoaderConfig {
   database: DatabaseConfig;
   processing: ProcessingConfig;
@@ -69,10 +75,9 @@ export const DEFAULT_RAW_LOADER_CONFIG: RawLoaderConfig = {
     continueOnError: true,
   },
   csv: {
-    fieldSeparator: "|", // Updated to match actual data format
-    rowSeparator: "\n", // Updated to standard newline
-    maxRowLength: 1000000,
-    maxFieldLength: 5000,
+    fieldSeparator: INDICI_CSV_SEPARATORS.FIELD_SEPARATOR,
+    rowSeparator: INDICI_CSV_SEPARATORS.ROW_SEPARATOR,
+    maxRowLength: 10000000, // Increased to handle long patient records
     hasHeaders: false,
     skipEmptyRows: true,
   },
@@ -110,9 +115,9 @@ export const DEFAULT_PROCESSING_CONFIG: ProcessingConfig = {
 };
 
 export const DEFAULT_CSV_CONFIG: CSVConfig = {
-  fieldSeparator: "|~~|",
-  rowSeparator: "|^^|",
-  maxRowLength: 10000,
+  fieldSeparator: INDICI_CSV_SEPARATORS.FIELD_SEPARATOR,
+  rowSeparator: INDICI_CSV_SEPARATORS.ROW_SEPARATOR,
+  maxRowLength: 10000000, // Increased to handle long patient records
   hasHeaders: false,
   skipEmptyRows: true,
 };
