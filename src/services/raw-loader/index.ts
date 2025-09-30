@@ -6,7 +6,7 @@
 export { RawLoaderService, RawLoaderContainer } from "./raw-loader-service";
 
 // Components
-export { IndiciCSVParser } from "./indici-csv-parser";
+export { CSVParser } from "./csv-parser";
 export { RawTableLoader } from "./raw-table-loader";
 export { ExtractHandlerFactory } from "./extract-handler-factory";
 export { IdempotencyService } from "./idempotency-service";

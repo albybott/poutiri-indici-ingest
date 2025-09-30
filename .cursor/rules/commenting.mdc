@@ -1,0 +1,34 @@
+# Comment Generation Rule
+
+When writing or modifying code, always include clear, concise comments that explain:
+
+1. **Function/Method Purpose**: Add a brief comment above each function explaining what it does
+2. **Complex Logic**: Add inline comments for any complex algorithms, calculations, or business logic
+3. **Variable Explanations**: Comment non-obvious variable names or purposes
+4. **TODO/FIXME**: Mark any temporary code or known issues
+5. **API Endpoints**: Document request/response formats for API routes
+6. **Regular Expressions**: Explain what regex patterns match
+7. **Magic Numbers**: Explain the significance of any hardcoded values
+
+## Comment Style Guidelines:
+
+- Use single-line comments (//, #, <!-- -->) for brief explanations
+- Use multi-line comments (/\* \*/, """, ### ###) for detailed explanations
+- Keep comments concise but informative
+- Update comments when code changes
+- Avoid obvious comments like "increment i" for i++
+
+## Examples:
+
+### JavaScript/TypeScript:
+
+```javascript
+// Calculate compound interest over time
+function calculateCompoundInterest(principal, rate, time, compound) {
+  // Convert percentage to decimal
+  const r = rate / 100;
+
+  // Apply compound interest formula: A = P(1 + r/n)^(nt)
+  return principal * Math.pow(1 + r / compound, compound * time);
+}
+```

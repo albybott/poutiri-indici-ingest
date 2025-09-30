@@ -1,5 +1,5 @@
 import type { ExtractHandler, ValidationRule } from "./types/raw-loader";
-import type { CSVRow } from "./indici-csv-parser";
+import type { CSVRow } from "./csv-parser";
 
 /**
  * Schema-driven handler generator

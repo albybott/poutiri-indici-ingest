@@ -1,0 +1,39 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+
+# Project Rules
+
+This project is a headless S3→PostgreSQL ingestion service for Indici healthcare data extracts. It's a modern TypeScript ETL pipeline built with best practices for 2025.
+
+## Tech Stack
+
+- **Runtime**: Node.js 18.17+ with TypeScript 5.9+
+- **Database**: PostgreSQL with Drizzle ORM
+- **Cloud**: AWS S3 for file storage
+- **Package Manager**: pnpm 9.5.0+
+- **Testing**: Vitest for modern testing
+- **Code Quality**: ESLint + Prettier
+- **Development**: tsx for hot reload
+
+### Code Implementation Guidelines
+
+Follow these rules when you write code:
+
+- Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`)
+- Use kebab-case for naming files
+- Use early returns whenever possible to make the code more readable
+- Use descriptive variable and function/const names
+- Follow TypeScript strict mode guidelines
+- Use ESM modules (import/export syntax)
+- Implement comprehensive error handling and logging
+- Write unit tests for all new functionality
+- Use dependency injection patterns for testability
+- Use camelCase for constants instead of UPPER_CASE\*\*
+- Use descriptive names that clearly indicate the constant's purpose
+- Group related constants together
+- Add JSDoc comments for complex configuration objects
+- Consider using `as const` for immutability when appropriate
+- Use the gitignored scratch folder (/scratch) for temp files

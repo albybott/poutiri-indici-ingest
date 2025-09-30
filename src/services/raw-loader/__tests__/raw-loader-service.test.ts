@@ -4,7 +4,7 @@
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { RawLoaderService } from "../raw-loader-service";
-import { IndiciCSVParser } from "../indici-csv-parser";
+import { CSVParser } from "../csv-parser";
 import { RawTableLoader } from "../raw-table-loader";
 import { ExtractHandlerFactory } from "../extract-handler-factory";
 import { IdempotencyService } from "../idempotency-service";

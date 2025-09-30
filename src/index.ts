@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { randomUUID } from "crypto";
 import { S3DiscoveryService } from "./services/discovery";
-import { RawLoaderContainer } from "./services/raw-loader";
+import { RawLoaderContainer, type LoadResult } from "./services/raw-loader";
 import type { RawLoaderConfig } from "./services/raw-loader/types/config";
 import type { DiscoveredFile } from "./services/discovery/types/files";
 
@@ -53,15 +53,6 @@ async function testRawLoaderService(): Promise<void> {
         enableStreaming: true,
         bufferSizeMB: 16,
         continueOnError: true,
-      },
-      // CSV configuration
-      csv: {
-        fieldSeparator: "|^^|", // Indici field separator
-        rowSeparator: "|~~|", // Indici row separator
-        maxRowLength: 10000000, // Increased to handle extremely long patient records (10M chars)
-        // maxFieldLength: 5000, // Limit individual field lengths
-        hasHeaders: false,
-        skipEmptyRows: true,
       },
       // Error handling configuration
       errorHandling: {
@@ -122,7 +113,14 @@ async function testRawLoaderService(): Promise<void> {
         });
 
         // Create a processing plan for this run
-        // A processing plan is a list of files to load into the database
+        // A processing plan is a structured plan that organizes discovered files into batches for processing.
+        // It contains:
+        // - batches: Array of FileBatch objects, each containing files from the same extraction date
+        // - totalFiles: Total count of files across all batches
+        // - estimatedDuration: Estimated processing time in seconds
+        // - dependencies: Extract type dependencies (e.g., Patients before Appointments)
+        // - processingOrder: Optimized order for processing files
+        // - warnings: Non-critical issues found during discovery
         const processingPlan = await discoveryService.discoverLatestFiles({
           extractTypes: ["Patient"],
           // Remove maxBatches limit to process all available batches
@@ -159,16 +157,30 @@ async function testRawLoaderService(): Promise<void> {
               `🏃 Starting load run: ${loadRunId} for batch ${batchIndex + 1}`
             );
 
-            // Load the files for this batch into the database using the raw loader service
-            const loadResults = await rawLoader.loadMultipleFiles(
-              batch.files,
-              loadRunId,
-              {
+            const loadResults: LoadResult[] = [];
+
+            for (const file of batch.files) {
+              console.log(`📦 Processing file: ${file.s3Key}`);
+
+              const loadResult = await rawLoader.loadFile(file, loadRunId, {
                 batchSize: 500,
                 continueOnError: true,
                 maxConcurrentFiles: 1,
-              }
-            );
+              });
+
+              loadResults.push(loadResult);
+            }
+
+            // Load the files for this batch into the database using the raw loader service
+            // const loadResults = await rawLoader.loadMultipleFiles(
+            //   batch.files,
+            //   loadRunId,
+            //   {
+            //     batchSize: 500,
+            //     continueOnError: true,
+            //     maxConcurrentFiles: 1,
+            //   }
+            // );
 
             allLoadResults.push(...loadResults);
             totalBatchesProcessed++;

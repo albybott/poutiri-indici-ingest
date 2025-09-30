@@ -17,7 +17,7 @@ import type { FileSystemAdapter } from "../../services/discovery/adapters/file-s
 import { S3FileSystemAdapter } from "../../services/discovery/adapters/s3-file-system-adapter";
 import type { S3Config } from "../../services/discovery/types/config";
 import type { RawLoaderConfig } from "./types/config";
-import { IndiciCSVParser } from "./indici-csv-parser";
+import { CSVParser } from "./csv-parser";
 import { RawTableLoader } from "./raw-table-loader";
 import { ExtractHandlerFactory } from "./extract-handler-factory";
 import { IdempotencyService } from "./idempotency-service";
@@ -30,32 +30,30 @@ import { LoadMonitor } from "./load-monitor";
  */
 export class RawLoaderService {
   private config: RawLoaderConfig;
-  private csvParser: IndiciCSVParser;
-  private tableLoader: RawTableLoader;
-  private handlerFactory: ExtractHandlerFactory;
   private idempotencyService: IdempotencyService;
-  private lineageService: LineageService;
+  // private lineageService: LineageService;
   private errorHandler: ErrorHandler;
   private monitor: LoadMonitor;
   private fileSystemAdapter: FileSystemAdapter;
+  public tableLoader: RawTableLoader;
+  public handlerFactory: ExtractHandlerFactory;
 
   constructor(
-    csvParser: IndiciCSVParser,
+    // csvParser: CSVParser,
     tableLoader: RawTableLoader,
     handlerFactory: ExtractHandlerFactory,
     idempotencyService: IdempotencyService,
-    lineageService: LineageService,
+    // lineageService: LineageService,
     errorHandler: ErrorHandler,
     monitor: LoadMonitor,
     fileSystemAdapter: FileSystemAdapter,
     config: RawLoaderConfig
   ) {
     this.config = config;
-    this.csvParser = csvParser;
     this.tableLoader = tableLoader;
     this.handlerFactory = handlerFactory;
     this.idempotencyService = idempotencyService;
-    this.lineageService = lineageService;
+    // this.lineageService = lineageService;
     this.errorHandler = errorHandler;
     this.monitor = monitor;
     this.fileSystemAdapter = fileSystemAdapter;
@@ -65,7 +63,7 @@ export class RawLoaderService {
    * Load a single file from S3
    */
   async loadFile(
-    fileMetadata: DiscoveredFile,
+    file: DiscoveredFile,
     loadRunId: string,
     options?: Partial<RawLoadOptions>
   ): Promise<LoadResult> {
@@ -75,12 +73,10 @@ export class RawLoaderService {
     try {
       // Check idempotency, this is to ensure we don't load the same file multiple times
       const idempotencyCheck =
-        await this.idempotencyService.checkFileProcessed(fileMetadata);
+        await this.idempotencyService.checkFileProcessed(file);
 
       if (idempotencyCheck.isProcessed && loadOptions.skipValidation !== true) {
-        console.log(
-          `✅ File already processed, skipping: ${fileMetadata.s3Key}`
-        );
+        console.log(`✅ File already processed, skipping: ${file.s3Key}`);
         // If the file has already been loaded, return the previous result
         return {
           totalRows: idempotencyCheck.rowCount || 0,
@@ -90,7 +86,7 @@ export class RawLoaderService {
           warnings: [
             {
               message: `File was already processed in load run ${idempotencyCheck.loadRunId}`,
-              fileKey: fileMetadata.s3Key,
+              fileKey: file.s3Key,
               timestamp: new Date(),
               severity: "low",
             },
@@ -104,37 +100,31 @@ export class RawLoaderService {
 
       // Mark file as being processed and get the loadRunFileId for foreign key relationships
       const loadRunFileId = await this.idempotencyService.markFileProcessing(
-        fileMetadata,
+        file,
         loadRunId
       );
 
       // Get extract handler, a handler is a function that will be used to load the data into the database
       const handler = await this.handlerFactory.getHandler(
-        fileMetadata.parsed.extractType
+        file.parsed.extractType
       );
 
       // Get file stream (this would come from S3 adapter)
-      const stream = await this.getFileStream(fileMetadata);
+      const stream = await this.getFileStream(file);
 
       // Load the data into the database from the stream
-      const result = await this.tableLoader.loadFromStream(
-        stream,
-        fileMetadata,
-        {
-          ...loadOptions,
-          extractType: fileMetadata.parsed.extractType,
-          tableName: handler.tableName,
-          columnMapping: handler.columnMapping,
-          fieldSeparator: this.config.csv.fieldSeparator,
-          rowSeparator: this.config.csv.rowSeparator,
-          loadRunFileId, // Pass the foreign key for lineage relationship
-        }
-      );
+      const result = await this.tableLoader.loadFromStream(stream, {
+        ...loadOptions,
+        extractType: file.parsed.extractType,
+        tableName: handler.tableName,
+        loadRunFileId,
+        columns: handler.columnMapping,
+      });
 
       // Mark as completed if successful
       if (result.successfulBatches > 0) {
         await this.idempotencyService.markFileCompleted(
-          fileMetadata,
+          file,
           loadRunId,
           result.totalRows
         );
@@ -144,14 +134,14 @@ export class RawLoaderService {
     } catch (error) {
       const loadError = await this.errorHandler.handleError(error, {
         operation: "loadFile",
-        fileMetadata,
+        fileMetadata: file,
         loadOptions,
       });
 
       // Mark file as failed in idempotency service
       try {
         await this.idempotencyService.markFileError(
-          fileMetadata,
+          file,
           loadRunId,
           loadError.message
         );
@@ -374,7 +364,7 @@ export class RawLoaderService {
     };
   }
 
-  private async getFileStream(fileMetadata: DiscoveredFile): Promise<Readable> {
+  async getFileStream(fileMetadata: DiscoveredFile): Promise<Readable> {
     console.log(`📁 Attempting to get file stream for: ${fileMetadata.s3Key}`);
     console.log(`🔍 Extract type: ${fileMetadata.parsed.extractType}`);
     console.log(`📦 Bucket: ${fileMetadata.s3Bucket}`);
@@ -424,40 +414,19 @@ export class RawLoaderContainer {
       // Create S3 file system adapter
       fileSystemAdapter = new S3FileSystemAdapter(s3Client, s3Config);
     } else {
-      // For testing or when no S3 config is provided, create a mock adapter
-      // This would need to be implemented or use a test adapter
       throw new Error("S3 configuration is required for RawLoaderService");
     }
 
-    // Create CSV parser options from config (columnMapping will be provided by handler)
-    const csvOptions = {
-      fieldSeparator: config.csv.fieldSeparator,
-      rowSeparator: config.csv.rowSeparator,
-      hasHeaders: config.csv.hasHeaders,
-      columnMapping: [], // Will be set by extract handler
-      maxRowLength: config.csv.maxRowLength,
-      skipEmptyRows: config.csv.skipEmptyRows ?? true, // Default to true if undefined
-    };
-
-    const csvParser = new IndiciCSVParser(csvOptions);
-    const lineageService = new LineageService();
     const errorHandler = new ErrorHandler(config.errorHandling);
     const monitor = new LoadMonitor(config.monitoring);
-    const tableLoader = new RawTableLoader(
-      config.database,
-      csvParser,
-      lineageService,
-      errorHandler
-    );
+    const tableLoader = new RawTableLoader(config.database, errorHandler);
     const handlerFactory = new ExtractHandlerFactory();
     const idempotencyService = new IdempotencyService();
 
     return new RawLoaderService(
-      csvParser,
       tableLoader,
       handlerFactory,
       idempotencyService,
-      lineageService,
       errorHandler,
       monitor,
       fileSystemAdapter,

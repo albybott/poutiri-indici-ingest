@@ -6,6 +6,9 @@ yarn-error.log*
 pnpm-debug.log*
 .pnpm-debug.log*
 
+# Scratch files
+scratch/
+
 # Runtime data
 pids
 *.pid

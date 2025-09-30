@@ -11,7 +11,6 @@ export const INDICI_CSV_SEPARATORS = {
 export interface RawLoaderConfig {
   database: DatabaseConfig;
   processing: ProcessingConfig;
-  csv: CSVConfig;
   errorHandling: ErrorHandlingConfig;
   monitoring: MonitoringConfig;
 }
@@ -73,13 +72,6 @@ export const DEFAULT_RAW_LOADER_CONFIG: RawLoaderConfig = {
     enableStreaming: true,
     bufferSizeMB: 16,
     continueOnError: true,
-  },
-  csv: {
-    fieldSeparator: INDICI_CSV_SEPARATORS.FIELD_SEPARATOR,
-    rowSeparator: INDICI_CSV_SEPARATORS.ROW_SEPARATOR,
-    maxRowLength: 10000000, // Increased to handle long patient records
-    hasHeaders: false,
-    skipEmptyRows: true,
   },
   errorHandling: {
     maxRetries: 3,

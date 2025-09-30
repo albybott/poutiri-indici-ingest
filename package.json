@@ -56,8 +56,9 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.713.0",
-    "@aws-sdk/lib-storage": "^3.713.0",
     "@aws-sdk/credential-providers": "^3.713.0",
+    "@aws-sdk/lib-storage": "^3.713.0",
+    "csv-parse": "^6.1.0",
     "dotenv": "^16.6.1",
     "drizzle-orm": "^0.44.5",
     "pg": "^8.16.3",
