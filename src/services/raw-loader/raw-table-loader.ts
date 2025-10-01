@@ -16,6 +16,7 @@ import type { CSVRow } from "./csv-parser";
 import { CSVParser } from "./csv-parser";
 import type { ErrorHandler } from "./error-handler";
 import { ConsoleLogWriter } from "drizzle-orm";
+import { StreamBatchProcessor } from "./stream-batch-processor";
 
 type CSVRowValue = string | number | boolean | Date;
 
@@ -176,28 +177,15 @@ export class RawTableLoader {
       columns: string[];
     }
   ): Promise<LoadResult> {
-    const startTime = Date.now();
-    let rowNumber = 0;
-    let successfulBatches = 0;
-    let failedBatches = 0;
-    const errors: LoadError[] = [];
-
-    let batchedRows: CSVRowValue[][] = [];
-    const batchSize = this.validateBatchSize(
-      options.columns.length,
-      options.batchSize
-    );
-    const maxQueueSize = 5; // Maximum number of batches to queue before pausing
-
-    // Queue to handle async batch processing
-    const batchQueue: InsertBatch[] = [];
-    let isProcessing = false;
-    let isStreamPaused = false;
-
     const loadRunFileId = options.loadRunFileId;
     if (!loadRunFileId) {
       throw new Error("loadRunFileId is required for raw table loading");
     }
+
+    const batchSize = this.validateBatchSize(
+      options.columns.length,
+      options.batchSize
+    );
 
     const csvParser = new CSVParser({
       fieldSeparator:
@@ -207,143 +195,27 @@ export class RawTableLoader {
       skipEmptyRows: true,
     });
 
-    // Async function to process batches from the queue
-    const processBatchQueue = async () => {
-      if (isProcessing || batchQueue.length === 0) return;
+    const processor = new StreamBatchProcessor();
 
-      isProcessing = true;
-
-      while (batchQueue.length > 0) {
-        const batch = batchQueue.shift();
-        if (!batch) continue;
-
-        try {
-          console.log(`📦 Processing batch of ${batch.rowCount} rows`);
-
-          const batchResult = await this.executeBatch(batch, options);
-          if (batchResult.success) {
-            successfulBatches++;
-            console.log(`✅ Batch processed successfully`);
-          } else {
-            failedBatches++;
-            if (batchResult.errors) {
-              failedBatches++;
-            }
-          }
-
-          // Resume stream if it was paused and queue has space
-          if (isStreamPaused && batchQueue.length < maxQueueSize) {
-            isStreamPaused = false;
-            stream.resume();
-            console.log(`🔄 Stream resumed - queue has space`);
-          }
-        } catch (error) {
-          console.error(`❌ Batch processing failed:`, error);
-          failedBatches++;
-        }
-      }
-
-      isProcessing = false;
+    // Define the batch executor that handles database insertion
+    const batchExecutor = async (
+      rows: CSVRowValue[][],
+      batchNumber: number
+    ) => {
+      const batch = this.prepareBatch(
+        rows,
+        loadRunFileId,
+        options,
+        batchNumber
+      );
+      return await this.executeBatch(batch, options);
     };
 
-    return new Promise((resolve, reject) => {
-      stream
-        .pipe(csvParser.parser)
-        .on("data", (row: CSVRowValue[]) => {
-          try {
-            batchedRows.push(row);
-            rowNumber++;
-
-            // console.log(`📦 Row: ${JSON.stringify(row)}`);
-
-            if (rowNumber % 500 === 0) {
-              const memUsage = process.memoryUsage();
-              console.log(
-                `📦 Row number: ${rowNumber}, Memory: ${Math.round(memUsage.heapUsed / 1024 / 1024)}MB`
-              );
-            }
-
-            // When batch is full, queue it for processing
-            if (batchedRows.length >= batchSize) {
-              const batch = this.prepareBatch(
-                batchedRows,
-                loadRunFileId,
-                options,
-                Math.floor(rowNumber / batchSize) + 1
-              );
-
-              batchQueue.push(batch);
-              batchedRows = []; // Reset rows for next batch
-
-              // Check if we need to pause the stream due to queue size
-              if (batchQueue.length >= maxQueueSize && !isStreamPaused) {
-                isStreamPaused = true;
-                stream.pause();
-                console.log(
-                  `⏸️ Stream paused - queue at capacity (${batchQueue.length}/${maxQueueSize})`
-                );
-              }
-
-              // Start processing the queue asynchronously
-              setImmediate(() => {
-                processBatchQueue().catch((error) => {
-                  console.error("Error in batch processing:", error);
-                });
-              });
-            }
-          } catch (error) {
-            reject(
-              new Error(`Error processing chunk at row ${rowNumber}: ${error}`)
-            );
-          }
-        })
-        .on("end", async () => {
-          try {
-            // Process any remaining rows in the final batch
-            if (batchedRows.length > 0) {
-              batchQueue.push(
-                this.prepareBatch(
-                  batchedRows,
-                  loadRunFileId,
-                  options,
-                  Math.floor(rowNumber / batchSize) + 1
-                )
-              );
-              batchedRows = [];
-            }
-
-            // Resume stream if it was paused to ensure final processing
-            if (isStreamPaused) {
-              isStreamPaused = false;
-              stream.resume();
-            }
-
-            // Wait for all queued batches to complete
-            while (batchQueue.length > 0 || isProcessing) {
-              await new Promise((resolve) => setTimeout(resolve, 100));
-            }
-
-            console.log(
-              `📊 Processing complete: ${successfulBatches} successful, ${failedBatches} failed batches`
-            );
-            resolve({
-              totalRows: rowNumber,
-              successfulBatches,
-              failedBatches,
-              errors: [],
-              warnings: [],
-              durationMs: Date.now() - startTime,
-              bytesProcessed: 0,
-              rowsPerSecond: rowNumber / ((Date.now() - startTime) / 1000),
-              memoryUsageMB: process.memoryUsage().heapUsed / 1024 / 1024,
-            });
-          } catch (error) {
-            reject(new Error(`Error processing final buffer: ${error}`));
-          }
-        })
-        .on("error", (error) => {
-          reject(new Error(`Stream error: ${error.message}`));
-        });
+    // Delegate stream processing to the specialized service
+    return await processor.processStream(stream, csvParser, batchExecutor, {
+      batchSize,
+      maxQueueSize: 5,
+      progressLogInterval: 500,
     });
   }
 

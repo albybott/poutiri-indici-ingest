@@ -8,6 +8,7 @@ export { RawLoaderService, RawLoaderContainer } from "./raw-loader-service";
 // Components
 export { CSVParser } from "./csv-parser";
 export { RawTableLoader } from "./raw-table-loader";
+export { StreamBatchProcessor } from "./stream-batch-processor";
 export { ExtractHandlerFactory } from "./extract-handler-factory";
 export { IdempotencyService } from "./idempotency-service";
 export { LineageService } from "./lineage-service";
