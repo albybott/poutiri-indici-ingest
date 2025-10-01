@@ -157,30 +157,16 @@ async function testRawLoaderService(): Promise<void> {
               `🏃 Starting load run: ${loadRunId} for batch ${batchIndex + 1}`
             );
 
-            const loadResults: LoadResult[] = [];
-
-            for (const file of batch.files) {
-              console.log(`📦 Processing file: ${file.s3Key}`);
-
-              const loadResult = await rawLoader.loadFile(file, loadRunId, {
+            // Load the files for this batch into the database using the raw loader service
+            const loadResults = await rawLoader.loadMultipleFiles(
+              batch.files,
+              loadRunId,
+              {
                 batchSize: 500,
                 continueOnError: true,
                 maxConcurrentFiles: 1,
-              });
-
-              loadResults.push(loadResult);
-            }
-
-            // Load the files for this batch into the database using the raw loader service
-            // const loadResults = await rawLoader.loadMultipleFiles(
-            //   batch.files,
-            //   loadRunId,
-            //   {
-            //     batchSize: 500,
-            //     continueOnError: true,
-            //     maxConcurrentFiles: 1,
-            //   }
-            // );
+              }
+            );
 
             allLoadResults.push(...loadResults);
             totalBatchesProcessed++;

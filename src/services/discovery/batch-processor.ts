@@ -124,9 +124,9 @@ export class BatchProcessor {
         return aPriority - bPriority;
       }
 
-      // Then sort by date extracted (newest first)
+      // Then sort by date extracted (oldest first)
       return (
-        b.parsed.dateExtracted.getTime() - a.parsed.dateExtracted.getTime()
+        a.parsed.dateExtracted.getTime() - b.parsed.dateExtracted.getTime()
       );
     });
   }

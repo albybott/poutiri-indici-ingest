@@ -10,8 +10,10 @@ import type {
   LoadResult,
   LoadProgress,
   LoadMetrics,
-  LoadStatus,
+  LoadError,
+  LoadWarning,
 } from "./types/raw-loader";
+import { LoadErrorType, LoadStatus } from "./types/raw-loader";
 import type { DiscoveredFile } from "../../services/discovery/types/files";
 import type { FileSystemAdapter } from "../../services/discovery/adapters/file-system-adapter";
 import { S3FileSystemAdapter } from "../../services/discovery/adapters/s3-file-system-adapter";
@@ -184,11 +186,23 @@ export class RawLoaderService {
 
     // Initialize results array, this will store the results of each file load
     const results: LoadResult[] = [];
+    const startTime = new Date(); // Track overall start time
+    let totalFilesProcessed = 0;
+
+    console.log(
+      `📦 Starting batch load: ${files.length} files, max concurrent: ${maxConcurrent}`
+    );
 
     // Take all the files and put them into batches of maxConcurrent so that we can process them in parallel
     for (let i = 0; i < files.length; i += maxConcurrent) {
       // Get the batch of files to process, we process in batches to control concurrency
       const batch = files.slice(i, i + maxConcurrent);
+      const batchNum = Math.floor(i / maxConcurrent) + 1;
+      const totalBatches = Math.ceil(files.length / maxConcurrent);
+
+      console.log(
+        `🔄 Processing batch ${batchNum}/${totalBatches} (${batch.length} files)`
+      );
 
       // Create an array of promises for each file in the batch, this will allow us to process the files in parallel
       const batchPromises = batch.map((file) =>
@@ -196,31 +210,121 @@ export class RawLoaderService {
         this.loadFile(file, loadRunId, loadOptions)
       );
 
-      const batchResults = await Promise.all(batchPromises);
-      results.push(...batchResults);
+      // Use Promise.allSettled for better error resilience
+      const batchResults = await Promise.allSettled(batchPromises);
 
-      // Update progress
+      // Handle both fulfilled and rejected promises
+      for (const result of batchResults) {
+        if (result.status === "fulfilled") {
+          results.push(result.value);
+        } else {
+          // Unexpected rejection (loadFile should catch its errors)
+          console.error("Unexpected promise rejection:", result.reason);
+          results.push({
+            totalRows: 0,
+            successfulBatches: 0,
+            failedBatches: 1,
+            errors: [
+              {
+                errorType: LoadErrorType.DATABASE_ERROR,
+                message: result.reason?.message ?? "Unknown error",
+                timestamp: new Date(),
+                isRetryable: false,
+              },
+            ],
+            warnings: [],
+            durationMs: 0,
+            bytesProcessed: 0,
+            rowsPerSecond: 0,
+            memoryUsageMB: 0,
+          });
+        }
+      }
+
+      totalFilesProcessed += batch.length;
+
+      // Update progress with accurate metrics
       if (this.config.monitoring.enableProgressTracking) {
+        const aggregatedMetrics = this.aggregateResults(results);
+
         await this.monitor.updateProgress({
-          fileKey: `batch_${i}`,
-          extractType: "batch",
-          totalRows: files.length,
-          processedRows: i + batch.length,
-          currentBatch: Math.floor(i / maxConcurrent) + 1,
-          totalBatches: Math.ceil(files.length / maxConcurrent),
-          estimatedTimeRemaining: 0,
-          currentStatus: "PROCESSING" as LoadStatus,
-          errors: [],
-          warnings: [],
-          bytesProcessed: 0,
-          memoryUsageMB: 0,
-          startTime: new Date(),
+          fileKey: `batch_operation_${loadRunId}`,
+          extractType: files[0]?.parsed.extractType ?? "multiple",
+          totalRows: aggregatedMetrics.totalRows,
+          processedRows: aggregatedMetrics.totalRows,
+          currentBatch: batchNum,
+          totalBatches,
+          estimatedTimeRemaining: this.estimateTimeRemaining(
+            startTime,
+            totalFilesProcessed,
+            files.length
+          ),
+          currentStatus: LoadStatus.PROCESSING,
+          errors: aggregatedMetrics.errors,
+          warnings: aggregatedMetrics.warnings,
+          bytesProcessed: aggregatedMetrics.bytesProcessed,
+          memoryUsageMB: aggregatedMetrics.memoryUsageMB,
+          startTime,
           lastUpdate: new Date(),
         });
       }
     }
 
+    const aggregated = this.aggregateResults(results);
+    console.log(
+      `✅ Batch load complete: ${results.length} files, ${aggregated.totalRows} rows, ` +
+        `${aggregated.successfulBatches} successful batches, ${aggregated.failedBatches} failed batches`
+    );
+
     return results;
+  }
+
+  /**
+   * Helper method to aggregate results from multiple files
+   */
+  private aggregateResults(results: LoadResult[]) {
+    return results.reduce(
+      (acc, result) => ({
+        totalRows: acc.totalRows + (result.totalRows ?? 0),
+        successfulBatches:
+          acc.successfulBatches + (result.successfulBatches ?? 0),
+        failedBatches: acc.failedBatches + (result.failedBatches ?? 0),
+        errors: [...acc.errors, ...(result.errors ?? [])],
+        warnings: [...acc.warnings, ...(result.warnings ?? [])],
+        bytesProcessed: acc.bytesProcessed + (result.bytesProcessed ?? 0),
+        memoryUsageMB: Math.max(acc.memoryUsageMB, result.memoryUsageMB ?? 0),
+        durationMs: acc.durationMs + (result.durationMs ?? 0),
+        rowsPerSecond: 0, // Calculated separately if needed
+      }),
+      {
+        totalRows: 0,
+        successfulBatches: 0,
+        failedBatches: 0,
+        errors: [] as LoadError[],
+        warnings: [] as LoadWarning[],
+        bytesProcessed: 0,
+        memoryUsageMB: 0,
+        durationMs: 0,
+        rowsPerSecond: 0,
+      }
+    );
+  }
+
+  /**
+   * Helper method to estimate remaining processing time
+   */
+  private estimateTimeRemaining(
+    startTime: Date,
+    processedFiles: number,
+    totalFiles: number
+  ): number {
+    if (processedFiles === 0) return 0;
+
+    const elapsedMs = Date.now() - startTime.getTime();
+    const avgTimePerFile = elapsedMs / processedFiles;
+    const remainingFiles = totalFiles - processedFiles;
+
+    return Math.round((avgTimePerFile * remainingFiles) / 1000); // Return seconds
   }
 
   /**
@@ -361,6 +465,7 @@ export class RawLoaderService {
         options?.continueOnError ?? this.config.errorHandling.continueOnError,
       validateRowCount: options?.validateRowCount ?? true,
       skipValidation: options?.skipValidation ?? false,
+      maxConcurrentFiles: options?.maxConcurrentFiles,
     };
   }
 

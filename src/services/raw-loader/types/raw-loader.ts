@@ -53,24 +53,24 @@ export interface LoadWarning {
 }
 
 export enum LoadErrorType {
-  CSV_PARSE_ERROR = "CSV_PARSE_ERROR",
-  VALIDATION_ERROR = "VALIDATION_ERROR",
-  DATABASE_ERROR = "DATABASE_ERROR",
-  IDEMPOTENCY_ERROR = "IDEMPOTENCY_ERROR",
-  FILE_NOT_FOUND = "FILE_NOT_FOUND",
-  PERMISSION_ERROR = "PERMISSION_ERROR",
-  CONSTRAINT_VIOLATION = "CONSTRAINT_VIOLATION",
-  MEMORY_ERROR = "MEMORY_ERROR",
-  TIMEOUT_ERROR = "TIMEOUT_ERROR",
+  CSV_PARSE_ERROR = "csv_parse_error",
+  VALIDATION_ERROR = "validation_error",
+  DATABASE_ERROR = "database_error",
+  IDEMPOTENCY_ERROR = "idempotency_error",
+  FILE_NOT_FOUND = "file_not_found",
+  PERMISSION_ERROR = "permission_error",
+  CONSTRAINT_VIOLATION = "constraint_violation",
+  MEMORY_ERROR = "memory_error",
+  TIMEOUT_ERROR = "timeout_error",
 }
 
 export enum LoadStatus {
-  PENDING = "PENDING",
-  PROCESSING = "PROCESSING",
-  COMPLETED = "COMPLETED",
-  FAILED = "FAILED",
-  PARTIAL = "PARTIAL",
-  RETRYING = "RETRYING",
+  PENDING = "pending",
+  PROCESSING = "processing",
+  COMPLETED = "completed",
+  FAILED = "failed",
+  PARTIAL = "partial",
+  RETRYING = "retrying",
 }
 
 export interface LoadProgress {

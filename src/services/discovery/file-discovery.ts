@@ -118,9 +118,9 @@ export class FileDiscovery {
       batches.push(batch);
     }
 
-    // Sort batches by date extracted (newest first)
+    // Sort batches by date extracted (oldest first)
     batches.sort(
-      (a, b) => b.dateExtracted.getTime() - a.dateExtracted.getTime()
+      (a, b) => a.dateExtracted.getTime() - b.dateExtracted.getTime()
     );
 
     return batches;
