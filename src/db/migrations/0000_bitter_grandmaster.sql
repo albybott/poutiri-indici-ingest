@@ -1394,13 +1394,7 @@ CREATE TABLE "stg"."patients" (
 	"nhi_status" text,
 	"per_org_id" text NOT NULL,
 	"loaded_date_time" timestamp with time zone,
-	"s3_bucket" text NOT NULL,
-	"s3_key" text NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
-	"extract_type" text NOT NULL,
-	"load_run_id" uuid NOT NULL,
+	"load_run_file_id" integer NOT NULL,
 	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
@@ -2661,6 +2655,7 @@ CREATE TABLE "etl"."health" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+CREATE UNIQUE INDEX "patients_stg_natural_key_idx" ON "stg"."patients" USING btree ("patient_id","practice_id","per_org_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "dim_medicine_business_key_current_idx" ON "core"."medicine" USING btree ("medicine_id","practice_id","per_org_id","is_current");--> statement-breakpoint
 CREATE UNIQUE INDEX "dim_patient_business_key_current_idx" ON "core"."patient" USING btree ("patient_id","practice_id","per_org_id","is_current");--> statement-breakpoint
 CREATE UNIQUE INDEX "dim_practice_business_key_current_idx" ON "core"."practice" USING btree ("practice_id","per_org_id","is_current");--> statement-breakpoint

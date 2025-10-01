@@ -10,10 +10,13 @@ import type {
   LoadResult,
   LoadProgress,
   LoadMetrics,
-  LoadError,
-  LoadWarning,
 } from "./types/raw-loader";
-import { LoadErrorType, LoadStatus } from "./types/raw-loader";
+import { LoadStatus } from "./types/raw-loader";
+import {
+  LoadErrorType,
+  type LoadError,
+  type LoadWarning,
+} from "../shared/types";
 import type { DiscoveredFile } from "../../services/discovery/types/files";
 import type { FileSystemAdapter } from "../../services/discovery/adapters/file-system-adapter";
 import { S3FileSystemAdapter } from "../../services/discovery/adapters/s3-file-system-adapter";

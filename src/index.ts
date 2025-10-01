@@ -4,6 +4,12 @@ import { S3DiscoveryService } from "./services/discovery";
 import { RawLoaderContainer, type LoadResult } from "./services/raw-loader";
 import type { RawLoaderConfig } from "./services/raw-loader/types/config";
 import type { DiscoveredFile } from "./services/discovery/types/files";
+import {
+  StagingTransformerContainer,
+  ColumnType,
+  ValidationRuleBuilders,
+  type StagingExtractHandler,
+} from "./services/staging-transformer";
 
 interface AppConfig {
   databaseUrl: string;
@@ -27,14 +33,19 @@ async function main(): Promise<void> {
   console.log(`🌍 AWS Region: ${config.awsRegion || "Not configured"}`);
   console.log(`🧪 Test Mode: ${config.testMode ? "Enabled" : "Disabled"}`);
 
-  // Test Raw Loader Service
-  await testRawLoaderService();
+  // Test Raw Loader Service (S3 CSV → raw.* tables)
+  const loadRunId = await testRawLoaderService();
 
-  console.log("✅ Application started successfully!");
+  // Test Staging Transformer Service (raw.* → stg.* tables)
+  if (loadRunId) {
+    await testStagingTransformerService(loadRunId);
+  }
+
+  console.log("✅ Application completed successfully!");
 }
 
-async function testRawLoaderService(): Promise<void> {
-  console.log("\n📦 Testing Raw Loader Service...");
+async function testRawLoaderService(): Promise<string | null> {
+  console.log("\n📦 Testing Raw Loader Service (S3 → raw.* tables)...");
 
   try {
     // Raw loader configuration
@@ -135,6 +146,7 @@ async function testRawLoaderService(): Promise<void> {
           const allLoadResults = [];
           let totalBatchesProcessed = 0;
           let totalFilesProcessed = 0;
+          let lastLoadRunId: string | null = null;
 
           for (
             let batchIndex = 0;
@@ -153,6 +165,7 @@ async function testRawLoaderService(): Promise<void> {
             );
 
             const loadRunId = randomUUID();
+            lastLoadRunId = loadRunId;
             console.log(
               `🏃 Starting load run: ${loadRunId} for batch ${batchIndex + 1}`
             );
@@ -219,22 +232,27 @@ async function testRawLoaderService(): Promise<void> {
               errors: firstResult.errors.length,
             });
           }
+
+          console.log("\n✅ Raw Loader Service tests completed successfully!");
+          return lastLoadRunId;
         } else {
           console.log("⚠️  No batches found in the processing plan");
+          return null;
         }
       } catch (error) {
         console.error("❌ Error loading real data:", error);
         console.log(
           "💡 This is expected if database connection is not available"
         );
+        return null;
       }
     } else {
       console.log(
         "⚠️  Cannot load real data - missing S3 credentials or not in test mode"
       );
+      console.log("\n✅ Raw Loader Service tests skipped");
+      return null;
     }
-
-    console.log("\n✅ Raw Loader Service tests completed successfully!");
   } catch (error) {
     console.error("❌ Raw Loader Service test failed:", error);
 
@@ -242,6 +260,266 @@ async function testRawLoaderService(): Promise<void> {
       console.error("🔍 Error details:", {
         message: error.message,
         stack: error.stack?.split("\n").slice(0, 3).join("\n"), // First 3 lines of stack
+      });
+    }
+
+    // Don't exit in test mode, just log the error
+    if (!config.testMode) {
+      throw error;
+    }
+    return null;
+  }
+}
+
+async function testStagingTransformerService(loadRunId: string): Promise<void> {
+  console.log(
+    "\n🔄 Testing Staging Transformer Service (raw.* → stg.* tables)..."
+  );
+
+  try {
+    // Create staging transformer
+    const transformer = StagingTransformerContainer.create({
+      transformation: {
+        batchSize: 1000,
+        maxConcurrentTransforms: 3,
+        enableTypeCoercion: true,
+        dateFormat: "YYYY-MM-DD",
+        timestampFormat: "YYYY-MM-DD HH:mm:ss",
+        decimalPrecision: 2,
+        trimStrings: true,
+        nullifyEmptyStrings: true,
+      },
+      validation: {
+        enableValidation: true,
+        failOnValidationError: false,
+        maxErrorsPerBatch: 100,
+        maxTotalErrors: 1000,
+        rejectInvalidRows: true,
+        trackRejectionReasons: true,
+      },
+      errorHandling: {
+        continueOnError: true,
+        maxRetries: 3,
+        retryDelayMs: 1000,
+        captureRawRow: true,
+        enableDetailedLogging: true,
+      },
+    });
+
+    // Health check
+    const isHealthy = await transformer.healthCheck();
+    console.log(
+      `🏥 Staging Transformer health: ${isHealthy ? "✅ Healthy" : "❌ Unhealthy"}`
+    );
+
+    if (!isHealthy) {
+      console.log("⚠️  Skipping staging transformation - service unhealthy");
+      return;
+    }
+
+    // Define Patient extract handler
+    const patientHandler: StagingExtractHandler = {
+      extractType: "Patient",
+      sourceTable: "raw.patients",
+      targetTable: "stg.patients",
+      naturalKeys: ["patient_id", "practice_id", "per_org_id"],
+      transformations: [
+        // Core identifiers
+        {
+          sourceColumn: "patient_id",
+          targetColumn: "patient_id",
+          targetType: ColumnType.TEXT,
+          required: true,
+        },
+        {
+          sourceColumn: "practice_id",
+          targetColumn: "practice_id",
+          targetType: ColumnType.TEXT,
+          required: true,
+        },
+        {
+          sourceColumn: "per_org_id",
+          targetColumn: "per_org_id",
+          targetType: ColumnType.TEXT,
+          required: true,
+        },
+        // Personal details
+        {
+          sourceColumn: "nhi_number",
+          targetColumn: "nhi_number",
+          targetType: ColumnType.TEXT,
+          required: false,
+          validationRules: [ValidationRuleBuilders.nhiFormat("nhi_number")],
+        },
+        {
+          sourceColumn: "first_name",
+          targetColumn: "first_name",
+          targetType: ColumnType.TEXT,
+          required: false,
+        },
+        {
+          sourceColumn: "middle_name",
+          targetColumn: "middle_name",
+          targetType: ColumnType.TEXT,
+          required: false,
+        },
+        {
+          sourceColumn: "family_name",
+          targetColumn: "family_name",
+          targetType: ColumnType.TEXT,
+          required: false,
+        },
+        {
+          sourceColumn: "full_name",
+          targetColumn: "full_name",
+          targetType: ColumnType.TEXT,
+          required: false,
+        },
+        // Dates
+        {
+          sourceColumn: "dob",
+          targetColumn: "dob",
+          targetType: ColumnType.DATE,
+          required: false,
+        },
+        {
+          sourceColumn: "death_date",
+          targetColumn: "death_date",
+          targetType: ColumnType.DATE,
+          required: false,
+        },
+        // Booleans
+        {
+          sourceColumn: "is_alive",
+          targetColumn: "is_alive",
+          targetType: ColumnType.BOOLEAN,
+          required: false,
+        },
+        {
+          sourceColumn: "is_active",
+          targetColumn: "is_active",
+          targetType: ColumnType.BOOLEAN,
+          required: false,
+        },
+        {
+          sourceColumn: "is_deleted",
+          targetColumn: "is_deleted",
+          targetType: ColumnType.BOOLEAN,
+          required: false,
+        },
+        // Numeric fields
+        {
+          sourceColumn: "age",
+          targetColumn: "age",
+          targetType: ColumnType.INTEGER,
+          required: false,
+          validationRules: [ValidationRuleBuilders.range("age", 0, 150)],
+        },
+        {
+          sourceColumn: "balance",
+          targetColumn: "balance",
+          targetType: ColumnType.DECIMAL,
+          required: false,
+        },
+        // Contact info
+        {
+          sourceColumn: "email",
+          targetColumn: "email",
+          targetType: ColumnType.TEXT,
+          required: false,
+          validationRules: [ValidationRuleBuilders.email("email")],
+        },
+        {
+          sourceColumn: "cell_number",
+          targetColumn: "cell_number",
+          targetType: ColumnType.TEXT,
+          required: false,
+        },
+      ],
+    };
+
+    console.log(`🔄 Transforming Patient data from load run: ${loadRunId}`);
+
+    // Transform the data
+    const result = await transformer.transformExtract(patientHandler, {
+      loadRunId,
+      upsertMode: true,
+      conflictColumns: ["patient_id", "practice_id", "per_org_id"],
+    });
+
+    // Display results
+    console.log("\n📊 Transformation Results:");
+    console.log(`  Total rows read:        ${result.totalRowsRead}`);
+    console.log(`  Successfully transformed: ${result.totalRowsTransformed}`);
+    console.log(`  Rejected rows:          ${result.totalRowsRejected}`);
+    console.log(`  Successful batches:     ${result.successfulBatches}`);
+    console.log(`  Failed batches:         ${result.failedBatches}`);
+    console.log(`  Duration:               ${result.durationMs}ms`);
+    console.log(
+      `  Throughput:             ${Math.round(result.rowsPerSecond)} rows/sec`
+    );
+    console.log(
+      `  Memory usage:           ${result.memoryUsageMB.toFixed(2)} MB`
+    );
+    console.log(`  Errors:                 ${result.errors.length}`);
+    console.log(`  Warnings:               ${result.warnings.length}`);
+
+    // Show rejection summary if there are rejections
+    if (result.totalRowsRejected > 0) {
+      console.log("\n⚠️  Rejection Summary:");
+      const rejectionRate =
+        (result.totalRowsRejected / result.totalRowsRead) * 100;
+      console.log(`  Rejection rate:         ${rejectionRate.toFixed(2)}%`);
+
+      // Show top rejection reasons
+      const reasonCounts = new Map<string, number>();
+      for (const rejection of result.rejections) {
+        reasonCounts.set(
+          rejection.rejectionReason,
+          (reasonCounts.get(rejection.rejectionReason) || 0) + 1
+        );
+      }
+
+      console.log("\n  Top rejection reasons:");
+      Array.from(reasonCounts.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .forEach(([reason, count]) => {
+          console.log(`    - ${reason}: ${count} rows`);
+        });
+    }
+
+    // Show sample errors if any
+    if (result.errors.length > 0) {
+      console.log("\n❌ Sample Errors (first 3):");
+      result.errors.slice(0, 3).forEach((error, idx) => {
+        console.log(`  ${idx + 1}. ${error.errorType}: ${error.message}`);
+      });
+    }
+
+    // Success message
+    if (result.totalRowsTransformed > 0) {
+      console.log(
+        "\n✅ Staging Transformer Service tests completed successfully!"
+      );
+      console.log(
+        `   ${result.totalRowsTransformed} rows now in stg.patients table`
+      );
+    } else {
+      console.log(
+        "\n⚠️  No rows were transformed - check raw data availability"
+      );
+    }
+
+    // Close connections
+    await transformer.close();
+  } catch (error) {
+    console.error("❌ Staging Transformer Service test failed:", error);
+
+    if (error instanceof Error) {
+      console.error("🔍 Error details:", {
+        message: error.message,
+        stack: error.stack?.split("\n").slice(0, 5).join("\n"),
       });
     }
 

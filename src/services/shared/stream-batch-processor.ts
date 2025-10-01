@@ -1,7 +1,5 @@
 import { Readable } from "node:stream";
-import type { CSVParser } from "./csv-parser";
-import type { LoadResult } from "./types/raw-loader";
-import type { BatchResult } from "../shared/types";
+import type { BatchResult, LoadError, LoadWarning } from "./types";
 
 type CSVRowValue = string | number | boolean | Date;
 
@@ -23,10 +21,30 @@ export type BatchExecutor<T> = (
 ) => Promise<BatchResult>;
 
 /**
- * Service responsible for orchestrating stream processing with batching,
- * backpressure management, and progress tracking.
+ * Result of stream processing
+ */
+export interface StreamLoadResult {
+  totalRows: number;
+  successfulBatches: number;
+  failedBatches: number;
+  errors: LoadError[];
+  warnings: LoadWarning[];
+  durationMs: number;
+  bytesProcessed: number;
+  rowsPerSecond: number;
+  memoryUsageMB: number;
+}
+
+/**
+ * Generic stream batch processor
+ * Handles stream processing with batching, backpressure management, and progress tracking.
  *
- * This service handles the complexity of:
+ * This service is layer-agnostic and can be used for:
+ * - Raw layer: CSV streams from S3
+ * - Staging layer: Query result streams from raw tables
+ * - Core layer: Query result streams from staging tables
+ *
+ * Features:
  * - Stream event coordination (data, end, error)
  * - Batch accumulation and queue management
  * - Backpressure control (pause/resume)
@@ -38,24 +56,24 @@ export class StreamBatchProcessor {
    * Process a readable stream with batching and backpressure management
    *
    * @param stream - The readable stream to process
-   * @param parser - CSV parser configured for the stream
+   * @param parser - Parser that transforms stream into data events (e.g., CSV parser)
    * @param batchExecutor - Async function that processes each batch
    * @param options - Processing configuration
    * @returns Load result with statistics and errors
    */
-  async processStream(
+  async processStream<T = CSVRowValue[]>(
     stream: Readable,
-    parser: CSVParser,
-    batchExecutor: BatchExecutor<CSVRowValue[]>,
+    parser: { parser: NodeJS.ReadWriteStream },
+    batchExecutor: BatchExecutor<T>,
     options: StreamProcessingOptions
-  ): Promise<LoadResult> {
+  ): Promise<StreamLoadResult> {
     const startTime = Date.now();
     const state = this.initializeState(options);
 
     return new Promise((resolve, reject) => {
       stream
         .pipe(parser.parser)
-        .on("data", (row: CSVRowValue[]) => {
+        .on("data", (row: T) => {
           this.handleDataEvent(
             row,
             state,
@@ -88,23 +106,25 @@ export class StreamBatchProcessor {
       rowNumber: 0,
       successfulBatches: 0,
       failedBatches: 0,
-      batchedRows: [] as CSVRowValue[][],
-      batchQueue: [] as { rows: CSVRowValue[][]; batchNumber: number }[],
+      batchedRows: [] as any[],
+      batchQueue: [] as { rows: any[]; batchNumber: number }[],
       isProcessing: false,
       isStreamPaused: false,
       maxQueueSize: options.maxQueueSize ?? 5,
       progressLogInterval: options.progressLogInterval ?? 500,
+      errors: [] as LoadError[],
+      warnings: [] as LoadWarning[],
     };
   }
 
   /**
    * Handle incoming data events from the stream
    */
-  private handleDataEvent(
-    row: CSVRowValue[],
+  private handleDataEvent<T>(
+    row: T,
     state: any,
     stream: Readable,
-    batchExecutor: BatchExecutor<CSVRowValue[]>,
+    batchExecutor: BatchExecutor<T>,
     options: StreamProcessingOptions,
     reject: (reason?: any) => void
   ): void {
@@ -158,11 +178,11 @@ export class StreamBatchProcessor {
   /**
    * Handle stream end event - process remaining batches
    */
-  private async handleEndEvent(
+  private async handleEndEvent<T>(
     state: any,
-    batchExecutor: BatchExecutor<CSVRowValue[]>,
+    batchExecutor: BatchExecutor<T>,
     startTime: number,
-    resolve: (value: LoadResult) => void,
+    resolve: (value: StreamLoadResult) => void,
     reject: (reason?: any) => void
   ): Promise<void> {
     try {
@@ -193,8 +213,8 @@ export class StreamBatchProcessor {
         totalRows: state.rowNumber,
         successfulBatches: state.successfulBatches,
         failedBatches: state.failedBatches,
-        errors: [],
-        warnings: [],
+        errors: state.errors,
+        warnings: state.warnings,
         durationMs: Date.now() - startTime,
         bytesProcessed: 0,
         rowsPerSecond: state.rowNumber / ((Date.now() - startTime) / 1000),
@@ -208,10 +228,10 @@ export class StreamBatchProcessor {
   /**
    * Process batches from the queue asynchronously
    */
-  private async processBatchQueue(
+  private async processBatchQueue<T>(
     state: any,
     stream: Readable | null,
-    batchExecutor: BatchExecutor<CSVRowValue[]>
+    batchExecutor: BatchExecutor<T>
   ): Promise<void> {
     if (state.isProcessing || state.batchQueue.length === 0) return;
 
@@ -234,6 +254,9 @@ export class StreamBatchProcessor {
           console.log(`✅ Batch processed successfully`);
         } else {
           state.failedBatches++;
+          // Collect errors from batch result
+          state.errors.push(...(batchResult.errors || []));
+          state.warnings.push(...(batchResult.warnings || []));
         }
 
         // Resume stream if it was paused and queue has space (only if stream is still active)

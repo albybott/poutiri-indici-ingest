@@ -1,5 +1,5 @@
 {
-  "id": "eae82605-92d0-497c-94d6-4c516daf3b12",
+  "id": "c26bf3a6-55ce-497e-b42b-4d453e428d88",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -8216,45 +8216,9 @@
           "primaryKey": false,
           "notNull": false
         },
-        "s3_bucket": {
-          "name": "s3_bucket",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "s3_key": {
-          "name": "s3_key",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "s3_version_id": {
-          "name": "s3_version_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "file_hash": {
-          "name": "file_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "date_extracted": {
-          "name": "date_extracted",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "extract_type": {
-          "name": "extract_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "load_run_id": {
-          "name": "load_run_id",
-          "type": "uuid",
+        "load_run_file_id": {
+          "name": "load_run_file_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -8266,7 +8230,35 @@
           "default": "now()"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "patients_stg_natural_key_idx": {
+          "name": "patients_stg_natural_key_idx",
+          "columns": [
+            {
+              "expression": "patient_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "practice_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "per_org_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},

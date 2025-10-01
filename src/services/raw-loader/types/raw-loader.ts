@@ -1,7 +1,9 @@
 import type { CSVRow } from "./csv";
+import type { LoadError, LoadWarning, LoadErrorType } from "../../shared/types";
 
 /**
  * Raw Loader Service Types
+ * Layer-specific types that extend shared types
  */
 
 export interface RawLoadOptions {
@@ -30,39 +32,8 @@ export interface LoadResult {
   memoryUsageMB: number;
 }
 
-export interface LoadError {
-  errorType: LoadErrorType;
-  message: string;
-  fileKey?: string;
-  rowNumber?: number;
-  columnName?: string;
-  rawRow?: string;
-  timestamp: Date;
-  isRetryable: boolean;
-  context?: Record<string, any>;
-}
-
-export interface LoadWarning {
-  message: string;
-  fileKey?: string;
-  rowNumber?: number;
-  columnName?: string;
-  rawRow?: string;
-  timestamp: Date;
-  severity: "low" | "medium" | "high";
-}
-
-export enum LoadErrorType {
-  CSV_PARSE_ERROR = "csv_parse_error",
-  VALIDATION_ERROR = "validation_error",
-  DATABASE_ERROR = "database_error",
-  IDEMPOTENCY_ERROR = "idempotency_error",
-  FILE_NOT_FOUND = "file_not_found",
-  PERMISSION_ERROR = "permission_error",
-  CONSTRAINT_VIOLATION = "constraint_violation",
-  MEMORY_ERROR = "memory_error",
-  TIMEOUT_ERROR = "timeout_error",
-}
+// Re-export shared types for convenience
+export type { LoadError, LoadWarning, LoadErrorType };
 
 export enum LoadStatus {
   PENDING = "pending",
@@ -90,24 +61,8 @@ export interface LoadProgress {
   lastUpdate: Date;
 }
 
-export interface InsertBatch {
-  tableName: string;
-  columns: string[];
-  values: any[][];
-  rowCount: number;
-  batchNumber: number;
-  fileKey: string;
-  loadRunId: string;
-}
-
-export interface BatchResult {
-  batchNumber: number;
-  rowsInserted: number;
-  errors: LoadError[];
-  warnings: LoadWarning[];
-  durationMs: number;
-  success: boolean;
-}
+// Re-export shared batch types for convenience
+export type { InsertBatch, BatchResult } from "../../shared/types";
 
 export interface RawTableRow {
   [columnName: string]: any;
