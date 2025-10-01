@@ -4,25 +4,15 @@
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { RawLoaderService } from "../raw-loader-service";
-import { CSVParser } from "../csv-parser";
 import { RawTableLoader } from "../raw-table-loader";
 import { ExtractHandlerFactory } from "../extract-handler-factory";
 import { IdempotencyService } from "../idempotency-service";
-import { LineageService } from "../lineage-service";
 import { ErrorHandler } from "../error-handler";
 import { LoadMonitor } from "../load-monitor";
 import type { FileSystemAdapter } from "../../discovery/adapters/file-system-adapter";
 import type { DiscoveredFile } from "../../discovery/types/files";
 
 // Mock implementations for testing
-const mockCSVParser = {
-  parseStream: vi.fn(),
-  parseFile: vi.fn(),
-  parseS3Object: vi.fn(),
-  validateRow: vi.fn(),
-  countRows: vi.fn(),
-};
-
 const mockTableLoader = {
   loadFromStream: vi.fn(),
   loadFromRows: vi.fn(),
@@ -41,17 +31,10 @@ const mockIdempotencyService = {
   checkFileProcessed: vi.fn(),
   markFileProcessing: vi.fn(),
   markFileCompleted: vi.fn(),
+  markFileError: vi.fn(),
   getDuplicateFiles: vi.fn(),
   shouldSkipFile: vi.fn(),
   cleanupOldRecords: vi.fn(),
-};
-
-const mockLineageService = {
-  generateLineageData: vi.fn(),
-  populateLineageColumns: vi.fn(),
-  validateLineageData: vi.fn(),
-  generateLoadRunId: vi.fn(),
-  trackLineage: vi.fn(),
 };
 
 const mockErrorHandler = {
@@ -127,11 +110,9 @@ describe("RawLoaderService", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     service = new RawLoaderService(
-      mockCSVParser as any,
       mockTableLoader as any,
       mockHandlerFactory as any,
       mockIdempotencyService as any,
-      mockLineageService as any,
       mockErrorHandler as any,
       mockMonitor as any,
       mockFileSystemAdapter as any,
@@ -167,22 +148,12 @@ describe("RawLoaderService", () => {
         validationRules: [],
       };
 
-      const mockLineageData = {
-        s3Bucket: "test-bucket",
-        s3Key: "test-file.csv",
-        s3VersionId: "version-123",
-        fileHash: "hash-456",
-        dateExtracted: "2025-01-01",
-        extractType: "patients",
-        loadRunId: "run-123",
-        loadTs: new Date(),
-      };
-
       const mockLoadResult = {
         totalRows: 100,
         successfulBatches: 1,
         failedBatches: 0,
         errors: [],
+        warnings: [],
         durationMs: 5000,
         bytesProcessed: 10240,
         rowsPerSecond: 20,
@@ -192,8 +163,10 @@ describe("RawLoaderService", () => {
       mockIdempotencyService.checkFileProcessed.mockResolvedValue(
         mockIdempotencyCheck
       );
+      mockIdempotencyService.markFileProcessing.mockResolvedValue(
+        "load-run-file-id-123"
+      );
       mockHandlerFactory.getHandler.mockResolvedValue(mockHandler);
-      mockLineageService.generateLineageData.mockResolvedValue(mockLineageData);
       mockTableLoader.loadFromStream.mockResolvedValue(mockLoadResult);
       mockIdempotencyService.markFileCompleted.mockResolvedValue(undefined);
 
@@ -227,11 +200,11 @@ describe("RawLoaderService", () => {
       expect(mockIdempotencyService.checkFileProcessed).toHaveBeenCalledWith(
         mockFileMetadata
       );
-      expect(mockHandlerFactory.getHandler).toHaveBeenCalledWith("patients");
-      expect(mockLineageService.generateLineageData).toHaveBeenCalledWith(
+      expect(mockIdempotencyService.markFileProcessing).toHaveBeenCalledWith(
         mockFileMetadata,
         "run-123"
       );
+      expect(mockHandlerFactory.getHandler).toHaveBeenCalledWith("patients");
       expect(mockFileSystemAdapter.getFileStream).toHaveBeenCalledWith(
         mockFileMetadata.s3Key
       );
@@ -264,26 +237,22 @@ describe("RawLoaderService", () => {
         s3VersionId: mockFileMetadata.s3VersionId,
         fileHash: mockFileMetadata.fileHash,
         extractType: "patients",
+        rowCount: 50,
+        loadRunId: "previous-run-123",
       };
 
       mockIdempotencyService.checkFileProcessed.mockResolvedValue(
         mockIdempotencyCheck
       );
 
-      // Mock the private getFileStream method
-      const mockStream = {
-        on: vi.fn(),
-        pipe: vi.fn(),
-        destroy: vi.fn(),
-      };
-      mockFileSystemAdapter.getFileStream.mockResolvedValue(mockStream as any);
-
       const result = await service.loadFile(
         mockFileMetadata as DiscoveredFile,
         "run-123"
       );
 
-      expect(result.totalRows).toBe(0);
+      expect(result.totalRows).toBe(50);
+      expect(result.warnings).toHaveLength(1);
+      expect(result.warnings[0].message).toContain("already processed");
       expect(mockTableLoader.loadFromStream).not.toHaveBeenCalled();
       expect(mockIdempotencyService.markFileCompleted).not.toHaveBeenCalled();
     });
@@ -309,16 +278,23 @@ describe("RawLoaderService", () => {
         context: { operation: "loadFile" },
       };
 
-      mockIdempotencyService.checkFileProcessed.mockRejectedValue(mockError);
-      mockErrorHandler.handleError.mockResolvedValue(mockLoadError);
-
-      // Mock the private getFileStream method
-      const mockStream = {
-        on: vi.fn(),
-        pipe: vi.fn(),
-        destroy: vi.fn(),
+      const mockIdempotencyCheck = {
+        isProcessed: false,
+        s3Key: mockFileMetadata.s3Key,
+        s3VersionId: mockFileMetadata.s3VersionId,
+        fileHash: mockFileMetadata.fileHash,
+        extractType: "patients",
       };
-      mockFileSystemAdapter.getFileStream.mockResolvedValue(mockStream as any);
+
+      mockIdempotencyService.checkFileProcessed.mockResolvedValue(
+        mockIdempotencyCheck
+      );
+      mockIdempotencyService.markFileProcessing.mockResolvedValue(
+        "load-run-file-id-123"
+      );
+      mockHandlerFactory.getHandler.mockRejectedValue(mockError);
+      mockErrorHandler.handleError.mockResolvedValue(mockLoadError);
+      mockIdempotencyService.markFileError.mockResolvedValue(undefined);
 
       const result = await service.loadFile(
         mockFileMetadata as DiscoveredFile,
@@ -328,7 +304,11 @@ describe("RawLoaderService", () => {
       expect(result.totalRows).toBe(0);
       expect(result.failedBatches).toBe(1);
       expect(result.errors).toContain(mockLoadError);
-      // Note: getFileStream is not called when checkFileProcessed fails
+      expect(mockIdempotencyService.markFileError).toHaveBeenCalledWith(
+        mockFileMetadata,
+        "run-123",
+        mockLoadError.message
+      );
     });
   });
 
@@ -417,6 +397,19 @@ describe("RawLoaderService", () => {
       expect(progress).toBe(mockProgress);
       expect(mockMonitor.getProgress).toHaveBeenCalledWith("test-file.csv");
     });
+
+    it("should return default progress when not found", async () => {
+      mockMonitor.getProgress.mockResolvedValue(null);
+
+      const progress = await service.getLoadProgress("nonexistent-file.csv");
+
+      expect(progress.fileKey).toBe("nonexistent-file.csv");
+      expect(progress.currentStatus).toBe("PENDING");
+      expect(progress.totalRows).toBe(0);
+      expect(mockMonitor.getProgress).toHaveBeenCalledWith(
+        "nonexistent-file.csv"
+      );
+    });
   });
 
   describe("getErrorSummary", () => {
@@ -435,18 +428,21 @@ describe("RawLoaderService", () => {
       ];
 
       const mockSummary = {
-        totalErrors: 2,
         errorsByType: { DATABASE_ERROR: 1, VALIDATION_ERROR: 1 },
         topErrors: mockErrors,
-        retryableErrors: 1,
-        blockingErrors: 1,
       };
 
       mockErrorHandler.getErrorSummary.mockResolvedValue(mockSummary);
 
       const summary = await service.getErrorSummary(mockErrors);
 
-      expect(summary).toStrictEqual(mockSummary);
+      expect(summary.totalErrors).toBe(2);
+      expect(summary.errorsByType).toEqual({
+        DATABASE_ERROR: 1,
+        VALIDATION_ERROR: 1,
+      });
+      expect(summary.retryableErrors).toBe(1);
+      expect(summary.blockingErrors).toBe(1);
       expect(mockErrorHandler.getErrorSummary).toHaveBeenCalledWith(mockErrors);
     });
   });
@@ -459,6 +455,23 @@ describe("RawLoaderService", () => {
 
       expect(isHealthy).toBe(true);
       expect(mockMonitor.healthCheck).toHaveBeenCalled();
+    });
+
+    it("should return false when monitor is unhealthy", async () => {
+      mockMonitor.healthCheck.mockResolvedValue(false);
+
+      const isHealthy = await service.healthCheck();
+
+      expect(isHealthy).toBe(false);
+      expect(mockMonitor.healthCheck).toHaveBeenCalled();
+    });
+
+    it("should return false when monitor throws error", async () => {
+      mockMonitor.healthCheck.mockRejectedValue(new Error("Monitor error"));
+
+      const isHealthy = await service.healthCheck();
+
+      expect(isHealthy).toBe(false);
     });
   });
 });
