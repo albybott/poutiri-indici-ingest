@@ -190,6 +190,18 @@ export class StagingTransformerService {
           successfulBatches++;
         } else {
           failedBatches++;
+
+          // Log load errors that caused batch failure
+          console.error(
+            `❌ Batch ${batchNum + 1} failed: ${batchResult.errors.length} load errors`
+          );
+
+          if (batchResult.errors.length > 0) {
+            console.error(
+              `   Errors:`,
+              batchResult.errors.map((e) => e.message).join(", ")
+            );
+          }
         }
 
         // Check if we should stop due to too many errors
@@ -380,7 +392,7 @@ export class StagingTransformerService {
       rejections,
       errors,
       warnings,
-      success: loadSuccess && rejections.length === 0,
+      success: loadSuccess,
     };
   }
 
