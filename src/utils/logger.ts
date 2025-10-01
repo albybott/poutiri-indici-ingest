@@ -31,27 +31,37 @@ export class Logger {
     return `${timestamp} ${level.toUpperCase()} ${this.prefix} ${message}`;
   }
 
-  debug(message: string): void {
+  debug(message: string, metadata?: Record<string, unknown>): void {
     if (this.shouldLog(LogLevel.DEBUG)) {
-      console.debug(this.formatMessage(LogLevel.DEBUG, message));
+      const metadataStr = metadata ? ` ${JSON.stringify(metadata)}` : "";
+      console.debug(this.formatMessage(LogLevel.DEBUG, message) + metadataStr);
     }
   }
 
-  info(message: string): void {
+  info(message: string, metadata?: Record<string, unknown>): void {
     if (this.shouldLog(LogLevel.INFO)) {
-      console.info(this.formatMessage(LogLevel.INFO, message));
+      const metadataStr = metadata ? ` ${JSON.stringify(metadata)}` : "";
+      console.info(this.formatMessage(LogLevel.INFO, message) + metadataStr);
     }
   }
 
-  warn(message: string): void {
+  warn(message: string, metadata?: Record<string, unknown>): void {
     if (this.shouldLog(LogLevel.WARN)) {
-      console.warn(this.formatMessage(LogLevel.WARN, message));
+      const metadataStr = metadata ? ` ${JSON.stringify(metadata)}` : "";
+      console.warn(this.formatMessage(LogLevel.WARN, message) + metadataStr);
     }
   }
 
-  error(message: string): void {
+  error(message: string, metadata?: Record<string, unknown>): void {
     if (this.shouldLog(LogLevel.ERROR)) {
-      console.error(this.formatMessage(LogLevel.ERROR, message));
+      const metadataStr = metadata ? ` ${JSON.stringify(metadata)}` : "";
+      console.error(this.formatMessage(LogLevel.ERROR, message) + metadataStr);
     }
   }
 }
+
+// Default logger instance
+export const logger = new Logger({
+  level: LogLevel.INFO,
+  prefix: "[Core-Merger]",
+});

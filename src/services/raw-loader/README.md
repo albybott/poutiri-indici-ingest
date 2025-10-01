@@ -1,102 +1,115 @@
-# Raw Loader Service
+## Raw Loader Service
 
-[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-336791?logo=postgresql&logoColor=white)](https://postgresql.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+The **Raw Loader Service** is the first stage of the ETL pipeline, responsible for loading Indici healthcare data extracts from S3 CSV files into raw database tables (`raw.*`). It preserves the original data structure and handles the complex Indici CSV format with custom separators.
 
-The **Raw Loader Service** is the critical data ingestion component of the Indici ETL pipeline responsible for streaming CSV data from S3 directly into PostgreSQL raw tables. It provides high-performance, lossless data loading with complete lineage tracking and robust error handling.
+## 🎯 Purpose
 
-## 🎯 Overview
-
-This service handles the second phase of the ETL pipeline by:
-
-- **Streaming** CSV data processing with custom separators (`|~~|`, `|^^|`)
-- **Handling** headerless CSV format with position-based column mapping
-- **Loading** data into PostgreSQL raw tables with full lineage tracking
-- **Supporting** all 18 Indici extract types with type-specific handlers
-- **Implementing** idempotency checks to prevent duplicate loading
-- **Providing** comprehensive error recovery and monitoring capabilities
-
-## 🏗️ Architecture
-
-### Core Components
+This service is responsible for the first layer of the ETL pipeline:
 
 ```
-┌─────────────────────┐      ┌──────────────────┐     ┌──────────────────────┐
-│ RawLoaderService    │─────▶│  RawTableLoader  │────▶│  DatabasePool        │
-│                     │      │                  │     │                      │
-│ • Main orchestrator │      │ • Batch inserts  │     │ • Connection pooling │
-│ • File coordination │      │ • Transactions   │     │ • Error handling     │
-│ • Progress tracking │      │ • Lineage data   │     │ • Performance        │
-└─────────────────────┘      └──────────────────┘     └──────────────────────┘
-           │                           │                        │
-           ▼                           ▼                        ▼
-┌─────────────────────────┐    ┌───────────────────────┐    ┌─────────────────────┐
-│ ExtractHandlerFactory   │    │  IndiciCSVParser      │    │  LineageService     │
-│                         │    │                       │    │                     │
-│ • Type-specific handlers│    │ • Custom separators   │    │ • Data provenance   │
-│ • Validation rules      │    │ • Streaming parsing   │    │ • Load tracking     │
-│ • Column mapping        │    │ • Error recovery      │    │ • Audit trails      │
-└─────────────────────────┘    └───────────────────────┘    └─────────────────────┘
+S3 CSV Files → [Raw Loader] → raw.* tables → [Staging Transformer] → stg.* tables → [Core Merger] → core.* tables
+                    ↑ YOU ARE HERE
 ```
 
-### Design Patterns
+## 🔄 What It Does
 
-- **Dependency Injection**: Clean separation of concerns and testability
-- **Strategy Pattern**: Multiple extract type handlers and processing strategies
-- **Factory Pattern**: Dynamic handler creation based on extract type
-- **Observer Pattern**: Progress tracking and metrics collection
-- **Repository Pattern**: Abstraction over database operations
+1. **Discovers** CSV files from S3 using the Discovery Service
+2. **Parses** Indici CSV format with custom separators (`|^^|` and `|~~|`)
+3. **Validates** basic file structure and data integrity
+4. **Loads** raw data into `raw.*` tables (preserving all columns as text)
+5. **Tracks** processing lineage and handles idempotency
+6. **Monitors** performance and errors with comprehensive logging
 
-### Key Interfaces
+## 📦 Components
 
-```typescript
-interface RawLoadOptions {
-  extractType: string;
-  batchSize?: number;
-  maxRetries?: number;
-  continueOnError?: boolean;
-  validateRowCount?: boolean;
-  skipValidation?: boolean;
-  maxConcurrentFiles?: number;
-}
+### Core Services
 
-interface LoadResult {
-  totalRows: number;
-  successfulBatches: number;
-  failedBatches: number;
-  errors: LoadError[];
-  durationMs: number;
-  bytesProcessed: number;
-  rowsPerSecond: number;
-  memoryUsageMB: number;
-}
-```
+1. **`RawLoaderService`** - Main orchestrator coordinating the entire loading process
+2. **`CSVParser`** - Handles Indici's custom CSV format with `|^^|` field separators and `|~~|` row separators
+3. **`RawTableLoader`** - Database operations using shared `DatabasePool` and `BatchLoader`
+4. **`ExtractHandlerFactory`** - Factory for extract-specific handlers (Patient, Appointments, etc.)
+5. **`IdempotencyService`** - Prevents duplicate file processing
+6. **`ErrorHandler`** - Comprehensive error handling and recovery
+7. **`LoadMonitor`** - Performance monitoring and progress tracking
 
-## 🚀 Quick Start
+### Supporting Infrastructure
 
-### Installation
+- Uses **shared components**: `DatabasePool`, `BatchLoader`, `StreamBatchProcessor`
+- Integrates with **Discovery Service** for file discovery
+- Leverages existing `ErrorHandler` from shared services
 
-The service is part of the larger ETL pipeline project. Ensure you have the required dependencies:
+## 🚀 Usage
 
-```bash
-pnpm install
-# Dependencies include:
-# - pg (PostgreSQL client)
-# - drizzle-orm (Database ORM)
-# - node:stream (Streaming utilities)
-```
-
-### Basic Usage
+### Basic Example
 
 ```typescript
 import { RawLoaderContainer } from "./services/raw-loader";
+import type { DiscoveredFile } from "./services/discovery/types/files";
 
+// Create service
 const rawLoader = RawLoaderContainer.create({
   database: {
     poolSize: 10,
     timeoutMs: 30000,
+  },
+  processing: {
+    batchSize: 1000,
+    maxConcurrentFiles: 5,
+  },
+}, {
+  bucket: "my-s3-bucket",
+  region: "us-east-1",
+});
+
+// Load a single file
+const result = await rawLoader.loadFile(discoveredFile, "load-run-123", {
+  batchSize: 500,
+  continueOnError: true,
+});
+
+console.log(`Loaded: ${result.totalRows} rows`);
+console.log(`Errors: ${result.errors.length}`);
+```
+
+### Load Multiple Files with Concurrency
+
+```typescript
+// Load multiple files in parallel batches
+const results = await rawLoader.loadMultipleFiles(
+  discoveredFiles,
+  "load-run-456",
+  {
+    batchSize: 1000,
+    maxConcurrentFiles: 3, // Process 3 files at a time
+    continueOnError: true,
+  }
+);
+
+const totalRows = results.reduce((sum, r) => sum + r.totalRows, 0);
+console.log(`Total loaded: ${totalRows} rows across ${results.length} files`);
+```
+
+### Health Check
+
+```typescript
+const isHealthy = await rawLoader.healthCheck();
+if (!isHealthy) {
+  console.error("Raw Loader service is unhealthy");
+}
+```
+
+## 🔧 Configuration
+
+### Default Configuration
+
+```typescript
+const config: RawLoaderConfig = {
+  database: {
+    poolSize: 10,
+    timeoutMs: 30000,
     maxConnections: 20,
+    retryAttempts: 3,
+    retryDelayMs: 1000,
   },
   processing: {
     batchSize: 1000,
@@ -106,20 +119,12 @@ const rawLoader = RawLoaderContainer.create({
     bufferSizeMB: 16,
     continueOnError: true,
   },
-  csv: {
-    fieldSeparator: "|^^|",
-    rowSeparator: "|~~|",
-    maxRowLength: 100000,
-    maxFieldLength: 5000,
-    hasHeaders: false,
-    skipEmptyRows: true,
-  },
   errorHandling: {
     maxRetries: 3,
     retryDelayMs: 1000,
     continueOnError: true,
     logErrors: true,
-    errorThreshold: 0.1,
+    errorThreshold: 0.1, // Stop if >10% errors
   },
   monitoring: {
     enableMetrics: true,
@@ -128,575 +133,327 @@ const rawLoader = RawLoaderContainer.create({
     enableProgressTracking: true,
     progressUpdateInterval: 5000,
   },
-});
-
-// Load a file
-const result = await rawLoader.loadFile(discoveredFile, loadRunId);
-console.log(`Loaded ${result.totalRows} rows successfully`);
+};
 ```
 
-### Configuration
+### Override Configuration
 
 ```typescript
-const config = {
-  database: {
-    poolSize: 10, // Connection pool size
-    timeoutMs: 30000, // Query timeout
-    maxConnections: 20, // Maximum connections
-  },
+const rawLoader = RawLoaderContainer.create({
   processing: {
-    batchSize: 1000, // Rows per batch insert
-    maxConcurrentFiles: 5, // Parallel file processing
-    maxMemoryMB: 512, // Memory usage limit
-    enableStreaming: true, // Use streaming for large files
-    bufferSizeMB: 16, // Stream buffer size
-    continueOnError: true, // Continue on individual errors
-  },
-  csv: {
-    fieldSeparator: "|^^|", // Indici field separator
-    rowSeparator: "|~~|", // Indici row separator
-    maxRowLength: 100000,
-    maxFieldLength: 5000, // Maximum row length
-    hasHeaders: false, // Indici files are headerless
-    skipEmptyRows: true, // Skip empty rows
+    batchSize: 500, // Smaller batches for wide tables
+    maxConcurrentFiles: 2, // Reduce concurrency
   },
   errorHandling: {
-    maxRetries: 3, // Retry attempts per batch
-    retryDelayMs: 1000, // Delay between retries
-    continueOnError: true, // Continue processing other files
-    logErrors: true, // Log error details
-    errorThreshold: 0.1, // Error rate threshold
+    errorThreshold: 0.05, // Stricter error threshold
   },
-  monitoring: {
-    enableMetrics: true, // Collect performance metrics
-    logLevel: "info", // Logging level
-    metricsInterval: 30000, // Metrics collection interval
-    enableProgressTracking: true, // Track file progress
-    progressUpdateInterval: 5000, // Progress update frequency
+});
+```
+
+## 📊 Indici CSV Format
+
+The Raw Loader handles Indici's proprietary CSV format:
+
+| Feature | Indici Format | Standard CSV |
+|---------|---------------|--------------|
+| Field Separator | `\|^\^^\|` | `,` |
+| Row Separator | `\|~\~\|` | `\n` |
+| Encoding | UTF-16LE | UTF-8 |
+| Headers | None | Optional |
+| Quotes | Relaxed handling | Strict |
+
+### Example Indici CSV Content
+
+```
+Patient^^^John^^^Doe^^^1990-01-01|~~|
+Patient^^^Jane^^^Smith^^^1985-05-15|~~|
+```
+
+### Parsing Configuration
+
+```typescript
+const parser = new CSVParser({
+  fieldSeparator: "|^^|",     // Custom field separator
+  rowSeparator: "|~~|",       // Custom row separator
+  encoding: "utf16le",         // UTF-16 Little Endian
+  hasHeaders: false,          // No headers in Indici files
+  columnMapping: ["type", "first_name", "last_name", "dob"], // Predefined columns
+});
+```
+
+## 🔄 Extract Handlers
+
+### Handler Factory Pattern
+
+```typescript
+// Get handler for specific extract type
+const patientHandler = await handlerFactory.getHandler("Patient");
+
+console.log(`Table: ${patientHandler.tableName}`);
+console.log(`Columns: ${patientHandler.columnMapping.length}`);
+
+// Register custom handler
+await handlerFactory.registerHandler(new CustomExtractHandler());
+```
+
+### Built-in Handlers
+
+| Extract Type | Handler Class | Table | Columns |
+|--------------|---------------|-------|---------|
+| `Patient` | `PatientsSchemaHandler` | `raw.patients` | 263+ |
+| `Appointments` | `AppointmentsHandler` | `raw.appointments` | 10 |
+
+### Custom Handler Implementation
+
+```typescript
+class CustomExtractHandler extends BaseExtractHandler {
+  extractType = "Custom";
+  tableName = "raw.custom_data";
+  columnMapping = ["id", "name", "value", "created_at"];
+
+  validationRules = [
+    {
+      columnName: "id",
+      ruleType: "required",
+      validator: (value) => /^\d+$/.test(value),
+      errorMessage: "ID must be numeric",
+    },
+  ];
+}
+```
+
+## 🛡️ Idempotency & Lineage
+
+### File Processing Tracking
+
+```sql
+-- Raw file processing tracking
+CREATE TABLE etl.raw_load_runs (
+  load_run_id UUID PRIMARY KEY,
+  extract_type TEXT NOT NULL,
+  started_at TIMESTAMP NOT NULL,
+  completed_at TIMESTAMP,
+  status TEXT NOT NULL
+);
+
+CREATE TABLE etl.raw_load_run_files (
+  load_run_file_id SERIAL PRIMARY KEY,
+  load_run_id UUID NOT NULL REFERENCES etl.raw_load_runs(load_run_id),
+  file_key TEXT NOT NULL,
+  extract_type TEXT NOT NULL,
+  row_count INTEGER,
+  processed_at TIMESTAMP NOT NULL,
+  status TEXT NOT NULL
+);
+```
+
+### Idempotency Checks
+
+```typescript
+// Service automatically prevents duplicate processing
+const result = await rawLoader.loadFile(file, loadRunId);
+
+// File already processed? Returns cached result
+if (result.warnings.some(w => w.message.includes("already processed"))) {
+  console.log("File was previously loaded, skipping");
+}
+```
+
+## 📈 Monitoring & Progress
+
+### Real-time Progress Tracking
+
+```typescript
+// Get progress for specific file
+const progress = await rawLoader.getLoadProgress("s3://bucket/file.csv");
+
+console.log(`Processed: ${progress.processedRows}/${progress.totalRows}`);
+console.log(`Status: ${progress.currentStatus}`);
+console.log(`ETA: ${progress.estimatedTimeRemaining}s`);
+```
+
+### Metrics Collection
+
+```typescript
+const metrics = await rawLoader.getMetrics();
+
+console.log(`Files processed: ${metrics.filesProcessed}`);
+console.log(`Total rows: ${metrics.totalRowsLoaded}`);
+console.log(`Avg throughput: ${metrics.averageRowsPerSecond} rows/sec`);
+```
+
+## 🚫 Error Handling
+
+### Comprehensive Error Recovery
+
+```typescript
+// Service handles various error types
+const result = await rawLoader.loadFile(file, loadRunId);
+
+if (result.errors.length > 0) {
+  const summary = await rawLoader.getErrorSummary(result.errors);
+
+  console.log(`Total errors: ${summary.totalErrors}`);
+  console.log(`Retryable: ${summary.retryableErrors}`);
+  console.log(`Blocking: ${summary.blockingErrors}`);
+}
+```
+
+### Error Types Handled
+
+- **Database errors**: Connection issues, constraint violations
+- **CSV parsing errors**: Malformed data, encoding issues
+- **File system errors**: S3 access, missing files
+- **Memory errors**: Large file processing
+- **Validation errors**: Data integrity issues
+
+## 🏗️ Architecture
+
+```
+┌────────────────────────────────────────────────────────────┐
+│                    RawLoaderService                        │
+│                     (Main Orchestrator)                    │
+└─────┬──────────────────┬─────────────────┬────────────────┘
+      │                  │                 │
+      ▼                  ▼                 ▼
+┌─────────────┐  ┌──────────────┐  ┌─────────────┐
+│  Discovery  │  │   CSVParser  │  │Idempotency  │
+│   Service   │  │              │  │  Service    │
+│• S3 files   │  │• |^^| fields │  │• Duplicate  │
+│• Metadata   │  │• |~~| rows   │  │• Prevention │
+└─────────────┘  └──────────────┘  └─────────────┘
+      │                  │                 │
+      ▼                  ▼                 ▼
+┌─────────────────────────────────────────────────┐
+│           ExtractHandlerFactory                 │
+│                                                 │
+│ • Patient handler                               │
+│ • Appointments handler                          │
+│ • Schema-driven configuration                   │
+└─────────────────────────────────────────────────┘
+      │
+      ▼
+┌─────────────────────────────────────────────────┐
+│             RawTableLoader                      │
+│             (Batch Processing)                  │
+│                                                 │
+│ • Streaming CSV → Database                      │
+│ • Batch optimization                            │
+│ • Memory management                             │
+└─────────────────────────────────────────────────┘
+      │
+      ▼
+┌─────────────────────────────────────────────────┐
+│           Shared Infrastructure                 │
+│                                                 │
+│ • DatabasePool                                  │
+│ • BatchLoader                                   │
+│ • ErrorHandler                                  │
+│ • LoadMonitor                                   │
+└─────────────────────────────────────────────────┘
+```
+
+## 📝 Best Practices
+
+### 1. Configure Appropriate Batch Sizes
+
+```typescript
+// For wide tables (many columns)
+const config = {
+  processing: {
+    batchSize: 500, // Smaller batches
+  },
+};
+
+// For narrow tables (few columns)
+const config = {
+  processing: {
+    batchSize: 2000, // Larger batches
   },
 };
 ```
 
-## 📋 API Reference
-
-### RawLoaderService
-
-The main service class that orchestrates all loading operations.
-
-#### Constructor
+### 2. Handle Large Files with Streaming
 
 ```typescript
-constructor(
-  csvParser: IndiciCSVParser,
-  tableLoader: RawTableLoader,
-  handlerFactory: ExtractHandlerFactory,
-  idempotencyService: IdempotencyService,
-  lineageService: LineageService,
-  errorHandler: ErrorHandler,
-  monitor: LoadMonitor,
-  config: RawLoaderConfig
-)
+// Enable streaming for large files
+const config = {
+  processing: {
+    enableStreaming: true,
+    bufferSizeMB: 16,
+    maxMemoryMB: 512,
+  },
+};
 ```
 
-#### Methods
-
-##### `loadFile(fileMetadata, loadRunId, options?)`
-
-Loads a single file from S3 to the raw database tables.
+### 3. Monitor Error Rates
 
 ```typescript
-const result = await rawLoader.loadFile(discoveredFile, loadRunId, {
-  batchSize: 500,
-  continueOnError: true,
+const result = await rawLoader.loadFile(file, loadRunId);
+
+const errorRate = result.errors.length / (result.totalRows || 1);
+
+if (errorRate > 0.1) { // 10% error rate
+  console.warn(`High error rate: ${(errorRate * 100).toFixed(1)}%`);
+  // Investigate data quality issues
+}
+```
+
+### 4. Use Idempotency for Reliability
+
+```typescript
+// Service automatically handles retries and duplicate prevention
+const result = await rawLoader.loadFile(file, loadRunId, {
+  skipValidation: false, // Check for duplicates
 });
 ```
 
-**Parameters:**
-
-- `fileMetadata` (required): `DiscoveredFile` from Discovery Service
-- `loadRunId` (required): Unique identifier for this load run
-- `options` (optional): `RawLoadOptions` for customization
-
-**Returns:** `LoadResult`
-
-##### `loadMultipleFiles(files, loadRunId, options?)`
-
-Loads multiple files in parallel with concurrency control.
+### 5. Configure Concurrency Based on Resources
 
 ```typescript
-const results = await rawLoader.loadMultipleFiles(fileBatch.files, loadRunId, {
-  maxConcurrentFiles: 3,
-  continueOnError: true,
+const rawLoader = RawLoaderContainer.create({
+  processing: {
+    maxConcurrentFiles: 3, // Balance throughput vs resource usage
+  },
 });
-```
-
-**Returns:** `LoadResult[]`
-
-##### `getLoadProgress(fileKey)`
-
-Returns current progress for a specific file.
-
-```typescript
-const progress = await rawLoader.getLoadProgress("file-key");
-```
-
-**Returns:** `LoadProgress`
-
-##### `getErrorSummary(errors)`
-
-Aggregates and summarizes loading errors.
-
-```typescript
-const summary = await rawLoader.getErrorSummary(loadResults.flatMap(r => r.errors));
-```
-
-**Returns:** `ErrorSummary`
-
-##### `getMetrics()`
-
-Returns current loading metrics.
-
-```typescript
-const metrics = await rawLoader.getMetrics();
-```
-
-**Returns:** `LoadMetrics`
-
-##### `healthCheck()`
-
-Validates service connectivity and configuration.
-
-```typescript
-const isHealthy = await rawLoader.healthCheck();
-```
-
-**Returns:** `boolean`
-
-### RawLoaderContainer
-
-Dependency injection container for creating configured service instances.
-
-#### `create(config)`
-
-Creates a fully configured Raw Loader service.
-
-```typescript
-const rawLoader = RawLoaderContainer.create(config);
-```
-
-**Returns:** `RawLoaderService`
-
-## 🔧 Configuration Options
-
-### Database Configuration
-
-| Option           | Default  | Description                  |
-| ---------------- | -------- | ---------------------------- |
-| `poolSize`       | `10`     | Database connection pool size |
-| `timeoutMs`      | `30000`  | Query timeout in milliseconds |
-| `maxConnections` | `20`     | Maximum database connections |
-
-### Processing Configuration
-
-| Option              | Default | Description                     |
-| ------------------- | ------- | ------------------------------- |
-| `batchSize`         | `1000`  | Rows per database batch insert  |
-| `maxConcurrentFiles`| `5`     | Parallel file processing limit  |
-| `maxMemoryMB`       | `512`   | Memory usage limit per process  |
-| `enableStreaming`   | `true`  | Use streaming for large files   |
-| `bufferSizeMB`      | `16`    | Stream buffer size              |
-| `continueOnError`   | `true`  | Continue processing on errors   |
-
-### CSV Configuration
-
-| Option           | Default    | Description                     |
-| ---------------- | ---------- | ------------------------------- |
-| `fieldSeparator` | `"\|^^\|"` | Indici field separator          |
-| `rowSeparator`   | `"\|~~\|"` | Indici row separator            |
-| `maxRowLength`   | `10000`    | Maximum row length in characters|
-| `hasHeaders`     | `false`    | Indici files are headerless     |
-| `skipEmptyRows`  | `true`     | Skip completely empty rows      |
-
-### Error Handling Configuration
-
-| Option         | Default | Description                  |
-| -------------- | ------- | ---------------------------- |
-| `maxRetries`   | `3`     | Retry attempts per batch     |
-| `retryDelayMs` | `1000`  | Delay between retries        |
-| `continueOnError`| `true` | Continue processing other files |
-| `logErrors`    | `true`  | Log detailed error information |
-| `errorThreshold`| `0.1`  | Error rate threshold (10%)   |
-
-### Monitoring Configuration
-
-| Option                    | Default | Description                      |
-| ------------------------- | ------- | -------------------------------- |
-| `enableMetrics`           | `true`  | Collect performance metrics      |
-| `logLevel`                | `"info"`| Logging level                    |
-| `metricsInterval`         | `30000` | Metrics collection interval (ms) |
-| `enableProgressTracking`  | `true`  | Track individual file progress   |
-| `progressUpdateInterval`  | `5000`  | Progress update frequency (ms)   |
-
-## 📁 File Structure
-
-```
-src/services/raw-loader/
-├── README.md                       # This file
-├── index.ts                        # Main exports
-├── raw-loader-service.ts           # Core service implementation
-├── indici-csv-parser.ts            # CSV parsing with custom separators
-├── raw-table-loader.ts             # Database loading and batch operations
-├── extract-handler-factory.ts      # Extract type-specific handlers
-├── idempotency-service.ts          # Duplicate prevention
-├── lineage-service.ts              # Data lineage and audit trails
-├── error-handler.ts                # Error handling and recovery
-├── load-monitor.ts                 # Monitoring and metrics collection
-├── types/
-│   ├── raw-loader.ts               # Core service types
-│   ├── csv.ts                      # CSV processing types
-│   ├── config.ts                   # Configuration types
-│   └── errors.ts                   # Error types and utilities
-├── handlers/
-│   ├── base-extract-handler.ts     # Base handler implementation
-│   ├── patients-handler.ts         # Patients-specific logic
-│   ├── appointments-handler.ts     # Appointments-specific logic
-│   └── [other extract handlers]    # Additional type handlers
-├── utils/
-│   ├── batch-utils.ts              # Batch processing utilities
-│   ├── validation-utils.ts         # Data validation utilities
-│   └── performance-utils.ts        # Performance optimization utilities
-└── __tests__/
-    ├── raw-loader-service.test.ts  # Main service tests
-    ├── unit/                       # Unit tests
-    ├── integration/                # Integration tests
-    └── fixtures/                   # Test data and fixtures
 ```
 
 ## 🧪 Testing
 
-### Running Tests
-
-```bash
-# Run all tests
-pnpm test
-
-# Run specific test file
-pnpm vitest run src/services/raw-loader/__tests__/raw-loader-service.test.ts
-
-# Run tests in watch mode
-pnpm vitest src/services/raw-loader/__tests__/
-```
-
-### Test Coverage
-
-The service includes comprehensive tests covering:
-
-- ✅ Service initialization and configuration
-- ✅ CSV parsing with custom separators
-- ✅ Database operations and transactions
-- ✅ Extract type handler creation and validation
-- ✅ Idempotency checks and duplicate prevention
-- ✅ Error handling and recovery scenarios
-- ✅ Progress tracking and metrics collection
-- ✅ Health checks and monitoring
-
-### Writing Tests
+Example test structure:
 
 ```typescript
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import { RawLoaderContainer } from "../raw-loader-service";
+import { RawLoaderContainer } from "./raw-loader";
+import { mockDiscoveredFile } from "./test-helpers";
 
 describe("RawLoaderService", () => {
-  let service: RawLoaderService;
+  it("should load valid CSV file", async () => {
+    const rawLoader = RawLoaderContainer.create(testConfig);
 
-  beforeEach(() => {
-    service = RawLoaderContainer.create(mockConfig);
-  });
+    const result = await rawLoader.loadFile(
+      mockDiscoveredFile("Patient"),
+      "test-run-123"
+    );
 
-  it("should initialize correctly", () => {
-    expect(service).toBeDefined();
-    expect(service.healthCheck()).toBeDefined();
-  });
-
-  it("should load files successfully", async () => {
-    const result = await service.loadFile(mockFile, "test-run");
     expect(result.totalRows).toBeGreaterThan(0);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  it("should handle malformed CSV gracefully", async () => {
+    // Test error handling
+  });
+
+  it("should prevent duplicate file processing", async () => {
+    // Test idempotency
   });
 });
 ```
 
-## 🔍 CSV Data Format
+## 📚 Related Documentation
 
-### Indici CSV Characteristics
-
-The Raw Loader is specifically designed to handle Indici's unique CSV format:
-
-- **Headerless Format**: Files contain no column headers
-- **Custom Field Separator**: Uses `|~~|` instead of commas
-- **Custom Row Separator**: Uses `|^^|` instead of newlines
-- **Position-Based Mapping**: Column names are mapped by position
-- **Variable Row Lengths**: Rows may have different numbers of fields
-- **Encoding Issues**: May contain special characters and encoding artifacts
-
-### Sample Data Structure
-
-```csv
-patient_id|~~|practice_id|~~|nhi_number|~~|first_name|~~|last_name|~~|date_of_birth|~~|gender|^^|
-12345|~~|535|~~|ABC1234|~~|John|~~|Doe|~~|1985-06-15|~~|M|^^|
-67890|~~|535|~~|DEF5678|~~|Jane|~~|Smith|~~|1990-08-20|~~|F|^^|
-11111|~~|535|~~|GHI9012|~~|Bob|~~|Johnson|~~|1978-12-10|~~|M
-```
-
-### Supported Extract Types
-
-- `Patient` - Patient demographic and clinical data
-- `Appointments` - Appointment scheduling and history
-- `Providers` - Healthcare provider information
-- `PracticeInfo` - Practice configuration and settings
-- `Invoices` - Billing and invoice records
-- `InvoiceDetail` - Detailed invoice line items
-- `Immunisations` - Vaccination and immunization records
-- `Diagnoses` - Diagnosis codes and descriptions
-- `Measurements` - Clinical measurements and vitals
-- `Recalls` - Patient recall and reminder data
-- `Inbox` - Inbox messages and communications
-- `InboxDetail` - Detailed inbox message content
-- `Medicine` - Medication prescriptions and history
-- `NextOfKin` - Next of kin and emergency contacts
-- `Vaccine` - Vaccine inventory and management
-- `Allergies` - Patient allergy information
-- `AppointmentMedications` - Medication-related appointments
-- `PatientAlerts` - Patient alert and notification data
-
-## 📊 Monitoring & Metrics
-
-### Loading Metrics
-
-```typescript
-interface LoadMetrics {
-  filesProcessed: number; // Files successfully loaded
-  totalRowsLoaded: number; // Total rows inserted
-  totalBytesProcessed: number; // Data volume processed
-  averageRowsPerSecond: number; // Processing throughput
-  averageProcessingTimeMs: number; // Average file processing time
-  errorRate: number; // Error percentage
-  retryCount: number; // Retry operations count
-  memoryPeakUsageMB: number; // Peak memory usage
-  databaseConnectionsUsed: number; // Active DB connections
-  throughputMBps: number; // Data throughput
-  averageLatencyMs: number; // Database operation latency
-}
-```
-
-### Load Progress
-
-```typescript
-interface LoadProgress {
-  fileKey: string; // S3 file key
-  extractType: string; // Data type being loaded
-  totalRows: number; // Total rows in file
-  processedRows: number; // Rows processed so far
-  currentBatch: number; // Current batch number
-  totalBatches: number; // Total batches expected
-  estimatedTimeRemaining: number; // Time remaining (ms)
-  currentStatus: LoadStatus; // Current processing status
-  errors: LoadError[]; // Errors encountered
-  warnings: LoadWarning[]; // Non-critical issues
-  bytesProcessed: number; // Bytes processed
-  memoryUsageMB: number; // Current memory usage
-  startTime: Date; // Processing start time
-  lastUpdate: Date; // Last progress update
-}
-```
-
-### Error Types
-
-```typescript
-enum LoadErrorType {
-  CSV_PARSE_ERROR = "CSV_PARSE_ERROR",
-  VALIDATION_ERROR = "VALIDATION_ERROR",
-  DATABASE_ERROR = "DATABASE_ERROR",
-  IDEMPOTENCY_ERROR = "IDEMPOTENCY_ERROR",
-  FILE_NOT_FOUND = "FILE_NOT_FOUND",
-  PERMISSION_ERROR = "PERMISSION_ERROR",
-  CONSTRAINT_VIOLATION = "CONSTRAINT_VIOLATION",
-  MEMORY_ERROR = "MEMORY_ERROR",
-  TIMEOUT_ERROR = "TIMEOUT_ERROR",
-}
-
-enum LoadStatus {
-  PENDING = "PENDING",
-  PROCESSING = "PROCESSING",
-  COMPLETED = "COMPLETED",
-  FAILED = "FAILED",
-  PARTIAL = "PARTIAL",
-  RETRYING = "RETRYING",
-}
-```
-
-## 🔄 Integration Points
-
-### Upstream Components
-
-1. **S3 Discovery Service**: Provides `DiscoveredFile[]` and file metadata
-2. **Configuration Service**: Provides runtime configuration and defaults
-3. **Audit Manager**: Receives load run information and tracking data
-
-### Downstream Components
-
-1. **Staging Transformer**: Consumes loaded raw data for transformation
-2. **Health Monitor**: Receives loading status and performance metrics
-3. **Error Reporting**: Receives detailed error information and summaries
-
-### Data Flow
-
-```
-S3 File Discovery
-       ↓
-  Raw Data Loading
-       ↓
-CSV Parsing & Validation
-       ↓
-   Batch Processing
-       ↓
-Database Insertion
-       ↓
- Lineage Tracking
-       ↓
-Progress Monitoring
-       ↓
- Error Handling & Recovery
-```
-
-## 🚀 Performance Optimization
-
-### Best Practices
-
-1. **Batch Sizing**: Use appropriate batch sizes (500-2000 rows) for optimal database performance
-2. **Memory Management**: Monitor and configure `maxMemoryMB` for your environment
-3. **Concurrency Control**: Set `maxConcurrentFiles` based on database capacity
-4. **Streaming**: Enable streaming for large files (>100MB)
-5. **Error Handling**: Use `continueOnError` for resilient processing
-
-### Scalability Considerations
-
-- **Database Connection Pooling**: Configure `poolSize` based on concurrent load
-- **Transaction Management**: Automatic rollback on batch failures
-- **Progress Tracking**: Real-time progress for long-running operations
-- **Resource Monitoring**: Memory and connection usage tracking
-- **Parallel Processing**: Multiple files processed concurrently
-
-### Performance Targets
-
-| File Size | Expected Performance | Configuration |
-| --------- | -------------------- | ------------- |
-| < 1K rows | < 10 seconds | Default settings |
-| 1K-100K rows | < 2 minutes | `batchSize: 1000` |
-| 100K+ rows | < 5 minutes | `batchSize: 2000`, streaming enabled |
-| Concurrent files | Up to 5 simultaneous | `maxConcurrentFiles: 5` |
-
-## 🤝 Contributing
-
-### Development Setup
-
-1. **Clone the repository** and navigate to the project root
-2. **Install dependencies**: `pnpm install`
-3. **Run tests**: `pnpm test`
-4. **Build the project**: `pnpm build`
-
-### Code Style
-
-- Use **TypeScript** for all new code
-- Follow **kebab-case** naming convention for files
-- Use **ESLint** and **Prettier** configurations
-- Write **comprehensive tests** for new features
-- Add **JSDoc comments** for public APIs
-
-### Pull Request Process
-
-1. Create a feature branch from `main`
-2. Write tests for new functionality
-3. Ensure all tests pass
-4. Update documentation as needed
-5. Create a pull request with clear description
-
-## 📈 Future Enhancements
-
-### Planned Features
-
-- [ ] **Advanced Validation**: Schema-based validation with JSON Schema
-- [ ] **Data Quality Checks**: Automated data quality assessment
-- [ ] **Parallel Loading**: Multi-threaded database loading
-- [ ] **Compression Support**: Gzip/Brotli compressed CSV files
-- [ ] **Delta Detection**: Smart incremental vs full load detection
-- [ ] **Real-time Streaming**: Kafka/EventBridge integration
-- [ ] **Advanced Error Recovery**: Resume partial loads from checkpoints
-- [ ] **Performance Profiling**: Detailed performance analysis tools
-
-### Architecture Improvements
-
-- [ ] **Plugin System**: Extensible extract type handlers
-- [ ] **Connection Pooling**: Advanced database connection management
-- [ ] **Load Balancing**: Multiple database instances
-- [ ] **Distributed Processing**: Multi-node processing support
-- [ ] **Metrics Export**: Prometheus/Grafana integration
-
-## 📞 Support
-
-### Getting Help
-
-- **Documentation**: Check this README first
-- **Issues**: Create GitHub issues for bugs and features
-- **Discussions**: Use GitHub Discussions for questions
-- **Code Review**: All changes require review
-
-### Troubleshooting
-
-#### Common Issues
-
-1. **Database Connection Errors**
-
-   ```bash
-   # Ensure database credentials are properly configured
-   export DB_HOST=your-postgres-host
-   export DB_NAME=your-database
-   export DB_USER=your-username
-   export DB_PASSWORD=your-password
-   ```
-
-2. **Memory Issues**
-
-   ```typescript
-   // Adjust memory limits for large files
-   const config = {
-     processing: { maxMemoryMB: 1024 },
-   };
-   ```
-
-3. **CSV Parsing Errors**
-
-   ```typescript
-   // Verify CSV configuration matches file format
-   const config = {
-     csv: {
-       fieldSeparator: "|^^|",
-       rowSeparator: "|~~|",
-       hasHeaders: false,
-     },
-   };
-   ```
-
-4. **Handler Not Found**
-
-   ```bash
-   # Ensure extract type handlers are registered
-   # Check available handlers in the factory
-   ```
-
-## 📄 License
-
-This project is part of the Poutiri Indici Ingest system and follows the project's licensing terms.
-
----
-
-**Built with ❤️ for reliable, high-performance data ingestion at scale**
+- [Discovery Service](../discovery/README.md) - File discovery from S3
+- [Staging Transformer](../staging-transformer/README.md) - Next stage in ETL pipeline
+- [ETL Architecture](../../../docs/etl/etl-guide.md)
+- [Schema Guide](../../../docs/schema/schema-guide.md)
+- [Shared Services](../shared/README.md)
+- [Indici Data Extracts](../../../docs/project-files/data-extract-Info.md)

@@ -39,6 +39,9 @@ async function main(): Promise<void> {
   // Test Staging Transformer Service (raw.* → stg.* tables)
   if (loadRunId) {
     await testStagingTransformerService(loadRunId);
+
+    // Test Core Merger Service (stg.* → core.* tables)
+    await testCoreMergerService(loadRunId);
   }
 
   console.log("✅ Application completed successfully!");
@@ -515,6 +518,113 @@ async function testStagingTransformerService(loadRunId: string): Promise<void> {
     await transformer.close();
   } catch (error) {
     console.error("❌ Staging Transformer Service test failed:", error);
+
+    if (error instanceof Error) {
+      console.error("🔍 Error details:", {
+        message: error.message,
+        stack: error.stack?.split("\n").slice(0, 5).join("\n"),
+      });
+    }
+
+    // Don't exit in test mode, just log the error
+    if (!config.testMode) {
+      throw error;
+    }
+  }
+}
+
+async function testCoreMergerService(loadRunId: string): Promise<void> {
+  console.log("\n🔀 Testing Core Merger Service (stg.* → core.* tables)...");
+
+  try {
+    const { CoreMergerContainer } = await import("./services/core-merger");
+
+    // Create core merger service
+    // Using partial config - defaults will be merged
+    const coreMerger = CoreMergerContainer.create();
+
+    // Health check
+    const isHealthy = await coreMerger.healthCheck();
+    console.log(
+      `🏥 Core Merger health: ${isHealthy ? "✅ Healthy" : "❌ Unhealthy"}`
+    );
+
+    if (!isHealthy) {
+      console.log("⚠️  Skipping core merge - service unhealthy");
+      return;
+    }
+
+    console.log(`🔀 Merging staging data to core for load run: ${loadRunId}`);
+
+    // Merge to core
+    const result = await coreMerger.mergeToCore({
+      loadRunId,
+      extractTypes: ["Patient", "Appointment"],
+    });
+
+    // Display results
+    console.log("\n📊 Core Merge Results:");
+    console.log(`  Merge run ID:           ${result.mergeRunId}`);
+    console.log(`  Status:                 ${result.status}`);
+    console.log(`  Dimensions created:     ${result.dimensionsCreated}`);
+    console.log(`  Dimensions updated:     ${result.dimensionsUpdated}`);
+    console.log(`  Facts inserted:         ${result.factsInserted}`);
+    console.log(`  Facts updated:          ${result.factsUpdated}`);
+    console.log(`  Total errors:           ${result.totalErrors}`);
+    console.log(`  Total warnings:         ${result.totalWarnings}`);
+    console.log(`  Duration:               ${result.durationMs}ms`);
+
+    // Show dimension results
+    if (result.dimensionResults.size > 0) {
+      console.log("\n📐 Dimension Results:");
+      for (const [dimType, dimResult] of result.dimensionResults.entries()) {
+        console.log(`  ${dimType}:`);
+        console.log(`    - Created:  ${dimResult.recordsCreated}`);
+        console.log(
+          `    - Updated:  ${dimResult.recordsUpdated} (new versions)`
+        );
+        console.log(`    - Skipped:  ${dimResult.recordsSkipped} (no change)`);
+        console.log(`    - Errors:   ${dimResult.errors.length}`);
+      }
+    }
+
+    // Show fact results
+    if (result.factResults.size > 0) {
+      console.log("\n📊 Fact Results:");
+      for (const [factType, factResult] of result.factResults.entries()) {
+        console.log(`  ${factType}:`);
+        console.log(`    - Inserted: ${factResult.recordsInserted}`);
+        console.log(`    - Updated:  ${factResult.recordsUpdated}`);
+        console.log(`    - Skipped:  ${factResult.recordsSkipped}`);
+        console.log(`    - Errors:   ${factResult.errors.length}`);
+
+        // Show missing FK summary
+        if (factResult.missingFKSummary.size > 0) {
+          console.log("    - Missing FKs:");
+          for (const [
+            dimType,
+            count,
+          ] of factResult.missingFKSummary.entries()) {
+            console.log(`      * ${dimType}: ${count}`);
+          }
+        }
+      }
+    }
+
+    // Success message
+    if (result.status === "completed") {
+      console.log("\n✅ Core Merger Service tests completed successfully!");
+      console.log(
+        `   ${result.dimensionsCreated + result.dimensionsUpdated} dimensions and ${result.factsInserted} facts loaded to core`
+      );
+    } else {
+      console.log("\n⚠️  Core merge completed with issues - check logs");
+    }
+
+    // Close connections
+    await coreMerger.close();
+  } catch (error) {
+    console.error("❌ Core Merger Service test failed:", error);
 
     if (error instanceof Error) {
       console.error("🔍 Error details:", {
