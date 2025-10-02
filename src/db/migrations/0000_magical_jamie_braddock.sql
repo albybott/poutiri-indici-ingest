@@ -1463,13 +1463,7 @@ CREATE TABLE "stg"."appointments" (
 	"is_consent_to_share" boolean,
 	"per_org_id" text NOT NULL,
 	"loaded_date_time" timestamp with time zone,
-	"s3_bucket" text NOT NULL,
-	"s3_key" text NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
-	"extract_type" text NOT NULL,
-	"load_run_id" uuid NOT NULL,
+	"load_run_file_id" integer NOT NULL,
 	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
@@ -1539,13 +1533,7 @@ CREATE TABLE "stg"."immunisations" (
 	"vaccine_group" text,
 	"per_org_id" text NOT NULL,
 	"loaded_date_time" timestamp with time zone,
-	"s3_bucket" text NOT NULL,
-	"s3_key" text NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
-	"extract_type" text NOT NULL,
-	"load_run_id" uuid NOT NULL,
+	"load_run_file_id" integer NOT NULL,
 	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
@@ -1578,13 +1566,7 @@ CREATE TABLE "stg"."invoices" (
 	"notes" text,
 	"per_org_id" text NOT NULL,
 	"loaded_date_time" timestamp with time zone,
-	"s3_bucket" text NOT NULL,
-	"s3_key" text NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
-	"extract_type" text NOT NULL,
-	"load_run_id" uuid NOT NULL,
+	"load_run_file_id" integer NOT NULL,
 	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
@@ -1638,13 +1620,7 @@ CREATE TABLE "stg"."invoice_detail" (
 	"practice_id" text NOT NULL,
 	"per_org_id" text NOT NULL,
 	"loaded_date_time" timestamp with time zone,
-	"s3_bucket" text NOT NULL,
-	"s3_key" text NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
-	"extract_type" text NOT NULL,
-	"load_run_id" uuid NOT NULL,
+	"load_run_file_id" integer NOT NULL,
 	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
@@ -1770,13 +1746,7 @@ CREATE TABLE "stg"."providers" (
 	"provider_permanent_address_longitude" numeric(11, 8),
 	"per_org_id" text NOT NULL,
 	"loaded_date_time" timestamp with time zone,
-	"s3_bucket" text NOT NULL,
-	"s3_key" text NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
-	"extract_type" text NOT NULL,
-	"load_run_id" uuid NOT NULL,
+	"load_run_file_id" integer NOT NULL,
 	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
@@ -1822,13 +1792,7 @@ CREATE TABLE "stg"."practice_info" (
 	"is_deleted" boolean DEFAULT false NOT NULL,
 	"per_org_id" text NOT NULL,
 	"loaded_date_time" timestamp with time zone,
-	"s3_bucket" text NOT NULL,
-	"s3_key" text NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
-	"extract_type" text NOT NULL,
-	"load_run_id" uuid NOT NULL,
+	"load_run_file_id" integer NOT NULL,
 	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
@@ -1883,13 +1847,7 @@ CREATE TABLE "stg"."diagnoses" (
 	"concept_id" text,
 	"per_org_id" text NOT NULL,
 	"loaded_date_time" timestamp with time zone,
-	"s3_bucket" text NOT NULL,
-	"s3_key" text NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
-	"extract_type" text NOT NULL,
-	"load_run_id" uuid NOT NULL,
+	"load_run_file_id" integer NOT NULL,
 	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
@@ -1935,9 +1893,6 @@ CREATE TABLE "core"."medicine" (
 	"pharma_code" text,
 	"is_active" boolean DEFAULT true NOT NULL,
 	"is_deleted" boolean DEFAULT false NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
 	"load_run_id" uuid NOT NULL,
 	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -1947,15 +1902,12 @@ CREATE TABLE "core"."patient" (
 	"patient_id" text NOT NULL,
 	"practice_id" text NOT NULL,
 	"per_org_id" text NOT NULL,
-	"nhi_number_hash" text,
-	"effective_from" timestamp with time zone NOT NULL,
-	"effective_to" timestamp with time zone,
-	"is_current" boolean DEFAULT true NOT NULL,
+	"nhi_number" text,
 	"title" text,
 	"first_name" text,
 	"middle_name" text,
-	"family_name" text NOT NULL,
-	"full_name" text NOT NULL,
+	"family_name" text,
+	"full_name" text,
 	"preferred_name" text,
 	"gender" text,
 	"dob" date,
@@ -1979,9 +1931,9 @@ CREATE TABLE "core"."patient" (
 	"permanent_address_deprivation_quintile" integer,
 	"provider_id" text,
 	"practice_name" text,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
+	"effective_from" timestamp with time zone NOT NULL,
+	"effective_to" timestamp with time zone,
+	"is_current" boolean DEFAULT true NOT NULL,
 	"load_run_id" uuid NOT NULL,
 	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -2016,9 +1968,6 @@ CREATE TABLE "core"."practice" (
 	"acc_no" text,
 	"is_active" boolean DEFAULT true NOT NULL,
 	"is_deleted" boolean DEFAULT false NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
 	"load_run_id" uuid NOT NULL,
 	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -2051,9 +2000,6 @@ CREATE TABLE "core"."provider" (
 	"user_role" text,
 	"is_active" boolean DEFAULT true NOT NULL,
 	"is_deleted" boolean DEFAULT false NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
 	"load_run_id" uuid NOT NULL,
 	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -2074,9 +2020,6 @@ CREATE TABLE "core"."vaccine" (
 	"is_nir" boolean DEFAULT false NOT NULL,
 	"is_active" boolean DEFAULT true NOT NULL,
 	"is_deleted" boolean DEFAULT false NOT NULL,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
 	"load_run_id" uuid NOT NULL,
 	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -2138,9 +2081,6 @@ CREATE TABLE "core"."fact_appointment" (
 	"location_name" text,
 	"permanent_address_latitude" numeric(10, 8),
 	"permanent_address_longitude" numeric(11, 8),
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
 	"load_run_id" uuid NOT NULL,
 	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -2196,9 +2136,6 @@ CREATE TABLE "core"."fact_diagnosis" (
 	"updated_by_id" text,
 	"inserted_by" text,
 	"updated_by" text,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
 	"load_run_id" uuid NOT NULL,
 	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -2260,9 +2197,6 @@ CREATE TABLE "core"."fact_immunisation" (
 	"location_name" text,
 	"permanent_address_latitude" numeric(10, 8),
 	"permanent_address_longitude" numeric(11, 8),
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
 	"load_run_id" uuid NOT NULL,
 	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -2298,9 +2232,6 @@ CREATE TABLE "core"."fact_invoice" (
 	"updated_at" timestamp with time zone,
 	"inserted_by" text,
 	"updated_by" text,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
 	"load_run_id" uuid NOT NULL,
 	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -2354,9 +2285,6 @@ CREATE TABLE "core"."fact_invoice_detail" (
 	"updated_by_id" text,
 	"inserted_by" text,
 	"updated_by" text,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
 	"load_run_id" uuid NOT NULL,
 	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -2409,11 +2337,25 @@ CREATE TABLE "core"."fact_measurement" (
 	"updated_by_id" text,
 	"inserted_by" text,
 	"updated_by" text,
-	"s3_version_id" text NOT NULL,
-	"file_hash" text NOT NULL,
-	"date_extracted" text NOT NULL,
 	"load_run_id" uuid NOT NULL,
 	"load_ts" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "etl"."core_merge_runs" (
+	"merge_run_id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"load_run_id" uuid NOT NULL,
+	"extract_type" text NOT NULL,
+	"started_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"completed_at" timestamp with time zone,
+	"status" text NOT NULL,
+	"dimensions_created" integer DEFAULT 0,
+	"dimensions_updated" integer DEFAULT 0,
+	"facts_inserted" integer DEFAULT 0,
+	"facts_updated" integer DEFAULT 0,
+	"error" text,
+	"result" text,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "etl"."dq_results" (
@@ -2655,7 +2597,28 @@ CREATE TABLE "etl"."health" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+ALTER TABLE "etl"."core_merge_runs" ADD CONSTRAINT "core_merge_runs_load_run_id_load_runs_load_run_id_fk" FOREIGN KEY ("load_run_id") REFERENCES "etl"."load_runs"("load_run_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "etl"."dq_results" ADD CONSTRAINT "dq_results_load_run_id_load_runs_load_run_id_fk" FOREIGN KEY ("load_run_id") REFERENCES "etl"."load_runs"("load_run_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "etl"."dq_results" ADD CONSTRAINT "dq_results_load_run_file_id_load_run_files_load_run_file_id_fk" FOREIGN KEY ("load_run_file_id") REFERENCES "etl"."load_run_files"("load_run_file_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "etl"."load_run_files" ADD CONSTRAINT "load_run_files_load_run_id_load_runs_load_run_id_fk" FOREIGN KEY ("load_run_id") REFERENCES "etl"."load_runs"("load_run_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "etl"."rejects_appointments" ADD CONSTRAINT "rejects_appointments_load_run_id_load_runs_load_run_id_fk" FOREIGN KEY ("load_run_id") REFERENCES "etl"."load_runs"("load_run_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "etl"."rejects_appointments" ADD CONSTRAINT "rejects_appointments_load_run_file_id_load_run_files_load_run_file_id_fk" FOREIGN KEY ("load_run_file_id") REFERENCES "etl"."load_run_files"("load_run_file_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "etl"."rejects_immunisations" ADD CONSTRAINT "rejects_immunisations_load_run_id_load_runs_load_run_id_fk" FOREIGN KEY ("load_run_id") REFERENCES "etl"."load_runs"("load_run_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "etl"."rejects_immunisations" ADD CONSTRAINT "rejects_immunisations_load_run_file_id_load_run_files_load_run_file_id_fk" FOREIGN KEY ("load_run_file_id") REFERENCES "etl"."load_run_files"("load_run_file_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "etl"."rejects_invoice_detail" ADD CONSTRAINT "rejects_invoice_detail_load_run_id_load_runs_load_run_id_fk" FOREIGN KEY ("load_run_id") REFERENCES "etl"."load_runs"("load_run_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "etl"."rejects_invoice_detail" ADD CONSTRAINT "rejects_invoice_detail_load_run_file_id_load_run_files_load_run_file_id_fk" FOREIGN KEY ("load_run_file_id") REFERENCES "etl"."load_run_files"("load_run_file_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "etl"."rejects_invoices" ADD CONSTRAINT "rejects_invoices_load_run_id_load_runs_load_run_id_fk" FOREIGN KEY ("load_run_id") REFERENCES "etl"."load_runs"("load_run_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "etl"."rejects_invoices" ADD CONSTRAINT "rejects_invoices_load_run_file_id_load_run_files_load_run_file_id_fk" FOREIGN KEY ("load_run_file_id") REFERENCES "etl"."load_run_files"("load_run_file_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "etl"."rejects_patients" ADD CONSTRAINT "rejects_patients_load_run_id_load_runs_load_run_id_fk" FOREIGN KEY ("load_run_id") REFERENCES "etl"."load_runs"("load_run_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "etl"."rejects_patients" ADD CONSTRAINT "rejects_patients_load_run_file_id_load_run_files_load_run_file_id_fk" FOREIGN KEY ("load_run_file_id") REFERENCES "etl"."load_run_files"("load_run_file_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 CREATE UNIQUE INDEX "patients_stg_natural_key_idx" ON "stg"."patients" USING btree ("patient_id","practice_id","per_org_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "appointments_stg_natural_key_idx" ON "stg"."appointments" USING btree ("appointment_id","practice_id","per_org_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "immunisations_stg_natural_key_idx" ON "stg"."immunisations" USING btree ("appointment_immunisation_id","practice_id","per_org_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "invoices_stg_natural_key_idx" ON "stg"."invoices" USING btree ("invoice_transaction_id","practice_id","per_org_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "invoice_detail_stg_natural_key_idx" ON "stg"."invoice_detail" USING btree ("invoice_detail_id","practice_id","per_org_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "providers_stg_natural_key_idx" ON "stg"."providers" USING btree ("provider_id","practice_id","per_org_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "practice_info_stg_natural_key_idx" ON "stg"."practice_info" USING btree ("practice_id","per_org_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "diagnoses_stg_natural_key_idx" ON "stg"."diagnoses" USING btree ("diagnosis_id","practice_id","per_org_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "dim_medicine_business_key_current_idx" ON "core"."medicine" USING btree ("medicine_id","practice_id","per_org_id","is_current");--> statement-breakpoint
 CREATE UNIQUE INDEX "dim_patient_business_key_current_idx" ON "core"."patient" USING btree ("patient_id","practice_id","per_org_id","is_current");--> statement-breakpoint
 CREATE UNIQUE INDEX "dim_practice_business_key_current_idx" ON "core"."practice" USING btree ("practice_id","per_org_id","is_current");--> statement-breakpoint
@@ -2667,4 +2630,7 @@ CREATE UNIQUE INDEX "fact_immunisation_business_key_idx" ON "core"."fact_immunis
 CREATE UNIQUE INDEX "fact_invoice_business_key_idx" ON "core"."fact_invoice" USING btree ("invoice_transaction_id","practice_id","per_org_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "fact_invoice_detail_business_key_idx" ON "core"."fact_invoice_detail" USING btree ("invoice_detail_id","practice_id","per_org_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "fact_measurement_business_key_idx" ON "core"."fact_measurement" USING btree ("patient_id","practice_id","per_org_id");--> statement-breakpoint
-CREATE UNIQUE INDEX "load_run_files_unique_idx" ON "etl"."load_run_files" USING btree ("s3_version_id","file_hash");
+CREATE UNIQUE INDEX "core_merge_runs_load_run_completed_idx" ON "etl"."core_merge_runs" USING btree ("load_run_id","extract_type") WHERE "etl"."core_merge_runs"."status" = 'completed';--> statement-breakpoint
+CREATE INDEX "core_merge_runs_status_idx" ON "etl"."core_merge_runs" USING btree ("status");--> statement-breakpoint
+CREATE UNIQUE INDEX "load_run_files_unique_idx" ON "etl"."load_run_files" USING btree ("s3_version_id","file_hash");--> statement-breakpoint
+CREATE INDEX "load_run_files_load_run_idx" ON "etl"."load_run_files" USING btree ("load_run_id");

@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { S3DiscoveryService } from "./services/discovery/index.js";
 import {
-  RawLoaderContainer,
+  RawLoaderFactory,
   type LoadResult,
 } from "./services/raw-loader/index.js";
 import type { RawLoaderConfig } from "./services/raw-loader/types/config.js";
@@ -28,33 +28,15 @@ const config: AppConfig = {
   testMode: process.env.NODE_ENV !== "production",
 };
 
-// eslint-disable-next-line @typescript-eslint/require-await
-async function main(): Promise<void> {
+function init(): void {
   console.log("🚀 Starting application...");
   console.log(`📡 Database URL: ${config.databaseUrl}`);
   console.log(`☁️  S3 Bucket: ${config.s3Bucket || "Not configured"}`);
   console.log(`🌍 AWS Region: ${config.awsRegion || "Not configured"}`);
   console.log(`🧪 Test Mode: ${config.testMode ? "Enabled" : "Disabled"}`);
-
-  // Test Raw Loader Service (S3 CSV → raw.* tables)
-  // const loadRunId = await testRawLoaderService();
-
-  const loadRunId = "7cec8f1d-90b5-4523-bef9-f2b4cf701c79";
-
-  // Test Staging Transformer Service (raw.* → stg.* tables)
-  if (loadRunId) {
-    // await testStagingTransformerService(loadRunId);
-
-    // Test Core Merger Service (stg.* → core.* tables)
-    await testCoreMergerService(loadRunId);
-  }
-
-  console.log("✅ Application completed successfully!");
 }
 
 async function testRawLoaderService(): Promise<string | null> {
-  console.log("\n📦 Testing Raw Loader Service (S3 → raw.* tables)...");
-
   let loadRunId: string | null = null;
   const loadRunService = new LoadRunService();
 
@@ -93,7 +75,8 @@ async function testRawLoaderService(): Promise<string | null> {
         progressUpdateInterval: 5000,
       },
     };
-    const rawLoader = RawLoaderContainer.create(
+
+    const rawLoader = RawLoaderFactory.create(
       rawLoaderConfig,
       config.s3Bucket && config.awsRegion
         ? {
@@ -681,6 +664,19 @@ async function testCoreMergerService(loadRunId: string): Promise<void> {
       throw error;
     }
   }
+}
+
+// eslint-disable-next-line @typescript-eslint/require-await
+async function main(): Promise<void> {
+  const loadRunId = await testRawLoaderService();
+
+  if (loadRunId) {
+    await testStagingTransformerService(loadRunId);
+
+    await testCoreMergerService(loadRunId);
+  }
+
+  console.log("✅ Application completed successfully!");
 }
 
 // Handle unhandled promise rejections

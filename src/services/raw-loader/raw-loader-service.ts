@@ -500,10 +500,10 @@ export class RawLoaderService {
 }
 
 /**
- * Raw Loader Container - Dependency Injection Container
+ * Raw Loader Factory - Dependency Injection Factory
  * Creates and wires up all Raw Loader dependencies
  */
-export class RawLoaderContainer {
+export class RawLoaderFactory {
   static create(
     config: RawLoaderConfig,
     s3Config?: S3Config

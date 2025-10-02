@@ -23,7 +23,7 @@ export const dimPatient = createTable(
     perOrgId: text("per_org_id").notNull(),
 
     // Hashed/salted NHI for privacy
-    nhiNumberHash: text("nhi_number"),
+    nhiNumber: text("nhi_number"),
 
     // Core patient attributes (minimal PII exposure)
     title: text("title"),

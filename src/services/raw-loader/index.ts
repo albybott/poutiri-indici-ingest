@@ -13,9 +13,9 @@
 /**
  * Main service classes for raw data loading operations
  * - RawLoaderService: Primary service orchestrating the entire loading process
- * - RawLoaderContainer: Dependency injection container for service configuration
+ * - RawLoaderFactory: Dependency injection factory for service configuration
  */
-export { RawLoaderService, RawLoaderContainer } from "./raw-loader-service";
+export { RawLoaderService, RawLoaderFactory } from "./raw-loader-service";
 
 // ============================================================================
 // COMPONENT EXPORTS

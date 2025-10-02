@@ -1,5 +1,5 @@
 {
-  "id": "c26bf3a6-55ce-497e-b42b-4d453e428d88",
+  "id": "dbc57e97-1fe2-4e77-a696-f41086f3edc8",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -8654,45 +8654,9 @@
           "primaryKey": false,
           "notNull": false
         },
-        "s3_bucket": {
-          "name": "s3_bucket",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "s3_key": {
-          "name": "s3_key",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "s3_version_id": {
-          "name": "s3_version_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "file_hash": {
-          "name": "file_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "date_extracted": {
-          "name": "date_extracted",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "extract_type": {
-          "name": "extract_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "load_run_id": {
-          "name": "load_run_id",
-          "type": "uuid",
+        "load_run_file_id": {
+          "name": "load_run_file_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -8704,7 +8668,35 @@
           "default": "now()"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "appointments_stg_natural_key_idx": {
+          "name": "appointments_stg_natural_key_idx",
+          "columns": [
+            {
+              "expression": "appointment_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "practice_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "per_org_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -9106,45 +9098,9 @@
           "primaryKey": false,
           "notNull": false
         },
-        "s3_bucket": {
-          "name": "s3_bucket",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "s3_key": {
-          "name": "s3_key",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "s3_version_id": {
-          "name": "s3_version_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "file_hash": {
-          "name": "file_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "date_extracted": {
-          "name": "date_extracted",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "extract_type": {
-          "name": "extract_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "load_run_id": {
-          "name": "load_run_id",
-          "type": "uuid",
+        "load_run_file_id": {
+          "name": "load_run_file_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -9156,7 +9112,35 @@
           "default": "now()"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "immunisations_stg_natural_key_idx": {
+          "name": "immunisations_stg_natural_key_idx",
+          "columns": [
+            {
+              "expression": "appointment_immunisation_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "practice_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "per_org_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -9336,45 +9320,9 @@
           "primaryKey": false,
           "notNull": false
         },
-        "s3_bucket": {
-          "name": "s3_bucket",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "s3_key": {
-          "name": "s3_key",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "s3_version_id": {
-          "name": "s3_version_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "file_hash": {
-          "name": "file_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "date_extracted": {
-          "name": "date_extracted",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "extract_type": {
-          "name": "extract_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "load_run_id": {
-          "name": "load_run_id",
-          "type": "uuid",
+        "load_run_file_id": {
+          "name": "load_run_file_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -9386,7 +9334,35 @@
           "default": "now()"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "invoices_stg_natural_key_idx": {
+          "name": "invoices_stg_natural_key_idx",
+          "columns": [
+            {
+              "expression": "invoice_transaction_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "practice_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "per_org_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -9692,45 +9668,9 @@
           "primaryKey": false,
           "notNull": false
         },
-        "s3_bucket": {
-          "name": "s3_bucket",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "s3_key": {
-          "name": "s3_key",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "s3_version_id": {
-          "name": "s3_version_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "file_hash": {
-          "name": "file_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "date_extracted": {
-          "name": "date_extracted",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "extract_type": {
-          "name": "extract_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "load_run_id": {
-          "name": "load_run_id",
-          "type": "uuid",
+        "load_run_file_id": {
+          "name": "load_run_file_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -9742,7 +9682,35 @@
           "default": "now()"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "invoice_detail_stg_natural_key_idx": {
+          "name": "invoice_detail_stg_natural_key_idx",
+          "columns": [
+            {
+              "expression": "invoice_detail_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "practice_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "per_org_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -10483,45 +10451,9 @@
           "primaryKey": false,
           "notNull": false
         },
-        "s3_bucket": {
-          "name": "s3_bucket",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "s3_key": {
-          "name": "s3_key",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "s3_version_id": {
-          "name": "s3_version_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "file_hash": {
-          "name": "file_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "date_extracted": {
-          "name": "date_extracted",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "extract_type": {
-          "name": "extract_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "load_run_id": {
-          "name": "load_run_id",
-          "type": "uuid",
+        "load_run_file_id": {
+          "name": "load_run_file_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -10533,7 +10465,35 @@
           "default": "now()"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "providers_stg_natural_key_idx": {
+          "name": "providers_stg_natural_key_idx",
+          "columns": [
+            {
+              "expression": "provider_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "practice_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "per_org_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -10794,45 +10754,9 @@
           "primaryKey": false,
           "notNull": false
         },
-        "s3_bucket": {
-          "name": "s3_bucket",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "s3_key": {
-          "name": "s3_key",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "s3_version_id": {
-          "name": "s3_version_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "file_hash": {
-          "name": "file_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "date_extracted": {
-          "name": "date_extracted",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "extract_type": {
-          "name": "extract_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "load_run_id": {
-          "name": "load_run_id",
-          "type": "uuid",
+        "load_run_file_id": {
+          "name": "load_run_file_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -10844,7 +10768,29 @@
           "default": "now()"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "practice_info_stg_natural_key_idx": {
+          "name": "practice_info_stg_natural_key_idx",
+          "columns": [
+            {
+              "expression": "practice_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "per_org_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -11158,45 +11104,9 @@
           "primaryKey": false,
           "notNull": false
         },
-        "s3_bucket": {
-          "name": "s3_bucket",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "s3_key": {
-          "name": "s3_key",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "s3_version_id": {
-          "name": "s3_version_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "file_hash": {
-          "name": "file_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "date_extracted": {
-          "name": "date_extracted",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "extract_type": {
-          "name": "extract_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "load_run_id": {
-          "name": "load_run_id",
-          "type": "uuid",
+        "load_run_file_id": {
+          "name": "load_run_file_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -11208,7 +11118,35 @@
           "default": "now()"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "diagnoses_stg_natural_key_idx": {
+          "name": "diagnoses_stg_natural_key_idx",
+          "columns": [
+            {
+              "expression": "diagnosis_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "practice_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "per_org_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -11463,24 +11401,6 @@
           "notNull": true,
           "default": false
         },
-        "s3_version_id": {
-          "name": "s3_version_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "file_hash": {
-          "name": "file_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "date_extracted": {
-          "name": "date_extracted",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "load_run_id": {
           "name": "load_run_id",
           "type": "uuid",
@@ -11565,30 +11485,11 @@
           "primaryKey": false,
           "notNull": true
         },
-        "nhi_number_hash": {
-          "name": "nhi_number_hash",
+        "nhi_number": {
+          "name": "nhi_number",
           "type": "text",
           "primaryKey": false,
           "notNull": false
-        },
-        "effective_from": {
-          "name": "effective_from",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "effective_to": {
-          "name": "effective_to",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "is_current": {
-          "name": "is_current",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": true
         },
         "title": {
           "name": "title",
@@ -11612,13 +11513,13 @@
           "name": "family_name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "full_name": {
           "name": "full_name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "preferred_name": {
           "name": "preferred_name",
@@ -11761,23 +11662,24 @@
           "primaryKey": false,
           "notNull": false
         },
-        "s3_version_id": {
-          "name": "s3_version_id",
-          "type": "text",
+        "effective_from": {
+          "name": "effective_from",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
-        "file_hash": {
-          "name": "file_hash",
-          "type": "text",
+        "effective_to": {
+          "name": "effective_to",
+          "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
-        "date_extracted": {
-          "name": "date_extracted",
-          "type": "text",
+        "is_current": {
+          "name": "is_current",
+          "type": "boolean",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": true
         },
         "load_run_id": {
           "name": "load_run_id",
@@ -12017,24 +11919,6 @@
           "notNull": true,
           "default": false
         },
-        "s3_version_id": {
-          "name": "s3_version_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "file_hash": {
-          "name": "file_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "date_extracted": {
-          "name": "date_extracted",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "load_run_id": {
           "name": "load_run_id",
           "type": "uuid",
@@ -12255,24 +12139,6 @@
           "notNull": true,
           "default": false
         },
-        "s3_version_id": {
-          "name": "s3_version_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "file_hash": {
-          "name": "file_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "date_extracted": {
-          "name": "date_extracted",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "load_run_id": {
           "name": "load_run_id",
           "type": "uuid",
@@ -12426,24 +12292,6 @@
           "primaryKey": false,
           "notNull": true,
           "default": false
-        },
-        "s3_version_id": {
-          "name": "s3_version_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "file_hash": {
-          "name": "file_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "date_extracted": {
-          "name": "date_extracted",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
         },
         "load_run_id": {
           "name": "load_run_id",
@@ -12849,24 +12697,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "s3_version_id": {
-          "name": "s3_version_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "file_hash": {
-          "name": "file_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "date_extracted": {
-          "name": "date_extracted",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "load_run_id": {
           "name": "load_run_id",
           "type": "uuid",
@@ -13220,24 +13050,6 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false
-        },
-        "s3_version_id": {
-          "name": "s3_version_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "file_hash": {
-          "name": "file_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "date_extracted": {
-          "name": "date_extracted",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
         },
         "load_run_id": {
           "name": "load_run_id",
@@ -13629,24 +13441,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "s3_version_id": {
-          "name": "s3_version_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "file_hash": {
-          "name": "file_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "date_extracted": {
-          "name": "date_extracted",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "load_run_id": {
           "name": "load_run_id",
           "type": "uuid",
@@ -13880,24 +13674,6 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false
-        },
-        "s3_version_id": {
-          "name": "s3_version_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "file_hash": {
-          "name": "file_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "date_extracted": {
-          "name": "date_extracted",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
         },
         "load_run_id": {
           "name": "load_run_id",
@@ -14241,24 +14017,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "s3_version_id": {
-          "name": "s3_version_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "file_hash": {
-          "name": "file_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "date_extracted": {
-          "name": "date_extracted",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "load_run_id": {
           "name": "load_run_id",
           "type": "uuid",
@@ -14595,24 +14353,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "s3_version_id": {
-          "name": "s3_version_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "file_hash": {
-          "name": "file_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "date_extracted": {
-          "name": "date_extracted",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "load_run_id": {
           "name": "load_run_id",
           "type": "uuid",
@@ -14657,6 +14397,164 @@
         }
       },
       "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "etl.core_merge_runs": {
+      "name": "core_merge_runs",
+      "schema": "etl",
+      "columns": {
+        "merge_run_id": {
+          "name": "merge_run_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "load_run_id": {
+          "name": "load_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "extract_type": {
+          "name": "extract_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dimensions_created": {
+          "name": "dimensions_created",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "dimensions_updated": {
+          "name": "dimensions_updated",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "facts_inserted": {
+          "name": "facts_inserted",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "facts_updated": {
+          "name": "facts_updated",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "error": {
+          "name": "error",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "result": {
+          "name": "result",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "core_merge_runs_load_run_completed_idx": {
+          "name": "core_merge_runs_load_run_completed_idx",
+          "columns": [
+            {
+              "expression": "load_run_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "extract_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"etl\".\"core_merge_runs\".\"status\" = 'completed'",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "core_merge_runs_status_idx": {
+          "name": "core_merge_runs_status_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "core_merge_runs_load_run_id_load_runs_load_run_id_fk": {
+          "name": "core_merge_runs_load_run_id_load_runs_load_run_id_fk",
+          "tableFrom": "core_merge_runs",
+          "tableTo": "load_runs",
+          "schemaTo": "etl",
+          "columnsFrom": [
+            "load_run_id"
+          ],
+          "columnsTo": [
+            "load_run_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -14742,7 +14640,36 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "dq_results_load_run_id_load_runs_load_run_id_fk": {
+          "name": "dq_results_load_run_id_load_runs_load_run_id_fk",
+          "tableFrom": "dq_results",
+          "tableTo": "load_runs",
+          "schemaTo": "etl",
+          "columnsFrom": [
+            "load_run_id"
+          ],
+          "columnsTo": [
+            "load_run_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "dq_results_load_run_file_id_load_run_files_load_run_file_id_fk": {
+          "name": "dq_results_load_run_file_id_load_run_files_load_run_file_id_fk",
+          "tableFrom": "dq_results",
+          "tableTo": "load_run_files",
+          "schemaTo": "etl",
+          "columnsFrom": [
+            "load_run_file_id"
+          ],
+          "columnsTo": [
+            "load_run_file_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -14894,9 +14821,39 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "load_run_files_load_run_idx": {
+          "name": "load_run_files_load_run_idx",
+          "columns": [
+            {
+              "expression": "load_run_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
-      "foreignKeys": {},
+      "foreignKeys": {
+        "load_run_files_load_run_id_load_runs_load_run_id_fk": {
+          "name": "load_run_files_load_run_id_load_runs_load_run_id_fk",
+          "tableFrom": "load_run_files",
+          "tableTo": "load_runs",
+          "schemaTo": "etl",
+          "columnsFrom": [
+            "load_run_id"
+          ],
+          "columnsTo": [
+            "load_run_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -15093,7 +15050,36 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "rejects_appointments_load_run_id_load_runs_load_run_id_fk": {
+          "name": "rejects_appointments_load_run_id_load_runs_load_run_id_fk",
+          "tableFrom": "rejects_appointments",
+          "tableTo": "load_runs",
+          "schemaTo": "etl",
+          "columnsFrom": [
+            "load_run_id"
+          ],
+          "columnsTo": [
+            "load_run_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "rejects_appointments_load_run_file_id_load_run_files_load_run_file_id_fk": {
+          "name": "rejects_appointments_load_run_file_id_load_run_files_load_run_file_id_fk",
+          "tableFrom": "rejects_appointments",
+          "tableTo": "load_run_files",
+          "schemaTo": "etl",
+          "columnsFrom": [
+            "load_run_file_id"
+          ],
+          "columnsTo": [
+            "load_run_file_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -15204,7 +15190,36 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "rejects_immunisations_load_run_id_load_runs_load_run_id_fk": {
+          "name": "rejects_immunisations_load_run_id_load_runs_load_run_id_fk",
+          "tableFrom": "rejects_immunisations",
+          "tableTo": "load_runs",
+          "schemaTo": "etl",
+          "columnsFrom": [
+            "load_run_id"
+          ],
+          "columnsTo": [
+            "load_run_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "rejects_immunisations_load_run_file_id_load_run_files_load_run_file_id_fk": {
+          "name": "rejects_immunisations_load_run_file_id_load_run_files_load_run_file_id_fk",
+          "tableFrom": "rejects_immunisations",
+          "tableTo": "load_run_files",
+          "schemaTo": "etl",
+          "columnsFrom": [
+            "load_run_file_id"
+          ],
+          "columnsTo": [
+            "load_run_file_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -15315,7 +15330,36 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "rejects_invoice_detail_load_run_id_load_runs_load_run_id_fk": {
+          "name": "rejects_invoice_detail_load_run_id_load_runs_load_run_id_fk",
+          "tableFrom": "rejects_invoice_detail",
+          "tableTo": "load_runs",
+          "schemaTo": "etl",
+          "columnsFrom": [
+            "load_run_id"
+          ],
+          "columnsTo": [
+            "load_run_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "rejects_invoice_detail_load_run_file_id_load_run_files_load_run_file_id_fk": {
+          "name": "rejects_invoice_detail_load_run_file_id_load_run_files_load_run_file_id_fk",
+          "tableFrom": "rejects_invoice_detail",
+          "tableTo": "load_run_files",
+          "schemaTo": "etl",
+          "columnsFrom": [
+            "load_run_file_id"
+          ],
+          "columnsTo": [
+            "load_run_file_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -15426,7 +15470,36 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "rejects_invoices_load_run_id_load_runs_load_run_id_fk": {
+          "name": "rejects_invoices_load_run_id_load_runs_load_run_id_fk",
+          "tableFrom": "rejects_invoices",
+          "tableTo": "load_runs",
+          "schemaTo": "etl",
+          "columnsFrom": [
+            "load_run_id"
+          ],
+          "columnsTo": [
+            "load_run_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "rejects_invoices_load_run_file_id_load_run_files_load_run_file_id_fk": {
+          "name": "rejects_invoices_load_run_file_id_load_run_files_load_run_file_id_fk",
+          "tableFrom": "rejects_invoices",
+          "tableTo": "load_run_files",
+          "schemaTo": "etl",
+          "columnsFrom": [
+            "load_run_file_id"
+          ],
+          "columnsTo": [
+            "load_run_file_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -15537,7 +15610,36 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "rejects_patients_load_run_id_load_runs_load_run_id_fk": {
+          "name": "rejects_patients_load_run_id_load_runs_load_run_id_fk",
+          "tableFrom": "rejects_patients",
+          "tableTo": "load_runs",
+          "schemaTo": "etl",
+          "columnsFrom": [
+            "load_run_id"
+          ],
+          "columnsTo": [
+            "load_run_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "rejects_patients_load_run_file_id_load_run_files_load_run_file_id_fk": {
+          "name": "rejects_patients_load_run_file_id_load_run_files_load_run_file_id_fk",
+          "tableFrom": "rejects_patients",
+          "tableTo": "load_run_files",
+          "schemaTo": "etl",
+          "columnsFrom": [
+            "load_run_file_id"
+          ],
+          "columnsTo": [
+            "load_run_file_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},

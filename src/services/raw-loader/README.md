@@ -43,11 +43,11 @@ S3 CSV Files → [Raw Loader] → raw.* tables → [Staging Transformer] → stg
 ### Basic Example
 
 ```typescript
-import { RawLoaderContainer } from "./services/raw-loader";
+import { RawLoaderFactory } from "./services/raw-loader";
 import type { DiscoveredFile } from "./services/discovery/types/files";
 
 // Create service
-const rawLoader = RawLoaderContainer.create({
+const rawLoader = RawLoaderFactory.create({
   database: {
     poolSize: 10,
     timeoutMs: 30000,
@@ -139,7 +139,7 @@ const config: RawLoaderConfig = {
 ### Override Configuration
 
 ```typescript
-const rawLoader = RawLoaderContainer.create({
+const rawLoader = RawLoaderFactory.create({
   processing: {
     batchSize: 500, // Smaller batches for wide tables
     maxConcurrentFiles: 2, // Reduce concurrency
@@ -411,7 +411,7 @@ const result = await rawLoader.loadFile(file, loadRunId, {
 ### 5. Configure Concurrency Based on Resources
 
 ```typescript
-const rawLoader = RawLoaderContainer.create({
+const rawLoader = RawLoaderFactory.create({
   processing: {
     maxConcurrentFiles: 3, // Balance throughput vs resource usage
   },
@@ -423,12 +423,12 @@ const rawLoader = RawLoaderContainer.create({
 Example test structure:
 
 ```typescript
-import { RawLoaderContainer } from "./raw-loader";
+import { RawLoaderFactory } from "./raw-loader";
 import { mockDiscoveredFile } from "./test-helpers";
 
 describe("RawLoaderService", () => {
   it("should load valid CSV file", async () => {
-    const rawLoader = RawLoaderContainer.create(testConfig);
+    const rawLoader = RawLoaderFactory.create(testConfig);
 
     const result = await rawLoader.loadFile(
       mockDiscoveredFile("Patient"),

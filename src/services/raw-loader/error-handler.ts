@@ -123,7 +123,6 @@ export class ErrorHandler {
   }
 
   // Private helper methods
-
   private classifyError(error: Error | any): LoadErrorType {
     if (error instanceof Error) {
       const errorCode = (error as any).code;
