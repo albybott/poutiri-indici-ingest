@@ -53,10 +53,7 @@ export class BatchProcessor {
       const estimatedDuration = Math.ceil(totalSize / (1024 * 1024)); // seconds
 
       // Create processing order (optimize based on priority extract types)
-      const processingOrder = this.createProcessingOrder(
-        discoveredFiles,
-        options
-      );
+      const processingOrder = this.createProcessingOrder(discoveredFiles);
 
       // Check for any warnings
       const warnings: string[] = [];
@@ -79,32 +76,31 @@ export class BatchProcessor {
     }
   }
 
-  async selectNextBatch(): Promise<FileBatch | null> {
+  selectNextBatch(): FileBatch | null {
     // TODO: Implement batch selection
     return null;
   }
 
-  async validateBatch(batch: FileBatch): Promise<any> {
+  validateBatch(): any {
     // TODO: Implement batch validation
     return { isValid: true, errors: [], warnings: [] };
   }
 
-  async markBatchStarted(batch: FileBatch): Promise<void> {
+  markBatchStarted(): void {
     // TODO: Implement batch start tracking
   }
 
-  async markBatchCompleted(batch: FileBatch): Promise<void> {
+  markBatchCompleted(): void {
     // TODO: Implement batch completion tracking
   }
 
-  async optimizeProcessingOrder(files: any[]): Promise<any[]> {
+  optimizeProcessingOrder(): any[] {
     // TODO: Implement processing order optimization
-    return files;
+    return [];
   }
 
   private createProcessingOrder(
-    discoveredFiles: DiscoveredFile[],
-    options: BatchProcessingOptions
+    discoveredFiles: DiscoveredFile[]
   ): DiscoveredFile[] {
     // Sort files by priority extract types first, then by date
     const priorityOrder = ["Patients", "Appointments", "Providers"]; // Default priority

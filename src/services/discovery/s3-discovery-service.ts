@@ -4,7 +4,6 @@
  */
 
 import { S3Client, ListObjectsV2Command } from "@aws-sdk/client-s3";
-import { Upload } from "@aws-sdk/lib-storage";
 import {
   fromEnv,
   fromIni,
@@ -114,7 +113,6 @@ export class S3DiscoveryService {
 
       return processingPlan;
     } catch (error) {
-      const duration = Date.now() - startTime;
       this.monitor.logError({
         type: "S3_CONNECTION",
         message: error instanceof Error ? error.message : "Unknown error",
@@ -140,7 +138,7 @@ export class S3DiscoveryService {
    * Discover a specific batch by date extracted
    */
   async discoverSpecificBatch(batchId: string): Promise<FileBatch | null> {
-    return this.fileDiscovery.findBatchByDate(this.parseBatchIdToDate(batchId));
+    return this.fileDiscovery.findBatchByDate(this.parseBatchIdToDate());
   }
 
   /**
@@ -153,7 +151,7 @@ export class S3DiscoveryService {
   /**
    * Parse batch ID back to Date object
    */
-  private parseBatchIdToDate(batchId: string): Date {
+  private parseBatchIdToDate(): Date {
     // Assuming batchId format is YYMMDDHHMM
     // This should be implemented based on your specific format
     return new Date(); // Placeholder
@@ -172,7 +170,7 @@ export class S3DiscoveryService {
         })
       );
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   }

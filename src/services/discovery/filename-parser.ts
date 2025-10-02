@@ -81,7 +81,7 @@ export class FilenameParser {
     // Validate date logic
     if (dateExtracted < dateTo) {
       throw new Error(
-        `DateExtracted (${dateExtracted}) must be >= DateTo (${dateTo})`
+        `DateExtracted (${dateExtracted.toISOString()}) must be >= DateTo (${dateTo.toISOString()})`
       );
     }
 

@@ -4,11 +4,8 @@
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { RawLoaderService } from "../raw-loader-service";
-import { RawTableLoader } from "../raw-table-loader";
-import { ExtractHandlerFactory } from "../extract-handler-factory";
 import { IdempotencyService } from "../idempotency-service";
 import { ErrorHandler } from "../error-handler";
-import { LoadMonitor } from "../load-monitor";
 import type { FileSystemAdapter } from "../../discovery/adapters/file-system-adapter";
 import type { DiscoveredFile } from "../../discovery/types/files";
 

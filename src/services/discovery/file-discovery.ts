@@ -135,22 +135,22 @@ export class FileDiscovery {
     return createHash("sha256").update(hashInput).digest("hex");
   }
 
-  async findLatestBatch(): Promise<FileBatch | null> {
+  findLatestBatch(): FileBatch | null {
     // TODO: Implement latest batch finding
     return null;
   }
 
-  async findBatchByDate(dateExtracted: Date): Promise<FileBatch | null> {
+  findBatchByDate(dateExtracted?: Date): FileBatch | null {
     // TODO: Implement batch lookup by date
-    return null;
+    return dateExtracted ? null : null;
   }
 
-  async findFilesByExtractType(extractType: string): Promise<DiscoveredFile[]> {
+  findFilesByExtractType(): DiscoveredFile[] {
     // TODO: Implement extract type filtering
     return [];
   }
 
-  async validateBatchCompleteness(batch: FileBatch): Promise<boolean> {
+  validateBatchCompleteness(): boolean {
     // TODO: Implement batch validation
     return true;
   }

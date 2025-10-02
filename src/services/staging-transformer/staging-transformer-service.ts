@@ -20,12 +20,9 @@ import type {
   TransformResult,
   StagingExtractHandler,
   RejectedRow,
-  TransformProgress,
-  TransformStatus,
 } from "./types/transformer";
 import type { StagingTransformerConfig } from "./types/config";
 import type { LoadError, LoadWarning } from "../../shared/types";
-import { LoadErrorType } from "../../shared/types";
 
 /**
  * Main staging transformer service

@@ -1,8 +1,4 @@
-import type {
-  ErrorSummary,
-  RecoveryOptions,
-  RecoveryResult,
-} from "./types/errors";
+import type { ErrorSummary } from "./types/errors";
 import { LoadErrorType, type LoadError } from "../../shared/types";
 import type { ErrorHandlingConfig } from "./types/config";
 

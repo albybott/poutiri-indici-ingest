@@ -2,7 +2,7 @@
  * Dimension loading types
  */
 
-import type { DimensionType, DimensionRecord, LineageMetadata } from "./scd2";
+import type { DimensionType } from "./scd2";
 
 /**
  * Configuration for dimension handler

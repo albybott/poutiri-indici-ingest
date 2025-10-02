@@ -75,11 +75,7 @@ export class TransformationEngine {
         }
 
         // Transform based on target type
-        const transformedValue = this.transformValue(
-          rawValue,
-          targetType,
-          sourceColumn
-        );
+        const transformedValue = this.transformValue(rawValue, targetType);
 
         if (transformedValue.success) {
           transformedRow[targetColumn] = transformedValue.value;
@@ -142,8 +138,7 @@ export class TransformationEngine {
    */
   private transformValue(
     value: any,
-    targetType: ColumnType,
-    columnName: string
+    targetType: ColumnType
   ): { success: boolean; value?: any; error?: string } {
     try {
       switch (targetType) {

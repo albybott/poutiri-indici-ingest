@@ -76,13 +76,7 @@ export class LineageService {
   /**
    * Track data lineage through the ETL process
    */
-  async trackLineage(
-    sourceFile: string,
-    sourceRow: number,
-    targetTable: string,
-    targetRow: number,
-    transformation: string
-  ): Promise<void> {
+  async trackLineage(): Promise<void> {
     // This would record lineage relationships in the database
     // For auditing and data quality tracking
   }
