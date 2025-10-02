@@ -5,7 +5,7 @@
 
 import type { RejectedRow } from "./types/transformer";
 import type { ValidationConfig } from "./types/config";
-import type { DatabasePool } from "../shared/database-pool";
+import type { DatabasePool } from "../../shared/database-pool";
 
 /**
  * Options for storing rejected rows

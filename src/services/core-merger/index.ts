@@ -94,4 +94,9 @@ export { LoadMonitor } from "./load-monitor";
 // Utility exports
 export * from "./utils/hash-utils";
 export * from "./utils/scd2-utils";
-export * from "./utils/business-key-utils";
+export {
+  extractFactBusinessKey,
+  extractDimensionBusinessKey,
+  businessKeyToString,
+  businessKeysEqual,
+} from "./utils/business-key-utils";

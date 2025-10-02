@@ -48,9 +48,6 @@ describe("SCD2Engine", () => {
           email: "john@example.com",
         },
         lineage: {
-          s3VersionId: "v1",
-          fileHash: "hash1",
-          dateExtracted: "2024-01-01",
           loadRunId: "run1",
           loadTs: new Date(),
         },
@@ -83,9 +80,6 @@ describe("SCD2Engine", () => {
           email: "john@old.com",
         },
         lineage: {
-          s3VersionId: "v1",
-          fileHash: "hash1",
-          dateExtracted: "2024-01-01",
           loadRunId: "run1",
           loadTs: new Date(),
         },
@@ -138,9 +132,6 @@ describe("SCD2Engine", () => {
           email: "john@old.com",
         },
         lineage: {
-          s3VersionId: "v1",
-          fileHash: "hash1",
-          dateExtracted: "2024-01-01",
           loadRunId: "run1",
           loadTs,
         },
@@ -189,9 +180,6 @@ describe("SCD2Engine", () => {
           email: "john@example.com",
         },
         lineage: {
-          s3VersionId: "v1",
-          fileHash: "hash1",
-          dateExtracted: "2024-01-01",
           loadRunId: "run1",
           loadTs,
         },
@@ -206,9 +194,6 @@ describe("SCD2Engine", () => {
           email: "john@example.com",
         },
         lineage: {
-          s3VersionId: "v1",
-          fileHash: "hash1",
-          dateExtracted: "2024-01-01",
           loadRunId: "run1",
           loadTs,
         },
@@ -248,9 +233,6 @@ describe("SCD2Engine", () => {
           email: "john@old.com",
         },
         lineage: {
-          s3VersionId: "v1",
-          fileHash: "hash1",
-          dateExtracted: "2024-01-01",
           loadRunId: "run1",
           loadTs: new Date(),
         },
@@ -295,9 +277,6 @@ describe("SCD2Engine", () => {
           email: "john@example.com",
         },
         lineage: {
-          s3VersionId: "v1",
-          fileHash: "hash1",
-          dateExtracted: "2024-01-01",
           loadRunId: "run1",
           loadTs: new Date(),
         },
@@ -339,9 +318,6 @@ describe("SCD2Engine", () => {
         isCurrent: true,
         attributes: {},
         lineage: {
-          s3VersionId: "v1",
-          fileHash: "hash1",
-          dateExtracted: "2024-01-01",
           loadRunId: "run1",
           loadTs: new Date(),
         },
@@ -372,9 +348,6 @@ describe("SCD2Engine", () => {
           isCurrent: false,
           attributes: {},
           lineage: {
-            s3VersionId: "v1",
-            fileHash: "hash1",
-            dateExtracted: "2024-01-01",
             loadRunId: "run1",
             loadTs: new Date(),
           },
@@ -393,9 +366,6 @@ describe("SCD2Engine", () => {
           isCurrent: true,
           attributes: {},
           lineage: {
-            s3VersionId: "v2",
-            fileHash: "hash2",
-            dateExtracted: "2024-06-01",
             loadRunId: "run2",
             loadTs: new Date(),
           },
@@ -424,9 +394,6 @@ describe("SCD2Engine", () => {
           isCurrent: true, // Both current!
           attributes: {},
           lineage: {
-            s3VersionId: "v1",
-            fileHash: "hash1",
-            dateExtracted: "2024-01-01",
             loadRunId: "run1",
             loadTs: new Date(),
           },
@@ -445,9 +412,6 @@ describe("SCD2Engine", () => {
           isCurrent: true, // Both current!
           attributes: {},
           lineage: {
-            s3VersionId: "v2",
-            fileHash: "hash2",
-            dateExtracted: "2024-06-01",
             loadRunId: "run2",
             loadTs: new Date(),
           },

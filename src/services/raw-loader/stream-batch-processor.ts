@@ -1,7 +1,7 @@
 import { Readable } from "node:stream";
 import type { CSVParser } from "./csv-parser";
 import type { LoadResult } from "./types/raw-loader";
-import type { BatchResult } from "../shared/types";
+import type { BatchResult } from "../../shared/types";
 
 type CSVRowValue = string | number | boolean | Date;
 

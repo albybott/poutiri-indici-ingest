@@ -15,148 +15,132 @@ const patientConfig: DimensionHandlerConfig = {
   dimensionType: DimensionType.PATIENT,
   sourceTable: "stg.patients",
   targetTable: "core.patient",
-  businessKeyFields: ["patientId", "practiceId", "perOrgId"],
+  businessKeyFields: ["patient_id", "practice_id", "per_org_id"],
 
   // Significant fields that trigger SCD2 versioning
   significantFields: [
-    "nhiNumber",
-    "firstName",
-    "middleName",
-    "familyName",
-    "fullName",
+    "nhi_number",
+    "first_name",
+    "middle_name",
+    "family_name",
+    "full_name",
     "dob",
     "gender",
-    "isAlive",
-    "deathDate",
+    "is_alive",
+    "death_date",
     "ethnicity",
-    "maritalStatus",
+    "marital_status",
   ],
 
   // Non-significant fields (updated in place)
   nonSignificantFields: [
     "email",
-    "cellNumber",
-    "dayPhone",
-    "nightPhone",
-    "balance",
-    "permanentAddressCity",
-    "permanentAddressSuburb",
-    "permanentAddressPostalCode",
+    "cell_number",
+    "day_phone",
+    "night_phone",
+    "permanent_address_city",
+    "permanent_address_suburb",
+    "permanent_address_postal_code",
   ],
 
   fieldMappings: [
     // Core identifiers
-    { sourceField: "patientId", targetField: "patientId", required: true },
-    { sourceField: "practiceId", targetField: "practiceId", required: true },
-    { sourceField: "perOrgId", targetField: "perOrgId", required: true },
-
-    // NHI (hashed for privacy in core)
-    {
-      sourceField: "nhiNumber",
-      targetField: "nhiNumberHash",
-      required: false,
-      transform: (value: unknown) => {
-        if (!value) return null;
-        // In production, this should use proper salted hashing
-        // For now, just pass through (hashing will be added later)
-        return value;
-      },
-    },
+    // { sourceField: "patient_id", targetField: "patient_id", required: true },
+    // { sourceField: "practice_id", targetField: "practice_id", required: true },
+    // { sourceField: "per_org_id", targetField: "per_org_id", required: true },
 
     // Personal details (significant)
-    { sourceField: "firstName", targetField: "firstName", required: false },
-    { sourceField: "middleName", targetField: "middleName", required: false },
-    { sourceField: "familyName", targetField: "familyName", required: true },
-    { sourceField: "fullName", targetField: "fullName", required: true },
     {
-      sourceField: "preferredName",
-      targetField: "preferredName",
+      sourceField: "nhi_number",
+      targetField: "nhi_number",
       required: false,
     },
     { sourceField: "title", targetField: "title", required: false },
+    { sourceField: "first_name", targetField: "first_name", required: false },
+    { sourceField: "middle_name", targetField: "middle_name", required: false },
+    { sourceField: "family_name", targetField: "family_name", required: false },
+    { sourceField: "full_name", targetField: "full_name", required: false },
+    {
+      sourceField: "preferred_name",
+      targetField: "preferred_name",
+      required: false,
+    },
     { sourceField: "gender", targetField: "gender", required: false },
     { sourceField: "dob", targetField: "dob", required: false },
     { sourceField: "age", targetField: "age", required: false },
+    { sourceField: "age_group", targetField: "age_group", required: false },
     {
-      sourceField: "isAlive",
-      targetField: "isAlive",
+      sourceField: "is_alive",
+      targetField: "is_alive",
       required: false,
       defaultValue: true,
     },
-    { sourceField: "deathDate", targetField: "deathDate", required: false },
+    { sourceField: "death_date", targetField: "death_date", required: false },
     {
-      sourceField: "maritalStatus",
-      targetField: "maritalStatus",
+      sourceField: "marital_status",
+      targetField: "marital_status",
       required: false,
     },
     { sourceField: "ethnicity", targetField: "ethnicity", required: false },
     {
-      sourceField: "residentialStatus",
-      targetField: "residentialStatus",
-      required: false,
-    },
-
-    // Contact info (non-significant)
-    { sourceField: "email", targetField: "email", required: false },
-    { sourceField: "cellNumber", targetField: "cellNumber", required: false },
-    { sourceField: "dayPhone", targetField: "dayPhone", required: false },
-    { sourceField: "nightPhone", targetField: "nightPhone", required: false },
-
-    // Address (non-significant - generalized for privacy)
-    {
-      sourceField: "permanentAddressCity",
-      targetField: "permanentAddressCity",
-      required: false,
-    },
-    {
-      sourceField: "permanentAddressSuburb",
-      targetField: "permanentAddressSuburb",
-      required: false,
-    },
-    {
-      sourceField: "permanentAddressPostalCode",
-      targetField: "permanentAddressPostalCode",
-      required: false,
-    },
-    {
-      sourceField: "permanentAddressDhbCode",
-      targetField: "permanentAddressDhbCode",
-      required: false,
-    },
-    {
-      sourceField: "permanentAddressDeprivationQuintile",
-      targetField: "permanentAddressDeprivationQuintile",
-      required: false,
-    },
-
-    // Provider relationship
-    { sourceField: "providerId", targetField: "providerId", required: false },
-    {
-      sourceField: "practiceName",
-      targetField: "practiceName",
+      sourceField: "residential_status",
+      targetField: "residential_status",
       required: false,
     },
 
     // Status flags
     {
-      sourceField: "isActive",
-      targetField: "isActive",
+      sourceField: "is_active",
+      targetField: "is_active",
       required: false,
       defaultValue: true,
     },
     {
-      sourceField: "isDeleted",
-      targetField: "isDeleted",
+      sourceField: "is_deleted",
+      targetField: "is_deleted",
       required: false,
       defaultValue: false,
     },
 
-    // Financial (non-significant)
+    // Contact info (non-significant)
+    { sourceField: "cell_number", targetField: "cell_number", required: false },
+    { sourceField: "day_phone", targetField: "day_phone", required: false },
+    { sourceField: "night_phone", targetField: "night_phone", required: false },
+    { sourceField: "email", targetField: "email", required: false },
+
+    // Address (non-significant - generalized for privacy)
     {
-      sourceField: "balance",
-      targetField: "balance",
+      sourceField: "permanent_address_city",
+      targetField: "permanent_address_city",
       required: false,
-      defaultValue: 0,
+    },
+    {
+      sourceField: "permanent_address_suburb",
+      targetField: "permanent_address_suburb",
+      required: false,
+    },
+    {
+      sourceField: "permanent_address_postal_code",
+      targetField: "permanent_address_postal_code",
+      required: false,
+    },
+    {
+      sourceField: "permanent_address_dhb_code",
+      targetField: "permanent_address_dhb_code",
+      required: false,
+    },
+    {
+      sourceField: "permanent_address_deprivation_quintile",
+      targetField: "permanent_address_deprivation_quintile",
+      required: false,
+    },
+
+    // Provider relationship
+    { sourceField: "provider_id", targetField: "provider_id", required: false },
+    {
+      sourceField: "practice_name",
+      targetField: "practice_name",
+      required: false,
     },
   ],
 };
@@ -166,38 +150,37 @@ const patientConfig: DimensionHandlerConfig = {
  */
 const patientSCD2Config: SCD2Config = {
   dimensionType: DimensionType.PATIENT,
-  businessKeyFields: ["patientId", "practiceId", "perOrgId"],
+  businessKeyFields: ["patient_id", "practice_id", "per_org_id"],
   trackedFields: [
-    "nhiNumber",
-    "firstName",
-    "middleName",
-    "familyName",
-    "fullName",
+    "nhi_number",
+    "first_name",
+    "middle_name",
+    "family_name",
+    "full_name",
     "dob",
     "gender",
-    "isAlive",
-    "deathDate",
+    "is_alive",
+    "death_date",
     "ethnicity",
-    "maritalStatus",
+    "marital_status",
   ],
   comparisonRules: [
     // Demographics - always version
-    { fieldName: "nhiNumber", compareType: "always_version", weight: 1.0 },
-    { fieldName: "firstName", compareType: "significant", weight: 0.8 },
-    { fieldName: "middleName", compareType: "significant", weight: 0.3 },
-    { fieldName: "familyName", compareType: "always_version", weight: 1.0 },
-    { fieldName: "fullName", compareType: "significant", weight: 0.9 },
+    { fieldName: "nhi_number", compareType: "always_version", weight: 1.0 },
+    { fieldName: "first_name", compareType: "significant", weight: 0.8 },
+    { fieldName: "middle_name", compareType: "significant", weight: 0.3 },
+    { fieldName: "family_name", compareType: "always_version", weight: 1.0 },
+    { fieldName: "full_name", compareType: "significant", weight: 0.9 },
     { fieldName: "dob", compareType: "always_version", weight: 1.0 },
     { fieldName: "gender", compareType: "significant", weight: 0.6 },
-    { fieldName: "isAlive", compareType: "always_version", weight: 1.0 },
-    { fieldName: "deathDate", compareType: "always_version", weight: 1.0 },
+    { fieldName: "is_alive", compareType: "always_version", weight: 1.0 },
+    { fieldName: "death_date", compareType: "always_version", weight: 1.0 },
     { fieldName: "ethnicity", compareType: "significant", weight: 0.5 },
-    { fieldName: "maritalStatus", compareType: "significant", weight: 0.3 },
+    { fieldName: "marital_status", compareType: "significant", weight: 0.3 },
 
     // Contact info - never version (updated in place)
     { fieldName: "email", compareType: "never_version", weight: 0 },
-    { fieldName: "cellNumber", compareType: "never_version", weight: 0 },
-    { fieldName: "balance", compareType: "never_version", weight: 0 },
+    { fieldName: "cell_number", compareType: "never_version", weight: 0 },
   ],
   changeThreshold: 0.5, // 50% weighted significance to create new version
 };

@@ -22,7 +22,7 @@ import type {
 import type { CoreMergerConfig } from "./types/config";
 import { DimensionType } from "./types/scd2";
 import { FactType } from "./types/fact";
-import { logger } from "../../utils/logger";
+import { logger } from "../../shared/utils/logger";
 
 export class CoreMergerService {
   private pool: Pool;
@@ -73,7 +73,8 @@ export class CoreMergerService {
     await this.recordMergeRunStart(mergeRunId, options.loadRunId);
 
     // Start monitoring
-    const totalEstimatedItems = 1000; // Would calculate from staging
+    // TODO: Calculate actual item count from staging data instead of using placeholder
+    const totalEstimatedItems = 1000; // Placeholder estimate for monitoring progress
     this.loadMonitor.startMonitoring(mergeRunId, totalEstimatedItems);
 
     const result: CoreMergeResult = {
@@ -157,9 +158,9 @@ export class CoreMergerService {
   ): Promise<void> {
     // Define load order (based on dependencies)
     const dimensionLoadOrder = [
-      DimensionType.PRACTICE, // No dependencies
+      // DimensionType.PRACTICE, // No dependencies
       DimensionType.PATIENT, // Depends on practice
-      DimensionType.PROVIDER, // Depends on practice
+      // DimensionType.PROVIDER, // Depends on practice
     ];
 
     for (const dimensionType of dimensionLoadOrder) {

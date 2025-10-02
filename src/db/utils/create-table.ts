@@ -1,9 +1,4 @@
-import {
-  rawSchema,
-  stgSchema,
-  coreSchema,
-  etlSchema,
-} from "../db/schema/schemas";
+import { rawSchema, stgSchema, coreSchema, etlSchema } from "../schema/schemas";
 import {
   uniqueIndex,
   index,

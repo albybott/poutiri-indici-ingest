@@ -5,10 +5,10 @@
  */
 
 import type { Pool } from "pg";
-import type { DimensionType } from "../types/scd2";
+import { DimensionType } from "../types/scd2";
 import type { DimensionCacheEntry } from "../types/dimension";
 import type { ResolvedForeignKey } from "../types/fact";
-import { logger } from "../../../utils/logger";
+import { logger } from "../../../shared/utils/logger";
 import { businessKeyToString } from "../utils/business-key-utils";
 
 export class ForeignKeyResolver {

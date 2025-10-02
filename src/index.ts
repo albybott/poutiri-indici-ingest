@@ -1,15 +1,18 @@
 import "dotenv/config";
-import { randomUUID } from "crypto";
-import { S3DiscoveryService } from "./services/discovery";
-import { RawLoaderContainer, type LoadResult } from "./services/raw-loader";
-import type { RawLoaderConfig } from "./services/raw-loader/types/config";
-import type { DiscoveredFile } from "./services/discovery/types/files";
+import { S3DiscoveryService } from "./services/discovery/index.js";
+import {
+  RawLoaderContainer,
+  type LoadResult,
+} from "./services/raw-loader/index.js";
+import type { RawLoaderConfig } from "./services/raw-loader/types/config.js";
+import type { DiscoveredFile } from "./services/discovery/types/files.js";
 import {
   StagingTransformerContainer,
   ColumnType,
   ValidationRuleBuilders,
   type StagingExtractHandler,
-} from "./services/staging-transformer";
+} from "@/services/staging-transformer/index.js";
+import { LoadRunService } from "@/services/raw-loader/load-run-service.js";
 
 interface AppConfig {
   databaseUrl: string;
@@ -34,11 +37,13 @@ async function main(): Promise<void> {
   console.log(`🧪 Test Mode: ${config.testMode ? "Enabled" : "Disabled"}`);
 
   // Test Raw Loader Service (S3 CSV → raw.* tables)
-  const loadRunId = await testRawLoaderService();
+  // const loadRunId = await testRawLoaderService();
+
+  const loadRunId = "7cec8f1d-90b5-4523-bef9-f2b4cf701c79";
 
   // Test Staging Transformer Service (raw.* → stg.* tables)
   if (loadRunId) {
-    await testStagingTransformerService(loadRunId);
+    // await testStagingTransformerService(loadRunId);
 
     // Test Core Merger Service (stg.* → core.* tables)
     await testCoreMergerService(loadRunId);
@@ -49,6 +54,9 @@ async function main(): Promise<void> {
 
 async function testRawLoaderService(): Promise<string | null> {
   console.log("\n📦 Testing Raw Loader Service (S3 → raw.* tables)...");
+
+  let loadRunId: string | null = null;
+  const loadRunService = new LoadRunService();
 
   try {
     // Raw loader configuration
@@ -145,11 +153,19 @@ async function testRawLoaderService(): Promise<string | null> {
             `📁 Found ${processingPlan.batches.length} batches with ${processingPlan.totalFiles} total files`
           );
 
-          // Process all batches
+          // Create a single load run for this entire execution
+          loadRunId = await loadRunService.createLoadRun({
+            triggeredBy: "manual",
+            notes: `Processing ${processingPlan.totalFiles} Patient files across ${processingPlan.batches.length} batches`,
+          });
+          console.log(`🏃 Created load run: ${loadRunId}`);
+
+          // Process all batches with the same load run ID
           const allLoadResults = [];
           let totalBatchesProcessed = 0;
           let totalFilesProcessed = 0;
-          let lastLoadRunId: string | null = null;
+          let totalRowsIngested = 0;
+          let totalRowsRejected = 0;
 
           for (
             let batchIndex = 0;
@@ -167,12 +183,6 @@ async function testRawLoaderService(): Promise<string | null> {
               `📦 Processing batch ${batchIndex + 1}/${processingPlan.batches.length} with ${batch.files.length} files`
             );
 
-            const loadRunId = randomUUID();
-            lastLoadRunId = loadRunId;
-            console.log(
-              `🏃 Starting load run: ${loadRunId} for batch ${batchIndex + 1}`
-            );
-
             // Load the files for this batch into the database using the raw loader service
             const loadResults = await rawLoader.loadMultipleFiles(
               batch.files,
@@ -187,6 +197,12 @@ async function testRawLoaderService(): Promise<string | null> {
             allLoadResults.push(...loadResults);
             totalBatchesProcessed++;
             totalFilesProcessed += loadResults.length;
+            totalRowsIngested += loadResults.reduce(
+              (sum, r) => sum + r.totalRows,
+              0
+            );
+            // Note: We don't have rejected rows count from LoadResult, tracking at 0 for now
+            totalRowsRejected += 0;
 
             console.log(`✅ Batch ${batchIndex + 1} completed!`, {
               filesProcessed: loadResults.length,
@@ -203,8 +219,16 @@ async function testRawLoaderService(): Promise<string | null> {
             });
           }
 
+          // Update load run with final statistics
+          await loadRunService.completeLoadRun(loadRunId, {
+            totalFilesProcessed,
+            totalRowsIngested,
+            totalRowsRejected,
+          });
+
           // Overall summary
           console.log("🎉 All batches processing completed!", {
+            loadRunId,
             batchesProcessed: totalBatchesProcessed,
             totalFilesProcessed,
             totalRows: allLoadResults.reduce((sum, r) => sum + r.totalRows, 0),
@@ -237,7 +261,8 @@ async function testRawLoaderService(): Promise<string | null> {
           }
 
           console.log("\n✅ Raw Loader Service tests completed successfully!");
-          return lastLoadRunId;
+          console.log(`📋 Load run ${loadRunId} completed`);
+          return loadRunId;
         } else {
           console.log("⚠️  No batches found in the processing plan");
           return null;
@@ -247,6 +272,15 @@ async function testRawLoaderService(): Promise<string | null> {
         console.log(
           "💡 This is expected if database connection is not available"
         );
+
+        // Mark load run as failed if it was created
+        if (loadRunId) {
+          await loadRunService.failLoadRun(
+            loadRunId,
+            error instanceof Error ? error.message : String(error)
+          );
+        }
+
         return null;
       }
     } else {
@@ -264,6 +298,14 @@ async function testRawLoaderService(): Promise<string | null> {
         message: error.message,
         stack: error.stack?.split("\n").slice(0, 3).join("\n"), // First 3 lines of stack
       });
+    }
+
+    // Mark load run as failed if it was created
+    if (loadRunId) {
+      await loadRunService.failLoadRun(
+        loadRunId,
+        error instanceof Error ? error.message : String(error)
+      );
     }
 
     // Don't exit in test mode, just log the error
@@ -559,7 +601,8 @@ async function testCoreMergerService(loadRunId: string): Promise<void> {
     // Merge to core
     const result = await coreMerger.mergeToCore({
       loadRunId,
-      extractTypes: ["Patient", "Appointment"],
+      forceReprocess: true, // Ensure we process all data for testing
+      extractTypes: ["Patient"],
     });
 
     // Display results

@@ -1,6 +1,5 @@
 import { text, integer, foreignKey } from "drizzle-orm/pg-core";
-import { extractTypeEnum } from "../shared/enums";
-import { createTable } from "../../../utils/create-table";
+import { createTable } from "../../utils/create-table";
 import { loadRunFiles } from "../etl/audit";
 
 export const patientsRaw = createTable("raw.patients", {

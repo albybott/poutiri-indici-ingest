@@ -12,6 +12,10 @@
     "noImplicitReturns": true,
 
     // Module Resolution and Interop
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]
+    },
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
@@ -39,11 +43,7 @@
     // - Omit "isolatedModules" unless using a bundler that requires it.
     // - If using path aliases, add baseUrl and paths here.
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.json",
-    "src/**/*.d.ts"
-  ],
+  "include": ["src/**/*.ts", "src/**/*.json", "src/**/*.d.ts"],
   "exclude": [
     "node_modules",
     "dist",

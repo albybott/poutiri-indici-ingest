@@ -10,8 +10,6 @@ import {
   type DimensionRecord,
   type SCD2Change,
   type SCD2Config,
-  type AttributeChange,
-  type LineageMetadata,
   type DimensionType,
   ChangeType,
 } from "../types/scd2";
@@ -21,7 +19,7 @@ import {
   meetsVersionThreshold,
 } from "../utils/scd2-utils";
 import { generateAttributeHash } from "../utils/hash-utils";
-import { logger } from "../../../utils/logger";
+import { logger } from "../../../shared/utils/logger";
 
 export class SCD2Engine {
   private config: SCD2Config;

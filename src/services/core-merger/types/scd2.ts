@@ -110,17 +110,10 @@ export interface DimensionRecord {
 
 /**
  * Lineage metadata for traceability
+ * Links dimension/fact records back to load run
+ * Detailed S3 lineage available via join to etl.load_runs/load_run_files
  */
 export interface LineageMetadata {
-  /** S3 version ID of source file */
-  s3VersionId: string;
-
-  /** Hash of source file */
-  fileHash: string;
-
-  /** Date extracted from source system */
-  dateExtracted: string;
-
   /** Load run ID from staging */
   loadRunId: string;
 

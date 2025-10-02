@@ -7,7 +7,7 @@ import {
   integer,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { createTable } from "../../../utils/create-table";
+import { createTable } from "../../utils/create-table";
 
 export const practiceInfoStg = createTable(
   "stg.practice_info",

@@ -9,7 +9,7 @@ import {
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
-import { createTable } from "../../../utils/create-table";
+import { createTable } from "../../utils/create-table";
 
 export const invoiceDetailStg = createTable(
   "stg.invoice_detail",

@@ -3,7 +3,7 @@
  * Dependency Injection container for staging transformer services
  */
 
-import { DatabasePool } from "../shared/database-pool";
+import { DatabasePool } from "../../shared/database-pool";
 import { ErrorHandler } from "../raw-loader/error-handler";
 import { StagingTransformerService } from "./staging-transformer-service";
 import type { StagingTransformerConfig } from "./types/config";

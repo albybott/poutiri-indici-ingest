@@ -11,7 +11,7 @@ import {
   foreignKey,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
-import { createTable } from "../../../utils/create-table";
+import { createTable } from "../../utils/create-table";
 import { loadRunFiles } from "../etl/audit";
 
 export const patientsStg = createTable(

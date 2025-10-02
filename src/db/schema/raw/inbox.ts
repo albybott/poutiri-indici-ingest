@@ -1,5 +1,5 @@
 import { text, integer, foreignKey } from "drizzle-orm/pg-core";
-import { createTable } from "../../../utils/create-table";
+import { createTable } from "../../utils/create-table";
 import { loadRunFiles } from "../etl/audit";
 
 export const inboxRaw = createTable("raw.inbox", {

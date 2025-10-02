@@ -1,5 +1,5 @@
 import { Pool, type QueryResult, type PoolClient } from "pg";
-import type { DatabaseConfig } from "../raw-loader/types/config";
+import type { DatabaseConfig } from "@/services/raw-loader/types/config";
 
 /**
  * Generic database connection pool wrapper

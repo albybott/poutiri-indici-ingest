@@ -4,7 +4,7 @@
  */
 
 import type { Pool } from "pg";
-import { ForeignKeyResolver } from "./foreign-key-resolver";
+import { ForeignKeyResolver } from "@/services/core-merger/fact/foreign-key-resolver";
 import type {
   FactHandlerConfig,
   FactLoadOptions,
@@ -13,10 +13,9 @@ import type {
   ResolvedFactRecord,
   ResolvedForeignKey,
   FactType,
-} from "../types/fact";
-import type { DimensionType } from "../types/scd2";
-import type { LineageMetadata } from "../types/scd2";
-import { logger } from "../../../utils/logger";
+} from "@/services/core-merger/types/fact";
+import type { DimensionType } from "@/services/core-merger/types/scd2";
+import { logger } from "@/shared/utils/logger";
 
 export class FactLoader {
   private pool: Pool;
@@ -84,7 +83,8 @@ export class FactLoader {
         return result;
       }
 
-      // Process records in batches
+      // Process records in batches for better memory management and transaction control
+      // Default batch size of 1000 records balances memory usage with transaction efficiency
       const batchSize = options.batchSize ?? 1000;
       const batches = this.createBatches(stagingRecords, batchSize);
 
@@ -140,13 +140,15 @@ export class FactLoader {
       client.release();
     }
 
-    // Calculate metrics
+    // Calculate performance metrics
     const endTime = Date.now();
     result.durationMs = endTime - startTime;
+    // Calculate throughput: (rows / milliseconds) * 1000 = rows per second
     result.rowsPerSecond =
       result.durationMs > 0
         ? (result.totalRowsRead / result.durationMs) * 1000
         : 0;
+    // Convert bytes to MB: heapUsed / 1024 / 1024
     result.memoryUsageMB = process.memoryUsage().heapUsed / 1024 / 1024;
 
     logger.info(`Completed ${factType} fact load`, {
@@ -175,12 +177,19 @@ export class FactLoader {
     client: any,
     loadRunId: string
   ): Promise<Record<string, unknown>[]> {
-    const columns = this.getAllColumns();
+    const stagingColumns = this.getAllColumns()
+      .filter((col) => col !== "load_run_id")
+      .map((col) => `stg.${col}`);
+
+    // Add load_run_id from load_run_files
+    const allColumns = [...stagingColumns, "lrf.load_run_id"];
+
     const query = `
-      SELECT ${columns.join(", ")}
-      FROM ${this.config.sourceTable}
-      WHERE load_run_id = $1
-      ORDER BY ${this.config.businessKeyFields.map((f) => this.toSnakeCase(f)).join(", ")}
+      SELECT ${allColumns.join(", ")}
+      FROM ${this.config.sourceTable} stg
+      INNER JOIN etl.load_run_files lrf ON stg.load_run_file_id = lrf.load_run_file_id
+      WHERE lrf.load_run_id = $1
+      ORDER BY ${this.config.businessKeyFields.map((f) => `stg.${this.toSnakeCase(f)}`).join(", ")}
     `;
 
     const result = await client.query(query, [loadRunId]);
@@ -246,9 +255,14 @@ export class FactLoader {
         // Build fact record for insertion
         const factRecord = this.buildFactRecord(resolved, stagingRecord);
 
-        // Insert or upsert
+        // Insert or upsert based on configuration mode
+        // Available modes:
+        // - "upsert": Insert if new, update if exists (default)
+        // - "insert": Only insert - fails if record exists
+        // - "update": Only update - fails if record doesn't exist
         const upsertMode = options.upsertMode ?? "upsert";
         if (upsertMode === "upsert") {
+          // Check if record exists to determine insert vs update
           const isUpdate = await this.recordExists(client, businessKey);
           if (isUpdate) {
             await this.updateFact(client, factRecord);
@@ -258,9 +272,11 @@ export class FactLoader {
             inserted++;
           }
         } else if (upsertMode === "insert") {
+          // Force insert only - will fail if record exists
           await this.insertFact(client, factRecord);
           inserted++;
         } else {
+          // Force update only - will fail if record doesn't exist
           await this.updateFact(client, factRecord);
           updated++;
         }
@@ -280,22 +296,33 @@ export class FactLoader {
 
   /**
    * Resolve foreign keys for a staging record
+   * Maps dimension business keys to surrogate keys and validates required relationships
+   * @param stagingRecord - Raw staging data containing dimension lookup fields
+   * @returns Resolved fact record with FK mappings and validation status
    */
   private async resolveForeignKeys(
     stagingRecord: Record<string, unknown>
   ): Promise<ResolvedFactRecord> {
+    // Track resolved foreign keys and their surrogate key mappings
     const resolvedFKs = new Map<DimensionType, ResolvedForeignKey>();
+    // Track which required dimensions are missing for later skip decision
     const missingRequiredFKs: DimensionType[] = [];
     let skipReason: string | undefined;
 
+    // Algorithm: For each FK relationship defined in config
+    // 1. Extract dimension business key from staging record
+    // 2. Use FK resolver to lookup surrogate key in dimension table
+    // 3. Handle missing FKs based on configured strategy (error vs skip)
+    // 4. Collect results for final decision on record insertion
+
     for (const fkRelationship of this.config.foreignKeyRelationships) {
-      // Extract business key for dimension lookup
+      // Extract business key for dimension lookup from staging record
       const dimBusinessKey: Record<string, unknown> = {};
       for (const field of fkRelationship.lookupFields) {
         dimBusinessKey[field] = stagingRecord[field];
       }
 
-      // Resolve FK
+      // Resolve FK using the FK resolver service to get surrogate key
       const resolved = await this.fkResolver.resolveForeignKey(
         fkRelationship.dimensionType,
         dimBusinessKey
@@ -303,14 +330,16 @@ export class FactLoader {
 
       resolvedFKs.set(fkRelationship.dimensionType, resolved);
 
-      // Handle missing FK based on strategy
+      // Handle missing FK based on relationship configuration strategy
       if (!resolved.found) {
         if (fkRelationship.required) {
           if (fkRelationship.missingStrategy === "error") {
+            // Fail fast if required dimension is missing and strategy is error
             throw new Error(
               `Required dimension ${fkRelationship.dimensionType} not found: ${JSON.stringify(dimBusinessKey)}`
             );
           } else if (fkRelationship.missingStrategy === "skip") {
+            // Track missing required FKs for later decision making
             missingRequiredFKs.push(fkRelationship.dimensionType);
             skipReason = `Missing required dimension: ${fkRelationship.dimensionType}`;
           }
@@ -333,6 +362,10 @@ export class FactLoader {
 
   /**
    * Build fact record for insertion
+   * Constructs the final fact table record from resolved FKs and staging data
+   * @param resolved - FK resolution results containing surrogate key mappings
+   * @param stagingRecord - Raw staging data containing fact attributes
+   * @returns Complete fact record ready for database insertion
    */
   private buildFactRecord(
     resolved: ResolvedFactRecord,
@@ -340,12 +373,12 @@ export class FactLoader {
   ): Record<string, unknown> {
     const factRecord: Record<string, unknown> = {};
 
-    // Add business keys
+    // Add business keys - these uniquely identify the fact record
     for (const field of this.config.businessKeyFields) {
       factRecord[this.toSnakeCase(field)] = stagingRecord[field];
     }
 
-    // Add foreign keys
+    // Add foreign keys - map dimension surrogate keys to fact table columns
     for (const [dimType, resolvedFK] of resolved.resolvedFKs.entries()) {
       const fkRelationship = this.config.foreignKeyRelationships.find(
         (r) => r.dimensionType === dimType
@@ -355,20 +388,19 @@ export class FactLoader {
       }
     }
 
-    // Add attributes from field mappings
+    // Add attributes from field mappings - transform staging data to fact table format
     for (const mapping of this.config.fieldMappings) {
       const value = stagingRecord[mapping.sourceField];
+      // Apply transformation function if provided, otherwise use raw value
       const transformedValue = mapping.transform
         ? mapping.transform(value)
         : value;
+      // Use transformed value, default value, or null if all are undefined
       factRecord[this.toSnakeCase(mapping.targetField)] =
         transformedValue ?? mapping.defaultValue ?? null;
     }
 
-    // Add lineage
-    factRecord.s3_version_id = stagingRecord.s3_version_id;
-    factRecord.file_hash = stagingRecord.file_hash;
-    factRecord.date_extracted = stagingRecord.date_extracted;
+    // Add lineage fields for audit trail - track data provenance
     factRecord.load_run_id = stagingRecord.load_run_id;
     factRecord.load_ts = new Date();
 
@@ -377,6 +409,9 @@ export class FactLoader {
 
   /**
    * Insert fact record
+   * Performs database insertion of a new fact record
+   * @param client - Database client for transaction management
+   * @param factRecord - Complete fact record with all fields populated
    */
   private async insertFact(
     client: any,
@@ -396,6 +431,9 @@ export class FactLoader {
 
   /**
    * Update fact record
+   * Updates existing fact record based on business key matching
+   * @param client - Database client for transaction management
+   * @param factRecord - Fact record containing updated values and business keys
    */
   private async updateFact(
     client: any,
@@ -436,6 +474,10 @@ export class FactLoader {
 
   /**
    * Check if record exists
+   * Determines if a fact record exists based on business key lookup
+   * @param client - Database client for query execution
+   * @param businessKey - Business key fields to search for
+   * @returns True if record exists, false otherwise
    */
   private async recordExists(
     client: any,
@@ -517,10 +559,7 @@ export class FactLoader {
       columns.add(this.toSnakeCase(mapping.sourceField));
     }
 
-    // Lineage fields
-    columns.add("s3_version_id");
-    columns.add("file_hash");
-    columns.add("date_extracted");
+    // Lineage field
     columns.add("load_run_id");
 
     return Array.from(columns);

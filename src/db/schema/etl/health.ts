@@ -7,7 +7,7 @@ import {
   decimal,
   serial,
 } from "drizzle-orm/pg-core";
-import { createTable } from "../../../utils/create-table";
+import { createTable } from "../../utils/create-table";
 
 // Health monitoring - last successful run per extract
 export const health = createTable("etl.health", {

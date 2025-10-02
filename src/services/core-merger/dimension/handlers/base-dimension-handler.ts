@@ -3,17 +3,14 @@
  * Abstract class for dimension-specific loading logic
  */
 
-import type {
-  DimensionHandlerConfig,
-  DimensionLoadOptions,
-  DimensionRecord,
-} from "../../types/dimension";
+import type { DimensionHandlerConfig } from "../../types/dimension";
 import type {
   SCD2Config,
   DimensionType,
   LineageMetadata,
+  DimensionRecord,
 } from "../../types/scd2";
-import { logger } from "../../../../utils/logger";
+import { logger } from "../../../../shared/utils/logger";
 
 export abstract class BaseDimensionHandler {
   protected config: DimensionHandlerConfig;
@@ -141,22 +138,72 @@ export abstract class BaseDimensionHandler {
 
   /**
    * Build SELECT query for reading staging data
+   * Joins with load_run_files to get load_run_id
    */
   buildSelectQuery(loadRunId: string): string {
-    const columns = this.config.fieldMappings
-      .map((m) => m.sourceField)
-      .concat(this.config.businessKeyFields)
-      .concat(["s3_version_id", "file_hash", "date_extracted", "load_run_id"]);
+    console.log(
+      "Building select query for dimension:",
+      this.getDimensionType()
+    );
 
-    // Deduplicate columns
-    const uniqueColumns = [...new Set(columns)];
+    // const stagingColumns = this.config.fieldMappings
+    //   .map((m) => {
+    //     // Use AS alias to convert snake_case column to camelCase property
+    //     return `stg.${this.toSnakeCase(m.sourceField)} AS "${m.sourceField}"`;
+    //   })
+    //   .concat(
+    //     this.config.businessKeyFields.map((f) => {
+    //       // Use AS alias for business keys too
+    //       // TODO: Remove this toSnakeCase
+    //       return `stg.${this.toSnakeCase(f)} AS "${f}"`;
+    //     })
+    //   );
 
-    return `
-      SELECT ${uniqueColumns.join(", ")}
-      FROM ${this.config.sourceTable}
-      WHERE load_run_id = $1
-      ORDER BY ${this.config.businessKeyFields.join(", ")}
+    // Deduplicate staging columns - need to dedupe before adding aliases
+    // const uniqueSourceFields = new Set<string>();
+    // const uniqueStagingColumns = stagingColumns.filter((col) => {
+    //   // Extract the source field name from "stg.column_name AS field"
+    //   const match = col.match(/AS "([^"]+)"/);
+    //   if (match) {
+    //     const field = match[1];
+    //     if (uniqueSourceFields.has(field)) {
+    //       return false;
+    //     }
+    //     uniqueSourceFields.add(field);
+    //   }
+    //   return true;
+    // });
+
+    // Add load_run_id from load_run_files (using camelCase alias)
+    // const allColumns = [
+    //   ...uniqueStagingColumns,
+    //   'lrf.load_run_id AS "loadRunId"',
+    // ];
+
+    const businessKeyFields = this.config.businessKeyFields.map(
+      (f) => `stg.${f}`
+    );
+    const fieldMappings = this.config.fieldMappings.map(
+      (m) => `stg.${m.targetField}`
+    );
+
+    const allColumns = [
+      ...businessKeyFields,
+      ...fieldMappings,
+      "lrf.load_run_id",
+    ];
+
+    const query = `
+      SELECT ${allColumns.join(", ")}
+      FROM ${this.config.sourceTable} stg
+      INNER JOIN etl.load_run_files lrf ON stg.load_run_file_id = lrf.load_run_file_id
+      WHERE lrf.load_run_id = $1
+      ORDER BY ${businessKeyFields.join(", ")}
     `;
+
+    console.log(query);
+
+    return query;
   }
 
   /**
@@ -169,18 +216,23 @@ export abstract class BaseDimensionHandler {
 
     // Business keys
     for (const field of this.config.businessKeyFields) {
+      // console.log("Processing business key --:", { field, type: typeof field });
+
       columnNames.push(this.toSnakeCase(field));
       placeholders.push(`$${paramIndex++}`);
     }
 
-    // practiceId, perOrgId (may be redundant with business keys)
-    if (!this.config.businessKeyFields.includes("practiceId")) {
-      columnNames.push("practice_id");
-      placeholders.push(`$${paramIndex++}`);
-    }
-    if (!this.config.businessKeyFields.includes("perOrgId")) {
-      columnNames.push("per_org_id");
-      placeholders.push(`$${paramIndex++}`);
+    // Attribute columns
+    for (const mapping of this.config.fieldMappings) {
+      // console.log("Processing targetField key --:", {
+      //   targetField: mapping.targetField,
+      //   type: typeof mapping.targetField,
+      // });
+
+      if (!columnNames.includes(this.toSnakeCase(mapping.targetField))) {
+        columnNames.push(this.toSnakeCase(mapping.targetField));
+        placeholders.push(`$${paramIndex++}`);
+      }
     }
 
     // SCD2 columns
@@ -191,29 +243,9 @@ export abstract class BaseDimensionHandler {
       `$${paramIndex++}`
     );
 
-    // Attribute columns
-    for (const mapping of this.config.fieldMappings) {
-      if (!columnNames.includes(this.toSnakeCase(mapping.targetField))) {
-        columnNames.push(this.toSnakeCase(mapping.targetField));
-        placeholders.push(`$${paramIndex++}`);
-      }
-    }
-
     // Lineage columns
-    columnNames.push(
-      "s3_version_id",
-      "file_hash",
-      "date_extracted",
-      "load_run_id",
-      "load_ts"
-    );
-    placeholders.push(
-      `$${paramIndex++}`,
-      `$${paramIndex++}`,
-      `$${paramIndex++}`,
-      `$${paramIndex++}`,
-      `$${paramIndex++}`
-    );
+    columnNames.push("load_run_id", "load_ts");
+    placeholders.push(`$${paramIndex++}`, `$${paramIndex++}`);
 
     return `
       INSERT INTO ${this.config.targetTable} (${columnNames.join(", ")})
@@ -238,9 +270,6 @@ export abstract class BaseDimensionHandler {
 
     // Update lineage
     setClauses.push(
-      `s3_version_id = $${paramIndex++}`,
-      `file_hash = $${paramIndex++}`,
-      `date_extracted = $${paramIndex++}`,
       `load_run_id = $${paramIndex++}`,
       `load_ts = $${paramIndex++}`
     );
@@ -299,6 +328,15 @@ export abstract class BaseDimensionHandler {
    * Convert camelCase to snake_case
    */
   protected toSnakeCase(str: string): string {
+    if (typeof str !== "string") {
+      console.error("toSnakeCase received non-string:", {
+        str,
+        type: typeof str,
+      });
+      throw new Error(
+        `Expected string but got ${typeof str}: ${JSON.stringify(str)}`
+      );
+    }
     return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
   }
 

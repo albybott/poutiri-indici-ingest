@@ -16,7 +16,7 @@ import {
   LoadErrorType,
   type LoadError,
   type LoadWarning,
-} from "../shared/types";
+} from "../../shared/types";
 import type { DiscoveredFile } from "../../services/discovery/types/files";
 import type { FileSystemAdapter } from "../../services/discovery/adapters/file-system-adapter";
 import { S3FileSystemAdapter } from "../../services/discovery/adapters/s3-file-system-adapter";

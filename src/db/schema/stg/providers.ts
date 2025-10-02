@@ -8,7 +8,7 @@ import {
   date,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { createTable } from "../../../utils/create-table";
+import { createTable } from "../../utils/create-table";
 
 export const providersStg = createTable(
   "stg.providers",

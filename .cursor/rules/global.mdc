@@ -37,3 +37,4 @@ Follow these rules when you write code:
 - Add JSDoc comments for complex configuration objects
 - Consider using `as const` for immutability when appropriate
 - Use the gitignored scratch folder (/scratch) for temp files
+- Use path aliases (`@/`) for src instead of relative imports for cleaner code

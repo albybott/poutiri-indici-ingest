@@ -3,7 +3,7 @@ import type {
   RecoveryOptions,
   RecoveryResult,
 } from "./types/errors";
-import { LoadErrorType, type LoadError } from "../shared/types";
+import { LoadErrorType, type LoadError } from "../../shared/types";
 import type { ErrorHandlingConfig } from "./types/config";
 
 /**

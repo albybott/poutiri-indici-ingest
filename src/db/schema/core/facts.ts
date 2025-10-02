@@ -11,7 +11,7 @@ import {
   index,
   foreignKey,
 } from "drizzle-orm/pg-core";
-import { createTable } from "../../../utils/create-table";
+import { createTable } from "../../utils/create-table";
 import { dimPatient, dimProvider, dimPractice, dimVaccine } from "./dimensions";
 
 // Appointment fact table

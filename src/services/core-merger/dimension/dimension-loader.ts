@@ -13,14 +13,11 @@ import type {
 } from "../types/dimension";
 import type {
   DimensionType,
-  SCD2Change,
-  ChangeType,
   LineageMetadata,
   DimensionRecord,
 } from "../types/scd2";
 import { ChangeType as CT } from "../types/scd2";
-import { logger } from "../../../utils/logger";
-import { extractDimensionBusinessKey } from "../utils/business-key-utils";
+import { logger } from "../../../shared/utils/logger";
 
 export class DimensionLoader {
   private pool: Pool;
@@ -90,13 +87,29 @@ export class DimensionLoader {
         return result;
       }
 
-      // Process records in batches
+      // Process records in batches for better memory management and performance
+      // Default batch size balances memory usage with transaction efficiency
       const batchSize = options.batchSize ?? 500;
       const batches = this.createBatches(stagingRecords, batchSize);
 
-      for (const batch of batches) {
+      console.log("Total batches:", batches.length);
+
+      for (let i = 0; i < batches.length; i++) {
+        const batch = batches[i];
+        const batchNum = i + 1;
+
+        logger.info(
+          `Processing batch ${batchNum}/${batches.length} (${batch.length} records)`
+        );
+
         try {
           const batchResult = await this.processBatch(client, batch, options);
+
+          logger.info(`Batch ${batchNum} completed`, {
+            created: batchResult.created,
+            updated: batchResult.updated,
+            skipped: batchResult.skipped,
+          });
 
           result.recordsCreated += batchResult.created;
           result.recordsUpdated += batchResult.updated;
@@ -107,12 +120,13 @@ export class DimensionLoader {
 
           result.successfulBatches++;
         } catch (error) {
+          logger.error(`Batch ${batchNum} failed`, {
+            error: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : undefined,
+          });
           result.failedBatches++;
           const errorMsg =
             error instanceof Error ? error.message : String(error);
-          logger.error(`Batch processing failed for ${dimensionType}`, {
-            error: errorMsg,
-          });
 
           result.errors.push({
             errorType: "database_error",
@@ -197,15 +211,27 @@ export class DimensionLoader {
     const errors: DimensionError[] = [];
     const warnings: string[] = [];
 
-    for (const stagingRecord of batch) {
+    for (let i = 0; i < batch.length; i++) {
+      const stagingRecord = batch[i];
+      const recordNum = i + 1;
+
       try {
         // Validate staging record
         const validation =
           await this.handler.validateStagingRecord(stagingRecord);
+
         if (!validation.valid) {
+          const errorMsg = `Validation failed: ${validation.errors.join(", ")}`;
+          // Log first few errors for debugging
+          if (errors.length < 3) {
+            logger.error(`Dimension validation error`, {
+              error: errorMsg,
+              sampleRecord: Object.keys(stagingRecord).slice(0, 10),
+            });
+          }
           errors.push({
             errorType: "business_key_missing",
-            message: `Validation failed: ${validation.errors.join(", ")}`,
+            message: errorMsg,
           });
           skipped++;
           continue;
@@ -213,9 +239,6 @@ export class DimensionLoader {
 
         // Transform to dimension record
         const lineage: LineageMetadata = {
-          s3VersionId: String(stagingRecord.s3VersionId),
-          fileHash: String(stagingRecord.fileHash),
-          dateExtracted: String(stagingRecord.dateExtracted),
           loadRunId: options.loadRunId,
           loadTs: new Date(),
         };
@@ -262,6 +285,13 @@ export class DimensionLoader {
         }
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : String(error);
+        // Log first few errors for debugging
+        if (errors.length < 3) {
+          logger.error(`Dimension transformation error`, {
+            error: errorMsg,
+            stack: error instanceof Error ? error.stack : undefined,
+          });
+        }
         errors.push({
           errorType: "transformation_error",
           message: errorMsg,
@@ -306,7 +336,6 @@ export class DimensionLoader {
   ): Promise<void> {
     const query = this.handler.buildInsertQuery();
     const params = this.buildInsertParams(record);
-
     await client.query(query, params);
   }
 
@@ -346,35 +375,23 @@ export class DimensionLoader {
     const params: unknown[] = [];
     const config = this.handler.getConfig();
 
+    // console.log("Building insert params for record:", record);
+
     // Business keys
     for (const field of config.businessKeyFields) {
       params.push(record.businessKey[field]);
     }
-
-    // practiceId, perOrgId (if not in business keys)
-    if (!config.businessKeyFields.includes("practiceId")) {
-      params.push(record.practiceId);
-    }
-    if (!config.businessKeyFields.includes("perOrgId")) {
-      params.push(record.perOrgId);
-    }
-
-    // SCD2 fields
-    params.push(record.effectiveFrom, record.effectiveTo, record.isCurrent);
 
     // Attributes
     for (const mapping of config.fieldMappings) {
       params.push(record.attributes[mapping.targetField] ?? null);
     }
 
+    // SCD2 fields
+    params.push(record.effectiveFrom, record.effectiveTo, record.isCurrent);
+
     // Lineage
-    params.push(
-      record.lineage.s3VersionId,
-      record.lineage.fileHash,
-      record.lineage.dateExtracted,
-      record.lineage.loadRunId,
-      record.lineage.loadTs
-    );
+    params.push(record.lineage.loadRunId, record.lineage.loadTs);
 
     return params;
   }
@@ -392,13 +409,7 @@ export class DimensionLoader {
     }
 
     // Lineage
-    params.push(
-      record.lineage.s3VersionId,
-      record.lineage.fileHash,
-      record.lineage.dateExtracted,
-      record.lineage.loadRunId,
-      record.lineage.loadTs
-    );
+    params.push(record.lineage.loadRunId, record.lineage.loadTs);
 
     // Business key for WHERE clause
     for (const field of config.businessKeyFields) {
@@ -430,9 +441,6 @@ export class DimensionLoader {
 
     // Extract lineage
     const lineage: LineageMetadata = {
-      s3VersionId: row.s3_version_id,
-      fileHash: row.file_hash,
-      dateExtracted: row.date_extracted,
       loadRunId: row.load_run_id,
       loadTs: row.load_ts,
     };

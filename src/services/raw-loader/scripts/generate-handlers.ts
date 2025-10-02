@@ -39,6 +39,7 @@ const schemas: SchemaInfo[] = [
   // Add more schemas as needed
 ];
 
+//TODO: complete this, it needs to be updated to use the new schema definitions
 function generateHandlerFromSchema(schemaInfo: SchemaInfo): string {
   const { extractType, tableName } = schemaInfo;
 
