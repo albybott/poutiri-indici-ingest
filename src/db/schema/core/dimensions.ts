@@ -23,21 +23,14 @@ export const dimPatient = createTable(
     perOrgId: text("per_org_id").notNull(),
 
     // Hashed/salted NHI for privacy
-    nhiNumberHash: text("nhi_number_hash"),
-
-    // SCD2 attributes
-    effectiveFrom: timestamp("effective_from", {
-      withTimezone: true,
-    }).notNull(),
-    effectiveTo: timestamp("effective_to", { withTimezone: true }),
-    isCurrent: boolean("is_current").notNull().default(true),
+    nhiNumberHash: text("nhi_number"),
 
     // Core patient attributes (minimal PII exposure)
     title: text("title"),
     firstName: text("first_name"),
     middleName: text("middle_name"),
-    familyName: text("family_name").notNull(),
-    fullName: text("full_name").notNull(),
+    familyName: text("family_name"),
+    fullName: text("full_name"),
     preferredName: text("preferred_name"),
     gender: text("gender"),
     dob: date("dob"),
@@ -70,10 +63,14 @@ export const dimPatient = createTable(
     providerId: text("provider_id"),
     practiceName: text("practice_name"),
 
-    // Lineage columns for traceability
-    s3VersionId: text("s3_version_id").notNull(),
-    fileHash: text("file_hash").notNull(),
-    dateExtracted: text("date_extracted").notNull(),
+    // SCD2 attributes
+    effectiveFrom: timestamp("effective_from", {
+      withTimezone: true,
+    }).notNull(),
+    effectiveTo: timestamp("effective_to", { withTimezone: true }),
+    isCurrent: boolean("is_current").notNull().default(true),
+
+    // Lineage - link to load run for traceability
     loadRunId: uuid("load_run_id").notNull(),
     loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -135,10 +132,7 @@ export const dimProvider = createTable(
     isActive: boolean("is_active").notNull().default(true),
     isDeleted: boolean("is_deleted").notNull().default(false),
 
-    // Lineage columns
-    s3VersionId: text("s3_version_id").notNull(),
-    fileHash: text("file_hash").notNull(),
-    dateExtracted: text("date_extracted").notNull(),
+    // Lineage - link to load run for traceability
     loadRunId: uuid("load_run_id").notNull(),
     loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -202,10 +196,7 @@ export const dimPractice = createTable(
     isActive: boolean("is_active").notNull().default(true),
     isDeleted: boolean("is_deleted").notNull().default(false),
 
-    // Lineage columns
-    s3VersionId: text("s3_version_id").notNull(),
-    fileHash: text("file_hash").notNull(),
-    dateExtracted: text("date_extracted").notNull(),
+    // Lineage - link to load run for traceability
     loadRunId: uuid("load_run_id").notNull(),
     loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -249,10 +240,7 @@ export const dimMedicine = createTable(
     isActive: boolean("is_active").notNull().default(true),
     isDeleted: boolean("is_deleted").notNull().default(false),
 
-    // Lineage columns
-    s3VersionId: text("s3_version_id").notNull(),
-    fileHash: text("file_hash").notNull(),
-    dateExtracted: text("date_extracted").notNull(),
+    // Lineage - link to load run for traceability
     loadRunId: uuid("load_run_id").notNull(),
     loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -298,10 +286,7 @@ export const dimVaccine = createTable(
     isActive: boolean("is_active").notNull().default(true),
     isDeleted: boolean("is_deleted").notNull().default(false),
 
-    // Lineage columns
-    s3VersionId: text("s3_version_id").notNull(),
-    fileHash: text("file_hash").notNull(),
-    dateExtracted: text("date_extracted").notNull(),
+    // Lineage - link to load run for traceability
     loadRunId: uuid("load_run_id").notNull(),
     loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
   },

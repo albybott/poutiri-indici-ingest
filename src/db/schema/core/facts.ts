@@ -104,10 +104,7 @@ export const factAppointment = createTable(
       scale: 8,
     }),
 
-    // Lineage columns
-    s3VersionId: text("s3_version_id").notNull(),
-    fileHash: text("file_hash").notNull(),
-    dateExtracted: text("date_extracted").notNull(),
+    // Lineage - link to load run for traceability
     loadRunId: uuid("load_run_id").notNull(),
     loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -199,10 +196,7 @@ export const factImmunisation = createTable(
       scale: 8,
     }),
 
-    // Lineage columns
-    s3VersionId: text("s3_version_id").notNull(),
-    fileHash: text("file_hash").notNull(),
-    dateExtracted: text("date_extracted").notNull(),
+    // Lineage - link to load run for traceability
     loadRunId: uuid("load_run_id").notNull(),
     loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -270,10 +264,7 @@ export const factInvoice = createTable(
     insertedBy: text("inserted_by"),
     updatedBy: text("updated_by"),
 
-    // Lineage columns
-    s3VersionId: text("s3_version_id").notNull(),
-    fileHash: text("file_hash").notNull(),
-    dateExtracted: text("date_extracted").notNull(),
+    // Lineage - link to load run for traceability
     loadRunId: uuid("load_run_id").notNull(),
     loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -362,10 +353,7 @@ export const factInvoiceDetail = createTable(
     insertedBy: text("inserted_by"),
     updatedBy: text("updated_by"),
 
-    // Lineage columns
-    s3VersionId: text("s3_version_id").notNull(),
-    fileHash: text("file_hash").notNull(),
-    dateExtracted: text("date_extracted").notNull(),
+    // Lineage - link to load run for traceability
     loadRunId: uuid("load_run_id").notNull(),
     loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -453,10 +441,7 @@ export const factDiagnosis = createTable(
     insertedBy: text("inserted_by"),
     updatedBy: text("updated_by"),
 
-    // Lineage columns
-    s3VersionId: text("s3_version_id").notNull(),
-    fileHash: text("file_hash").notNull(),
-    dateExtracted: text("date_extracted").notNull(),
+    // Lineage - link to load run for traceability
     loadRunId: uuid("load_run_id").notNull(),
     loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -545,10 +530,7 @@ export const factMeasurement = createTable(
     insertedBy: text("inserted_by"),
     updatedBy: text("updated_by"),
 
-    // Lineage columns
-    s3VersionId: text("s3_version_id").notNull(),
-    fileHash: text("file_hash").notNull(),
-    dateExtracted: text("date_extracted").notNull(),
+    // Lineage - link to load run for traceability
     loadRunId: uuid("load_run_id").notNull(),
     loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
   },
