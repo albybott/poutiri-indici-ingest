@@ -65,20 +65,33 @@ export class CoreMergerService {
       throw new Error(`Staging run ${options.stagingRunId} not found`);
     }
 
+    logger.info(`Found staging run`, {
+      loadRunId: stagingRun.loadRunId,
+      extractType: stagingRun.extractType,
+    });
+
     // Check if staging run already merged
     const existing = await this.checkExistingMerge(options.stagingRunId);
 
-    // If merge has already completed, return the cached result
-    if (
-      existing &&
-      existing.status === "completed" &&
-      !options.forceReprocess
-    ) {
-      logger.info(`Staging run already merged - returning cached result`, {
+    // If merge has already completed
+    if (existing && existing.status === "completed") {
+      logger.info(`Staging run already merged`, {
         stagingRunId: options.stagingRunId,
         mergeRunId: existing.mergeRunId,
       });
-      return existing.result!;
+
+      // If not forcing reprocessing, return the cached result
+      if (!options.forceReprocess) {
+        logger.info(`Returning existing merge run`, {
+          stagingRunId: options.stagingRunId,
+          mergeRunId: existing.mergeRunId,
+        });
+        return existing.result!;
+      } else {
+        logger.info(`Force reprocessing staging run`, {
+          stagingRunId: options.stagingRunId,
+        });
+      }
     }
 
     // Create or use existing merge run id
@@ -177,9 +190,9 @@ export class CoreMergerService {
   ): Promise<void> {
     // Define load order (based on dependencies)
     const dimensionLoadOrder = [
-      // DimensionType.PRACTICE, // No dependencies
+      DimensionType.PRACTICE, // No dependencies
       DimensionType.PATIENT, // Depends on practice
-      // DimensionType.PROVIDER, // Depends on practice
+      DimensionType.PROVIDER, // Depends on practice
     ];
 
     for (const dimensionType of dimensionLoadOrder) {
@@ -190,7 +203,7 @@ export class CoreMergerService {
         options.extractTypes.length > 0 &&
         !options.extractTypes.includes(extractType)
       ) {
-        logger.debug(`Skipping ${dimensionType} - not in extract types`);
+        logger.info(`Skipping ${dimensionType} - not in extract types`);
         continue;
       }
 

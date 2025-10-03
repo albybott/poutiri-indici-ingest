@@ -154,17 +154,13 @@ export abstract class BaseDimensionHandler {
       "lrf.load_run_id",
     ];
 
-    const query = `
+    return `
       SELECT ${allColumns.join(", ")}
       FROM ${this.config.sourceTable} stg
       INNER JOIN etl.load_run_files lrf ON stg.load_run_file_id = lrf.load_run_file_id
       WHERE lrf.load_run_id = $1
       ORDER BY ${businessKeyFields.join(", ")}
     `;
-
-    console.log(query);
-
-    return query;
   }
 
   /**

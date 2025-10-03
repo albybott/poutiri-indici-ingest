@@ -92,8 +92,6 @@ export class DimensionLoader {
       const batchSize = options.batchSize ?? 500;
       const batches = this.createBatches(stagingRecords, batchSize);
 
-      console.log("Total batches:", batches.length);
-
       for (let i = 0; i < batches.length; i++) {
         const batch = batches[i];
         const batchNum = i + 1;
