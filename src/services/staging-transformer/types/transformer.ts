@@ -16,6 +16,7 @@ export interface StagingTransformOptions {
   skipValidation?: boolean; // Skip validation for performance
   upsertMode?: boolean; // Use upsert instead of insert
   conflictColumns?: string[]; // Columns for conflict resolution
+  forceReprocess?: boolean; // Skip idempotency check and force reprocessing
 }
 
 /**
@@ -179,4 +180,103 @@ export interface TransformMetrics {
   errorRate: number;
   rejectionRate: number;
   memoryPeakUsageMB: number;
+}
+
+/**
+ * Status values for staging run operations
+ */
+export type StagingRunStatus = "running" | "completed" | "failed";
+
+/**
+ * Parameters for creating a new staging run
+ */
+export interface CreateStagingRunParams {
+  /** Load run ID that this staging transformation is processing */
+  loadRunId: string;
+  /** Extract type being transformed */
+  extractType: string;
+  /** Source raw table name */
+  sourceTable: string;
+  /** Target staging table name */
+  targetTable: string;
+}
+
+/**
+ * Parameters for updating an existing staging run
+ */
+export interface UpdateStagingRunParams {
+  /** Current status of the staging run */
+  status?: StagingRunStatus;
+  /** Timestamp when the staging run completed */
+  completedAt?: Date;
+  /** Total number of rows read from source */
+  totalRowsRead?: number;
+  /** Total number of rows successfully transformed */
+  totalRowsTransformed?: number;
+  /** Total number of rows rejected due to validation */
+  totalRowsRejected?: number;
+  /** Total number of rows removed due to deduplication */
+  totalRowsDeduplicated?: number;
+  /** Number of batches that completed successfully */
+  successfulBatches?: number;
+  /** Number of batches that failed */
+  failedBatches?: number;
+  /** Total processing duration in milliseconds */
+  durationMs?: number;
+  /** Processing throughput in rows per second */
+  rowsPerSecond?: number;
+  /** Peak memory usage during processing (MB) */
+  memoryUsageMB?: number;
+  /** Error message if the staging run failed */
+  error?: string;
+  /** JSON string of full result */
+  result?: string;
+}
+
+/**
+ * Complete staging run record from the database
+ */
+export interface StagingRunRecord {
+  /** Unique identifier for this staging run */
+  stagingRunId: string;
+  /** Load run ID that this staging transformation is processing */
+  loadRunId: string;
+  /** Extract type being transformed */
+  extractType: string;
+  /** Source raw table name */
+  sourceTable: string;
+  /** Target staging table name */
+  targetTable: string;
+  /** Timestamp when the staging run started */
+  startedAt: Date;
+  /** Timestamp when the staging run completed (null if still running) */
+  completedAt: Date | null;
+  /** Current status of the staging run */
+  status: string;
+  /** Total number of rows read from source */
+  totalRowsRead: number;
+  /** Total number of rows successfully transformed */
+  totalRowsTransformed: number;
+  /** Total number of rows rejected due to validation */
+  totalRowsRejected: number;
+  /** Total number of rows removed due to deduplication */
+  totalRowsDeduplicated: number;
+  /** Number of batches that completed successfully */
+  successfulBatches: number;
+  /** Number of batches that failed */
+  failedBatches: number;
+  /** Total processing duration in milliseconds */
+  durationMs: number | null;
+  /** Processing throughput in rows per second */
+  rowsPerSecond: number | null;
+  /** Peak memory usage during processing (MB) */
+  memoryUsageMB: number | null;
+  /** Error message if the staging run failed */
+  error: string | null;
+  /** JSON string of full result */
+  result: string | null;
+  /** Timestamp when this record was created */
+  createdAt: Date;
+  /** Timestamp when this record was last updated */
+  updatedAt: Date;
 }

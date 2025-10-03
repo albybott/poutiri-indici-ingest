@@ -72,6 +72,52 @@ export const loadRunFiles = createTable(
   ]
 );
 
+// Staging runs - tracks raw to staging transformation runs
+export const stagingRuns = createTable(
+  "etl.staging_runs",
+  {
+    stagingRunId: uuid("staging_run_id").primaryKey().defaultRandom(),
+    loadRunId: uuid("load_run_id")
+      .notNull()
+      .references(() => loadRuns.loadRunId),
+    extractType: text("extract_type").notNull(),
+    sourceTable: text("source_table").notNull(),
+    targetTable: text("target_table").notNull(),
+    startedAt: timestamp("started_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+    status: text("status").notNull(), // 'running', 'completed', 'failed'
+    totalRowsRead: integer("total_rows_read").default(0),
+    totalRowsTransformed: integer("total_rows_transformed").default(0),
+    totalRowsRejected: integer("total_rows_rejected").default(0),
+    totalRowsDeduplicated: integer("total_rows_deduplicated").default(0),
+    successfulBatches: integer("successful_batches").default(0),
+    failedBatches: integer("failed_batches").default(0),
+    durationMs: integer("duration_ms"),
+    rowsPerSecond: integer("rows_per_second"),
+    memoryUsageMB: integer("memory_usage_mb"),
+    error: text("error"),
+    result: text("result"), // JSON string of full result
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    // Unique constraint for idempotency - one completed staging run per load_run and extract_type
+    uniqueIndex("staging_runs_load_run_completed_idx")
+      .on(table.loadRunId, table.extractType)
+      .where(sql`${table.status} = 'completed'`),
+    // Index for querying by status
+    index("staging_runs_status_idx").on(table.status),
+    // Index for querying by load run
+    index("staging_runs_load_run_idx").on(table.loadRunId),
+  ]
+);
+
 // Core merge runs - tracks staging to core transformation runs
 export const coreMergeRuns = createTable(
   "etl.core_merge_runs",

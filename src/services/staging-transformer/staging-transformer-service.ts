@@ -15,6 +15,7 @@ import { TransformationEngine } from "./transformation-engine";
 import { ValidationEngine } from "./validation-engine";
 import { RejectionHandler } from "./rejection-handler";
 import { StagingTableLoader } from "./staging-table-loader";
+import { StagingRunService } from "./staging-run-service";
 import type {
   StagingTransformOptions,
   TransformResult,
@@ -33,6 +34,7 @@ export class StagingTransformerService {
   private validationEngine: ValidationEngine;
   private rejectionHandler: RejectionHandler;
   private stagingLoader: StagingTableLoader;
+  private stagingRunService: StagingRunService;
 
   constructor(
     private dbPool: DatabasePool,
@@ -44,6 +46,7 @@ export class StagingTransformerService {
     this.validationEngine = new ValidationEngine(config.validation);
     this.rejectionHandler = new RejectionHandler(dbPool, config.validation);
     this.stagingLoader = new StagingTableLoader(dbPool, errorHandler);
+    this.stagingRunService = new StagingRunService();
   }
 
   /**
@@ -59,6 +62,42 @@ export class StagingTransformerService {
     console.log(
       `🔄 Starting transformation: ${handler.extractType} (${handler.sourceTable} → ${handler.targetTable})`
     );
+
+    // Check idempotency (unless forced)
+    if (!options.loadRunId) {
+      throw new Error(
+        "loadRunId is required for staging transformation tracking"
+      );
+    }
+
+    if (!options.forceReprocess) {
+      const existing = await this.stagingRunService.getExistingStagingRun(
+        options.loadRunId,
+        handler.extractType
+      );
+      if (existing && existing.status === "completed") {
+        console.log(
+          `Staging transformation already completed - returning cached result`,
+          {
+            loadRunId: options.loadRunId,
+            stagingRunId: existing.stagingRunId,
+          }
+        );
+        return existing.result
+          ? JSON.parse(existing.result)
+          : this.emptyResult();
+      }
+    }
+
+    // Create staging run record
+    const stagingRunId = await this.stagingRunService.createRun({
+      loadRunId: options.loadRunId,
+      extractType: handler.extractType,
+      sourceTable: handler.sourceTable,
+      targetTable: handler.targetTable,
+    });
+
+    console.log(`📝 Created staging run: ${stagingRunId}`);
 
     try {
       // Ensure rejection table exists
@@ -79,7 +118,9 @@ export class StagingTransformerService {
       console.log(`📊 Total rows to transform: ${totalRows}`);
 
       if (totalRows === 0) {
-        return this.emptyResult();
+        const emptyResult = this.emptyResult();
+        await this.stagingRunService.completeRun(stagingRunId, emptyResult);
+        return emptyResult;
       }
 
       // Transform in batches
@@ -89,13 +130,37 @@ export class StagingTransformerService {
         totalRows
       );
 
+      // Calculate final metrics
+      const finalResult = {
+        ...result,
+        durationMs: Date.now() - startTime,
+        rowsPerSecond:
+          result.totalRowsRead > 0
+            ? result.totalRowsRead / ((Date.now() - startTime) / 1000)
+            : 0,
+        memoryUsageMB: process.memoryUsage().heapUsed / 1024 / 1024,
+      };
+
       console.log(
         `✅ Transformation complete: ${result.totalRowsTransformed}/${totalRows} rows transformed, ${result.totalRowsRejected} rejected`
       );
 
-      return result;
+      // Complete the staging run
+      await this.stagingRunService.completeRun(stagingRunId, finalResult);
+
+      return finalResult;
     } catch (error) {
       console.error("❌ Transformation failed:", error);
+
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+
+      // Fail the staging run
+      await this.stagingRunService.failRun(stagingRunId, errorMessage, {
+        failedBatches: 1,
+        durationMs: Date.now() - startTime,
+        memoryUsageMB: process.memoryUsage().heapUsed / 1024 / 1024,
+      });
 
       const loadError = await this.errorHandler.handleError(error, {
         operation: "transformExtract",
