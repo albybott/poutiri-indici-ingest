@@ -65,6 +65,8 @@ export type {
   LoadError, // Error information for failed load operations
   LoadProgress, // Progress tracking information during load operations
   LoadStatus, // Enumeration of possible load operation statuses
+  ProcessingBatchResult, // Result for a single batch within a processing plan
+  ProcessingPlanResult, // Result for a complete processing plan execution
 } from "./types/raw-loader";
 
 /**

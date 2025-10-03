@@ -1,8 +1,12 @@
 import "dotenv/config";
-import { S3DiscoveryService } from "./services/discovery/index.js";
+import {
+  S3DiscoveryService,
+  type ProcessingPlan,
+} from "./services/discovery/index.js";
 import {
   RawLoaderFactory,
   type LoadResult,
+  type ProcessingPlanResult,
 } from "./services/raw-loader/index.js";
 import type { RawLoaderConfig } from "./services/raw-loader/types/config.js";
 import type { DiscoveredFile } from "./services/discovery/types/files.js";
@@ -36,11 +40,105 @@ function init(): void {
   console.log(`🧪 Test Mode: ${config.testMode ? "Enabled" : "Disabled"}`);
 }
 
-async function testRawLoaderService(): Promise<string | null> {
-  let loadRunId: string | null = null;
+async function testDiscoveryService(): Promise<ProcessingPlan | null> {
+  try {
+    if (!config.s3Bucket || !config.awsRegion) {
+      console.log("⚠️  Cannot test discovery service - missing S3 credentials");
+      return null;
+    }
+
+    const discoveryService = new S3DiscoveryService({
+      s3: {
+        bucket: config.s3Bucket,
+        region: config.awsRegion,
+        maxConcurrency: 1,
+        retryAttempts: 2,
+      },
+      discovery: {
+        batchSize: 1,
+        maxFilesPerBatch: 1,
+        enableVersioning: true,
+        validateHashes: false,
+        cacheMetadata: false,
+        cacheTtlMinutes: 5,
+      },
+      processing: {
+        priorityExtracts: ["Patient"],
+        maxConcurrentFiles: 1,
+        processingTimeoutMs: 60000,
+      },
+    });
+
+    const isDiscoveryHealthy = await discoveryService.healthCheck();
+    console.log(
+      `🏥 Discovery service health: ${isDiscoveryHealthy ? "✅ Healthy" : "❌ Unhealthy"}`
+    );
+
+    /**
+     * Create a processing plan for this run
+     * A processing plan is a structured plan that organizes discovered files into batches for processing.
+     * It contains:
+     * - batches: Array of FileBatch objects, each containing files from the same extraction date
+     * - totalFiles: Total count of files across all batches
+     * - estimatedDuration: Estimated processing time in seconds
+     * - dependencies: Extract type dependencies (e.g., Patients before Appointments)
+     * - processingOrder: Optimized order for processing files
+     * - warnings: Non-critical issues found during discovery
+     */
+    const processingPlan = await discoveryService.discoverLatestFiles({
+      extractTypes: ["Patient"],
+      // Remove maxBatches limit to process all available batches
+    });
+
+    if (!processingPlan || processingPlan.batches.length === 0) {
+      console.log("⚠️  No batches found in the processing plan");
+      return null;
+    }
+
+    console.log(
+      `📁 Found ${processingPlan.batches.length} batches with ${processingPlan.totalFiles} total files for extraction types: ${processingPlan.dependencies.map((d) => d.extractType).join(", ")}
+      `
+    );
+    return processingPlan;
+  } catch (error) {
+    console.error("❌ Discovery Service test failed:", error);
+
+    if (error instanceof Error) {
+      console.error("🔍 Error details:", {
+        message: error.message,
+        stack: error.stack?.split("\n").slice(0, 3).join("\n"), // First 3 lines of stack
+      });
+    }
+
+    return null;
+  }
+}
+
+async function testRawLoaderService(
+  processingPlan: ProcessingPlan
+): Promise<string | null> {
   const loadRunService = new LoadRunService();
+  let loadRunId: string | null = null;
 
   try {
+    if (!processingPlan || processingPlan.batches.length === 0) {
+      console.log("🚨  No batches found in the processing plan");
+      return null;
+    }
+
+    // Create a single load run for this entire execution
+    loadRunId = await loadRunService.createLoadRun({
+      triggeredBy: "manual",
+      notes: `Processing ${processingPlan.totalFiles} files across ${processingPlan.batches.length} batches for extraction types: ${processingPlan.dependencies.map((d) => d.extractType).join(", ")}`,
+    });
+
+    if (!loadRunId) {
+      console.log("⚠️  Failed to create load run");
+      return null;
+    }
+
+    console.log(`🎽 Created load run: ${loadRunId}`);
+
     // Raw loader configuration
     const rawLoaderConfig: RawLoaderConfig = {
       // Database configuration
@@ -88,191 +186,70 @@ async function testRawLoaderService(): Promise<string | null> {
         : undefined
     );
 
-    const isHealthy = await rawLoader.healthCheck();
+    const isRawLoaderHealthy = await rawLoader.healthCheck();
     console.log(
-      `🏥 Service health: ${isHealthy ? "✅ Healthy" : "❌ Unhealthy"}`
+      `🏥 Raw Loader service health: ${isRawLoaderHealthy ? "✅ Healthy" : "❌ Unhealthy"}`
     );
 
-    if (config.s3Bucket && config.awsRegion) {
-      try {
-        const discoveryService = new S3DiscoveryService({
-          s3: {
-            bucket: config.s3Bucket,
-            region: config.awsRegion,
-            maxConcurrency: 1,
-            retryAttempts: 2,
-          },
-          discovery: {
-            batchSize: 1,
-            maxFilesPerBatch: 1,
-            enableVersioning: true,
-            validateHashes: false,
-            cacheMetadata: false,
-            cacheTtlMinutes: 5,
-          },
-          processing: {
-            priorityExtracts: ["Patient"],
-            maxConcurrentFiles: 1,
-            processingTimeoutMs: 60000,
-          },
-        });
-
-        // Create a processing plan for this run
-        // A processing plan is a structured plan that organizes discovered files into batches for processing.
-        // It contains:
-        // - batches: Array of FileBatch objects, each containing files from the same extraction date
-        // - totalFiles: Total count of files across all batches
-        // - estimatedDuration: Estimated processing time in seconds
-        // - dependencies: Extract type dependencies (e.g., Patients before Appointments)
-        // - processingOrder: Optimized order for processing files
-        // - warnings: Non-critical issues found during discovery
-        const processingPlan = await discoveryService.discoverLatestFiles({
-          extractTypes: ["Patient"],
-          // Remove maxBatches limit to process all available batches
-        });
-
-        if (processingPlan.batches.length > 0) {
-          console.log(
-            `📁 Found ${processingPlan.batches.length} batches with ${processingPlan.totalFiles} total files`
-          );
-
-          // Create a single load run for this entire execution
-          loadRunId = await loadRunService.createLoadRun({
-            triggeredBy: "manual",
-            notes: `Processing ${processingPlan.totalFiles} Patient files across ${processingPlan.batches.length} batches`,
-          });
-          console.log(`🏃 Created load run: ${loadRunId}`);
-
-          // Process all batches with the same load run ID
-          const allLoadResults = [];
-          let totalBatchesProcessed = 0;
-          let totalFilesProcessed = 0;
-          let totalRowsIngested = 0;
-          let totalRowsRejected = 0;
-
-          for (
-            let batchIndex = 0;
-            batchIndex < processingPlan.batches.length;
-            batchIndex++
-          ) {
-            const batch = processingPlan.batches[batchIndex];
-
-            if (batch.files.length === 0) {
-              console.log(`⚠️  Batch ${batchIndex + 1} has no files, skipping`);
-              continue;
-            }
-
-            console.log(
-              `📦 Processing batch ${batchIndex + 1}/${processingPlan.batches.length} with ${batch.files.length} files`
-            );
-
-            // Load the files for this batch into the database using the raw loader service
-            const loadResults = await rawLoader.loadMultipleFiles(
-              batch.files,
-              loadRunId,
-              {
-                batchSize: 500,
-                continueOnError: true,
-                maxConcurrentFiles: 1,
-              }
-            );
-
-            allLoadResults.push(...loadResults);
-            totalBatchesProcessed++;
-            totalFilesProcessed += loadResults.length;
-            totalRowsIngested += loadResults.reduce(
-              (sum, r) => sum + r.totalRows,
-              0
-            );
-            // Note: We don't have rejected rows count from LoadResult, tracking at 0 for now
-            totalRowsRejected += 0;
-
-            console.log(`✅ Batch ${batchIndex + 1} completed!`, {
-              filesProcessed: loadResults.length,
-              totalRows: loadResults.reduce((sum, r) => sum + r.totalRows, 0),
-              successfulBatches: loadResults.reduce(
-                (sum, r) => sum + r.successfulBatches,
-                0
-              ),
-              failedBatches: loadResults.reduce(
-                (sum, r) => sum + r.failedBatches,
-                0
-              ),
-              errors: loadResults.reduce((sum, r) => sum + r.errors.length, 0),
-            });
-          }
-
-          // Update load run with final statistics
-          await loadRunService.completeLoadRun(loadRunId, {
-            totalFilesProcessed,
-            totalRowsIngested,
-            totalRowsRejected,
-          });
-
-          // Overall summary
-          console.log("🎉 All batches processing completed!", {
-            loadRunId,
-            batchesProcessed: totalBatchesProcessed,
-            totalFilesProcessed,
-            totalRows: allLoadResults.reduce((sum, r) => sum + r.totalRows, 0),
-            totalSuccessfulBatches: allLoadResults.reduce(
-              (sum, r) => sum + r.successfulBatches,
-              0
-            ),
-            totalFailedBatches: allLoadResults.reduce(
-              (sum, r) => sum + r.failedBatches,
-              0
-            ),
-            totalErrors: allLoadResults.reduce(
-              (sum, r) => sum + r.errors.length,
-              0
-            ),
-          });
-
-          // Show detailed results for the first file across all batches
-          if (allLoadResults.length > 0) {
-            const firstResult = allLoadResults[0];
-            console.log("📊 Sample file details:", {
-              totalRows: firstResult.totalRows,
-              successfulBatches: firstResult.successfulBatches,
-              failedBatches: firstResult.failedBatches,
-              durationMs: firstResult.durationMs,
-              rowsPerSecond: Math.round(firstResult.rowsPerSecond),
-              memoryUsageMB: firstResult.memoryUsageMB,
-              errors: firstResult.errors.length,
-            });
-          }
-
-          console.log("\n✅ Raw Loader Service tests completed successfully!");
-          console.log(`📋 Load run ${loadRunId} completed`);
-          return loadRunId;
-        } else {
-          console.log("⚠️  No batches found in the processing plan");
-          return null;
-        }
-      } catch (error) {
-        console.error("❌ Error loading real data:", error);
-        console.log(
-          "💡 This is expected if database connection is not available"
-        );
-
-        // Mark load run as failed if it was created
-        if (loadRunId) {
-          await loadRunService.failLoadRun(
-            loadRunId,
-            error instanceof Error ? error.message : String(error)
-          );
-        }
-
-        return null;
+    // Process all batches using the new loadBatches method
+    const processingResult = await rawLoader.loadBatches(
+      processingPlan.batches,
+      loadRunId,
+      {
+        batchSize: 500,
+        continueOnError: true,
+        maxConcurrentFiles: 1,
       }
-    } else {
-      console.log(
-        "⚠️  Cannot load real data - missing S3 credentials or not in test mode"
-      );
-      console.log("\n✅ Raw Loader Service tests skipped");
-      return null;
+    );
+
+    // Extract metrics for backwards compatibility with existing code
+    const totalBatchesProcessed = processingResult.batchesProcessed;
+    const totalFilesProcessed = processingResult.totalFiles;
+    const totalRowsIngested = processingResult.totalRows;
+    const totalRowsRejected = 0; // Note: We don't have rejected rows count from LoadResult, tracking at 0 for now
+    const allLoadResults = processingResult.batchResults.flatMap(
+      (br) => br.fileResults
+    );
+
+    // Update load run with final statistics
+    await loadRunService.completeLoadRun(loadRunId, {
+      totalFilesProcessed,
+      totalRowsIngested,
+      totalRowsRejected,
+    });
+
+    // Overall summary
+    console.log("🎉 All batches processing completed!", {
+      loadRunId,
+      batchesProcessed: processingResult.batchesProcessed,
+      batchesFailed: processingResult.batchesFailed,
+      totalFilesProcessed: processingResult.totalFiles,
+      successfulFiles: processingResult.successfulFiles,
+      failedFiles: processingResult.failedFiles,
+      totalRows: processingResult.totalRows,
+      totalErrors: processingResult.errors.length,
+      totalWarnings: processingResult.warnings.length,
+      overallDurationMs: processingResult.overallDuration,
+    });
+
+    // Show detailed results for the first batch if available
+    if (processingResult.batchResults.length > 0) {
+      const firstBatch = processingResult.batchResults[0];
+      console.log("📊 Sample batch details:", {
+        batchId: firstBatch.batchId,
+        totalFiles: firstBatch.totalFiles,
+        successfulFiles: firstBatch.successfulFiles,
+        failedFiles: firstBatch.failedFiles,
+        totalRows: firstBatch.totalRows,
+        durationMs: firstBatch.durationMs,
+        errors: firstBatch.errors.length,
+        warnings: firstBatch.warnings.length,
+      });
     }
+
+    console.log("\n✅ Raw Loader Service tests completed successfully!");
+    console.log(`📋 Load run ${loadRunId} completed`);
+    return loadRunId;
   } catch (error) {
     console.error("❌ Raw Loader Service test failed:", error);
 
@@ -668,15 +645,26 @@ async function testCoreMergerService(loadRunId: string): Promise<void> {
 
 // eslint-disable-next-line @typescript-eslint/require-await
 async function main(): Promise<void> {
-  const loadRunId = await testRawLoaderService();
+  try {
+    const processingPlan = await testDiscoveryService();
+    if (!processingPlan) {
+      throw new Error("There was an error with the discovery service");
+    }
 
-  if (loadRunId) {
+    const loadRunId = await testRawLoaderService(processingPlan);
+    if (!loadRunId) {
+      throw new Error("There was an error with the raw loader service");
+    }
+
     await testStagingTransformerService(loadRunId);
 
     await testCoreMergerService(loadRunId);
-  }
 
-  console.log("✅ Application completed successfully!");
+    console.log("✅ Application completed successfully!");
+  } catch (error) {
+    console.error("❌ Failed to start application:", error);
+    process.exit(1);
+  }
 }
 
 // Handle unhandled promise rejections

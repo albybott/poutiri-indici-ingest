@@ -10,6 +10,8 @@ import type {
   LoadResult,
   LoadProgress,
   LoadMetrics,
+  ProcessingPlanResult,
+  ProcessingBatchResult,
 } from "./types/raw-loader";
 import { LoadStatus } from "./types/raw-loader";
 import {
@@ -17,7 +19,11 @@ import {
   type LoadError,
   type LoadWarning,
 } from "../../shared/types";
-import type { DiscoveredFile } from "../../services/discovery/types/files";
+import type {
+  DiscoveredFile,
+  FileBatch,
+} from "../../services/discovery/types/files";
+import type { ProcessingPlan } from "../../services/discovery/types/discovery";
 import type { FileSystemAdapter } from "../../services/discovery/adapters/file-system-adapter";
 import { S3FileSystemAdapter } from "../../services/discovery/adapters/s3-file-system-adapter";
 import type { S3Config } from "../../services/discovery/types/config";
@@ -280,6 +286,223 @@ export class RawLoaderService {
     );
 
     return results;
+  }
+
+  /**
+   * Load multiple batches of files from a processing plan
+   * Processes each batch sequentially, with configurable concurrency within each batch
+   */
+  async loadBatches(
+    batches: FileBatch[],
+    loadRunId: string,
+    options?: Partial<RawLoadOptions>
+  ): Promise<ProcessingPlanResult> {
+    // Build load options ensuring defaults are set if not provided
+    const loadOptions = this.buildLoadOptions(loadRunId, options);
+
+    const startedAt = new Date();
+    const batchResults: ProcessingBatchResult[] = [];
+    let totalFilesProcessed = 0;
+    let totalRowsProcessed = 0;
+    let totalSuccessfulFiles = 0;
+    let totalFailedFiles = 0;
+    let batchesProcessed = 0;
+    let batchesFailed = 0;
+
+    console.log(
+      `📦 Starting batch processing: ${batches.length} batches, load run: ${loadRunId}`
+    );
+
+    // Process each batch sequentially
+    for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
+      const batch = batches[batchIndex];
+      const batchStartTime = new Date();
+
+      if (batch.files.length === 0) {
+        console.log(
+          `⚠️  Batch ${batchIndex + 1}/${batches.length} (${batch.batchId}) has no files, skipping`
+        );
+        continue;
+      }
+
+      console.log(
+        `🔄 Processing batch ${batchIndex + 1}/${batches.length} (${batch.batchId}) with ${batch.files.length} files`
+      );
+
+      try {
+        // Load all files in this batch using existing loadMultipleFiles method
+        const fileResults = await this.loadMultipleFiles(
+          batch.files,
+          loadRunId,
+          loadOptions
+        );
+
+        const batchDuration = Date.now() - batchStartTime.getTime();
+        const batchTotalRows = fileResults.reduce(
+          (sum, r) => sum + r.totalRows,
+          0
+        );
+        const batchSuccessfulFiles = fileResults.filter(
+          (r) => r.successfulBatches > 0
+        ).length;
+        const batchFailedFiles = fileResults.filter(
+          (r) => r.failedBatches > 0
+        ).length;
+
+        // Aggregate errors and warnings from all file results
+        const batchErrors = fileResults.flatMap((r) => r.errors);
+        const batchWarnings = fileResults.flatMap((r) => r.warnings);
+
+        const batchResult: ProcessingBatchResult = {
+          batchIndex,
+          batchId: batch.batchId,
+          fileResults,
+          totalFiles: batch.files.length,
+          totalRows: batchTotalRows,
+          successfulFiles: batchSuccessfulFiles,
+          failedFiles: batchFailedFiles,
+          durationMs: batchDuration,
+          errors: batchErrors,
+          warnings: batchWarnings,
+        };
+
+        batchResults.push(batchResult);
+        batchesProcessed++;
+        totalFilesProcessed += batch.files.length;
+        totalRowsProcessed += batchTotalRows;
+        totalSuccessfulFiles += batchSuccessfulFiles;
+        totalFailedFiles += batchFailedFiles;
+
+        console.log(
+          `✅ Batch ${batchIndex + 1} completed: ${batchSuccessfulFiles}/${batch.files.length} files successful, ` +
+            `${batchTotalRows} rows, ${batchErrors.length} errors`
+        );
+
+        // Update progress if monitoring is enabled
+        if (this.config.monitoring.enableProgressTracking) {
+          await this.monitor.updateProgress({
+            fileKey: `batch_${batch.batchId}_${loadRunId}`,
+            extractType: "batch_processing",
+            totalRows: totalRowsProcessed,
+            processedRows: totalRowsProcessed,
+            currentBatch: batchIndex + 1,
+            totalBatches: batches.length,
+            estimatedTimeRemaining: this.estimateTimeRemaining(
+              startedAt,
+              totalFilesProcessed,
+              batches.reduce((sum, b) => sum + b.files.length, 0)
+            ),
+            currentStatus: LoadStatus.PROCESSING,
+            errors: batchErrors,
+            warnings: batchWarnings,
+            bytesProcessed: fileResults.reduce(
+              (sum, r) => sum + r.bytesProcessed,
+              0
+            ),
+            memoryUsageMB: Math.max(...fileResults.map((r) => r.memoryUsageMB)),
+            startTime: startedAt,
+            lastUpdate: new Date(),
+          });
+        }
+      } catch (error) {
+        const batchDuration = Date.now() - batchStartTime.getTime();
+        console.error(
+          `❌ Batch ${batchIndex + 1} (${batch.batchId}) failed:`,
+          error
+        );
+
+        // Create a failed batch result
+        const batchResult: ProcessingBatchResult = {
+          batchIndex,
+          batchId: batch.batchId,
+          fileResults: [],
+          totalFiles: batch.files.length,
+          totalRows: 0,
+          successfulFiles: 0,
+          failedFiles: batch.files.length,
+          durationMs: batchDuration,
+          errors: [
+            {
+              errorType: LoadErrorType.DATABASE_ERROR,
+              message:
+                error instanceof Error
+                  ? error.message
+                  : "Unknown batch processing error",
+              timestamp: new Date(),
+              isRetryable: false,
+            },
+          ],
+          warnings: [],
+        };
+
+        batchResults.push(batchResult);
+        batchesFailed++;
+        totalFilesProcessed += batch.files.length;
+        totalFailedFiles += batch.files.length;
+
+        // Continue processing other batches if continueOnError is enabled
+        if (!loadOptions.continueOnError) {
+          console.error(
+            "❌ Stopping batch processing due to error and continueOnError=false"
+          );
+          break;
+        }
+      }
+    }
+
+    const completedAt = new Date();
+    const overallDuration = completedAt.getTime() - startedAt.getTime();
+
+    // Aggregate all errors and warnings from all batches
+    const allErrors = batchResults.flatMap((br) => br.errors);
+    const allWarnings = batchResults.flatMap((br) => br.warnings);
+
+    const result: ProcessingPlanResult = {
+      totalBatches: batches.length,
+      batchesProcessed,
+      batchesFailed,
+      totalFiles: totalFilesProcessed,
+      totalRows: totalRowsProcessed,
+      successfulFiles: totalSuccessfulFiles,
+      failedFiles: totalFailedFiles,
+      batchResults,
+      overallDuration,
+      errors: allErrors,
+      warnings: allWarnings,
+      startedAt,
+      completedAt,
+    };
+
+    console.log(
+      `🎉 Batch processing complete: ${batchesProcessed}/${batches.length} batches processed, ` +
+        `${totalSuccessfulFiles}/${totalFilesProcessed} files successful, ` +
+        `${totalRowsProcessed} total rows, ${allErrors.length} total errors`
+    );
+
+    return result;
+  }
+
+  /**
+   * Load files from a complete processing plan
+   * Delegates to loadBatches with the plan's batches, potentially using plan metadata for optimization
+   */
+  async loadProcessingPlan(
+    processingPlan: ProcessingPlan,
+    loadRunId: string,
+    options?: Partial<RawLoadOptions>
+  ): Promise<ProcessingPlanResult> {
+    console.log(
+      `📋 Processing plan loaded: ${processingPlan.totalFiles} files across ${processingPlan.batches.length} batches`
+    );
+
+    // Log any warnings from the processing plan
+    if (processingPlan.warnings.length > 0) {
+      console.warn(`⚠️  Processing plan warnings:`, processingPlan.warnings);
+    }
+
+    // For now, delegate to loadBatches. In the future, this could use processing plan metadata
+    // like estimatedDuration, dependencies, or processingOrder for optimization
+    return this.loadBatches(processingPlan.batches, loadRunId, options);
   }
 
   /**

@@ -4,8 +4,9 @@ import type {
   LoadWarning,
   LoadErrorType,
   InsertBatch,
-  BatchResult,
 } from "../../../shared/types";
+import type { FileBatch } from "../../discovery/types/files";
+import type { ProcessingPlan } from "../../discovery/types/discovery";
 
 /**
  * Raw Loader Service Types
@@ -121,7 +122,7 @@ export interface LoadProgress {
 }
 
 // Re-export shared types for convenience
-export type { LoadError, LoadWarning, LoadErrorType, InsertBatch, BatchResult };
+export type { LoadError, LoadWarning, LoadErrorType, InsertBatch };
 
 /**
  * Structure for raw table rows with mandatory lineage metadata
@@ -388,4 +389,64 @@ export interface LoadRunRecord {
   createdAt: Date;
   /** Timestamp when this record was last updated */
   updatedAt: Date;
+}
+
+/**
+ * Result for a single batch within a processing plan
+ * Contains aggregated results for all files in a batch
+ */
+export interface ProcessingBatchResult {
+  /** Index of this batch within the processing plan (0-based) */
+  batchIndex: number;
+  /** Unique identifier for this batch */
+  batchId: string;
+  /** Individual file load results for this batch */
+  fileResults: LoadResult[];
+  /** Total number of files in this batch */
+  totalFiles: number;
+  /** Total number of rows processed across all files in this batch */
+  totalRows: number;
+  /** Number of successful file loads in this batch */
+  successfulFiles: number;
+  /** Number of failed file loads in this batch */
+  failedFiles: number;
+  /** Total processing time for this batch in milliseconds */
+  durationMs: number;
+  /** Errors aggregated from all files in this batch */
+  errors: LoadError[];
+  /** Warnings aggregated from all files in this batch */
+  warnings: LoadWarning[];
+}
+
+/**
+ * Result for a complete processing plan execution
+ * Contains aggregated results for all batches in the plan
+ */
+export interface ProcessingPlanResult {
+  /** Total number of batches in the processing plan */
+  totalBatches: number;
+  /** Number of batches that were successfully processed */
+  batchesProcessed: number;
+  /** Number of batches that failed during processing */
+  batchesFailed: number;
+  /** Total number of files across all batches */
+  totalFiles: number;
+  /** Total number of rows processed across all files and batches */
+  totalRows: number;
+  /** Number of files that were successfully processed */
+  successfulFiles: number;
+  /** Number of files that failed during processing */
+  failedFiles: number;
+  /** Individual batch results */
+  batchResults: ProcessingBatchResult[];
+  /** Total processing time for the entire plan in milliseconds */
+  overallDuration: number;
+  /** All errors aggregated from all batches */
+  errors: LoadError[];
+  /** All warnings aggregated from all batches */
+  warnings: LoadWarning[];
+  /** Timestamp when processing started */
+  startedAt: Date;
+  /** Timestamp when processing completed */
+  completedAt: Date;
 }
