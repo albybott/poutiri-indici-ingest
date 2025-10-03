@@ -9,6 +9,8 @@ import { DimensionLoader } from "./dimension/dimension-loader";
 import { PatientDimensionHandler } from "./dimension/handlers/patient-dimension-handler";
 import { ProviderDimensionHandler } from "./dimension/handlers/provider-dimension-handler";
 import { PracticeDimensionHandler } from "./dimension/handlers/practice-dimension-handler";
+import { MedicineDimensionHandler } from "./dimension/handlers/medicine-dimension-handler";
+import { VaccineDimensionHandler } from "./dimension/handlers/vaccine-dimension-handler";
 import { ForeignKeyResolver } from "./fact/foreign-key-resolver";
 import { FactLoader } from "./fact/fact-loader";
 import { appointmentFactConfig } from "./fact/handlers/appointment-fact-handler";
@@ -330,6 +332,10 @@ export class CoreMergerService {
         return new ProviderDimensionHandler();
       case DimensionType.PRACTICE:
         return new PracticeDimensionHandler();
+      case DimensionType.MEDICINE:
+        return new MedicineDimensionHandler();
+      case DimensionType.VACCINE:
+        return new VaccineDimensionHandler();
       default:
         throw new Error(`Unknown dimension type: ${dimensionType}`);
     }

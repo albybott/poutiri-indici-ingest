@@ -15,75 +15,79 @@ const practiceConfig: DimensionHandlerConfig = {
   dimensionType: DimensionType.PRACTICE,
   sourceTable: "stg.practice_info",
   targetTable: "core.practice",
-  businessKeyFields: ["practiceId", "perOrgId"],
+  businessKeyFields: ["practice_id", "per_org_id"],
 
   // Significant fields
   significantFields: [
-    "practiceName",
-    "practiceCategory",
+    "practice_name",
+    "practice_category",
     "pho",
-    "legalStatus",
-    "ownershipModel",
-    "isActive",
+    "legal_status",
+    "ownership_model",
+    "is_active",
   ],
 
   // Non-significant fields
   nonSignificantFields: [
-    "primaryPhone",
-    "secondaryPhone",
-    "primaryEmail",
-    "secondaryEmail",
+    "primary_phone",
+    "secondary_phone",
+    "primary_email",
+    "secondary_email",
   ],
 
   fieldMappings: [
     // Core identifiers
-    { sourceField: "practiceId", targetField: "practiceId", required: true },
-    { sourceField: "perOrgId", targetField: "perOrgId", required: true },
+    { sourceField: "practice_id", targetField: "practiceId", required: true },
+    { sourceField: "per_org_id", targetField: "perOrgId", required: true },
 
     // Core practice attributes (significant)
     {
-      sourceField: "practiceName",
+      sourceField: "practice_name",
       targetField: "practiceName",
       required: true,
     },
     {
-      sourceField: "practiceCategory",
+      sourceField: "practice_category",
       targetField: "practiceCategory",
       required: false,
     },
     {
-      sourceField: "practiceSpeciality",
+      sourceField: "practice_speciality",
       targetField: "practiceSpeciality",
       required: false,
     },
     { sourceField: "pho", targetField: "pho", required: false },
     {
-      sourceField: "organizationType",
+      sourceField: "organization_type",
       targetField: "organizationType",
       required: false,
     },
     {
-      sourceField: "orgShortName",
+      sourceField: "org_short_name",
       targetField: "orgShortName",
       required: false,
     },
-    { sourceField: "orgCode", targetField: "orgCode", required: false },
-    { sourceField: "ediAccount", targetField: "ediAccount", required: false },
+    { sourceField: "org_code", targetField: "orgCode", required: false },
+    { sourceField: "edi_account", targetField: "ediAccount", required: false },
 
     // Legal information (significant)
     {
-      sourceField: "legalEntityTitle",
+      sourceField: "legal_entity_title",
       targetField: "legalEntityTitle",
       required: false,
     },
-    { sourceField: "legalStatus", targetField: "legalStatus", required: false },
     {
-      sourceField: "incorporationNumber",
+      sourceField: "legal_status",
+      targetField: "legalStatus",
+      required: false,
+    },
+    {
+      sourceField: "incorporation_number",
       targetField: "incorporationNumber",
       required: false,
     },
     {
-      sourceField: "ownershipModel",
+      sourceField: "ownership_model",
       targetField: "ownershipModel",
       required: false,
     },
@@ -96,49 +100,49 @@ const practiceConfig: DimensionHandlerConfig = {
 
     // Contact information (non-significant)
     {
-      sourceField: "primaryPhone",
+      sourceField: "primary_phone",
       targetField: "primaryPhone",
       required: false,
     },
     {
-      sourceField: "secondaryPhone",
+      sourceField: "secondary_phone",
       targetField: "secondaryPhone",
       required: false,
     },
     {
-      sourceField: "primaryEmail",
+      sourceField: "primary_email",
       targetField: "primaryEmail",
       required: false,
     },
     {
-      sourceField: "secondaryEmail",
+      sourceField: "secondary_email",
       targetField: "secondaryEmail",
       required: false,
     },
 
     // Identifiers
     {
-      sourceField: "healthFacilityNo",
+      sourceField: "health_facility_no",
       targetField: "healthFacilityNo",
       required: false,
     },
     {
-      sourceField: "hpiFacilityNo",
+      sourceField: "hpi_facility_no",
       targetField: "hpiFacilityNo",
       required: false,
     },
-    { sourceField: "gstNo", targetField: "gstNo", required: false },
-    { sourceField: "accNo", targetField: "accNo", required: false },
+    { sourceField: "gst_no", targetField: "gstNo", required: false },
+    { sourceField: "acc_no", targetField: "accNo", required: false },
 
     // Status
     {
-      sourceField: "isActive",
+      sourceField: "is_active",
       targetField: "isActive",
       required: false,
       defaultValue: true,
     },
     {
-      sourceField: "isDeleted",
+      sourceField: "is_deleted",
       targetField: "isDeleted",
       required: false,
       defaultValue: false,
@@ -151,33 +155,33 @@ const practiceConfig: DimensionHandlerConfig = {
  */
 const practiceSCD2Config: SCD2Config = {
   dimensionType: DimensionType.PRACTICE,
-  businessKeyFields: ["practiceId", "perOrgId"],
+  businessKeyFields: ["practice_id", "per_org_id"],
   trackedFields: [
-    "practiceName",
-    "practiceCategory",
+    "practice_name",
+    "practice_category",
     "pho",
-    "legalStatus",
-    "ownershipModel",
-    "isActive",
+    "legal_status",
+    "ownership_model",
+    "is_active",
   ],
   comparisonRules: [
     // Practice name - always version
-    { fieldName: "practiceName", compareType: "always_version", weight: 1.0 },
+    { fieldName: "practice_name", compareType: "always_version", weight: 1.0 },
 
     // Category and organizational changes - significant
-    { fieldName: "practiceCategory", compareType: "significant", weight: 0.7 },
+    { fieldName: "practice_category", compareType: "significant", weight: 0.7 },
     { fieldName: "pho", compareType: "always_version", weight: 0.8 },
-    { fieldName: "legalStatus", compareType: "always_version", weight: 0.9 },
-    { fieldName: "ownershipModel", compareType: "significant", weight: 0.6 },
+    { fieldName: "legal_status", compareType: "always_version", weight: 0.9 },
+    { fieldName: "ownership_model", compareType: "significant", weight: 0.6 },
 
     // Status - significant
-    { fieldName: "isActive", compareType: "always_version", weight: 0.8 },
+    { fieldName: "is_active", compareType: "always_version", weight: 0.8 },
 
     // Contact info - never version
-    { fieldName: "primaryPhone", compareType: "never_version", weight: 0 },
-    { fieldName: "secondaryPhone", compareType: "never_version", weight: 0 },
-    { fieldName: "primaryEmail", compareType: "never_version", weight: 0 },
-    { fieldName: "secondaryEmail", compareType: "never_version", weight: 0 },
+    { fieldName: "primary_phone", compareType: "never_version", weight: 0 },
+    { fieldName: "secondary_phone", compareType: "never_version", weight: 0 },
+    { fieldName: "primary_email", compareType: "never_version", weight: 0 },
+    { fieldName: "secondary_email", compareType: "never_version", weight: 0 },
   ],
   changeThreshold: 0.5,
 };

@@ -15,55 +15,55 @@ const providerConfig: DimensionHandlerConfig = {
   dimensionType: DimensionType.PROVIDER,
   sourceTable: "stg.providers",
   targetTable: "core.provider",
-  businessKeyFields: ["providerId", "practiceId", "perOrgId"],
+  businessKeyFields: ["provider_id", "practice_id", "per_org_id"],
 
   // Significant fields
   significantFields: [
-    "nhiNumber",
-    "firstName",
-    "middleName",
-    "familyName",
-    "fullName",
+    "nhi_number",
+    "first_name",
+    "middle_name",
+    "family_name",
+    "full_name",
     "dob",
     "gender",
-    "providerCode",
-    "nzmcNo",
-    "hpiNo",
-    "isActive",
+    "provider_code",
+    "nzmc_no",
+    "hpi_no",
+    "is_active",
   ],
 
   // Non-significant fields
-  nonSignificantFields: ["email", "cellNumber", "userRole"],
+  nonSignificantFields: ["email", "cell_number", "user_role"],
 
   fieldMappings: [
     // Core identifiers
-    { sourceField: "providerId", targetField: "providerId", required: true },
-    { sourceField: "practiceId", targetField: "practiceId", required: true },
-    { sourceField: "perOrgId", targetField: "perOrgId", required: true },
+    { sourceField: "provider_id", targetField: "providerId", required: true },
+    { sourceField: "practice_id", targetField: "practiceId", required: true },
+    { sourceField: "per_org_id", targetField: "perOrgId", required: true },
 
     // Professional identifiers (significant)
-    { sourceField: "nhiNumber", targetField: "nhiNumber", required: false },
-    { sourceField: "nzmcNo", targetField: "nzmcNo", required: false },
-    { sourceField: "npiNo", targetField: "npiNo", required: false },
+    { sourceField: "nhi_number", targetField: "nhiNumber", required: false },
+    { sourceField: "nzmc_no", targetField: "nzmcNo", required: false },
+    { sourceField: "npi_no", targetField: "npiNo", required: false },
     {
-      sourceField: "providerCode",
+      sourceField: "provider_code",
       targetField: "providerCode",
       required: false,
     },
     {
-      sourceField: "accreditationNo",
+      sourceField: "accreditation_no",
       targetField: "accreditationNo",
       required: false,
     },
-    { sourceField: "hpiNo", targetField: "hpiNo", required: false },
+    { sourceField: "hpi_no", targetField: "hpiNo", required: false },
 
     // Personal details (significant)
-    { sourceField: "firstName", targetField: "firstName", required: false },
-    { sourceField: "middleName", targetField: "middleName", required: false },
-    { sourceField: "familyName", targetField: "familyName", required: true },
-    { sourceField: "fullName", targetField: "fullName", required: true },
+    { sourceField: "first_name", targetField: "firstName", required: false },
+    { sourceField: "middle_name", targetField: "middleName", required: false },
+    { sourceField: "family_name", targetField: "familyName", required: true },
+    { sourceField: "full_name", targetField: "fullName", required: true },
     {
-      sourceField: "preferredName",
+      sourceField: "preferred_name",
       targetField: "preferredName",
       required: false,
     },
@@ -71,30 +71,34 @@ const providerConfig: DimensionHandlerConfig = {
     { sourceField: "gender", targetField: "gender", required: false },
     { sourceField: "dob", targetField: "dob", required: false },
     {
-      sourceField: "isAlive",
+      sourceField: "is_alive",
       targetField: "isAlive",
       required: false,
       defaultValue: true,
     },
-    { sourceField: "deathDate", targetField: "deathDate", required: false },
+    { sourceField: "death_date", targetField: "deathDate", required: false },
 
     // Practice relationship (non-significant)
     {
-      sourceField: "practiceName",
+      sourceField: "practice_name",
       targetField: "practiceName",
       required: false,
     },
-    { sourceField: "userRole", targetField: "userRole", required: false },
+    { sourceField: "user_role", targetField: "userRole", required: false },
+
+    // Contact information
+    { sourceField: "email", targetField: "email", required: false },
+    { sourceField: "cell_number", targetField: "cellNumber", required: false },
 
     // Status
     {
-      sourceField: "isActive",
+      sourceField: "is_active",
       targetField: "isActive",
       required: false,
       defaultValue: true,
     },
     {
-      sourceField: "isDeleted",
+      sourceField: "is_deleted",
       targetField: "isDeleted",
       required: false,
       defaultValue: false,
@@ -107,42 +111,44 @@ const providerConfig: DimensionHandlerConfig = {
  */
 const providerSCD2Config: SCD2Config = {
   dimensionType: DimensionType.PROVIDER,
-  businessKeyFields: ["providerId", "practiceId", "perOrgId"],
+  businessKeyFields: ["provider_id", "practice_id", "per_org_id"],
   trackedFields: [
-    "nhiNumber",
-    "firstName",
-    "middleName",
-    "familyName",
-    "fullName",
+    "nhi_number",
+    "first_name",
+    "middle_name",
+    "family_name",
+    "full_name",
     "dob",
     "gender",
-    "providerCode",
-    "nzmcNo",
-    "hpiNo",
-    "isActive",
+    "provider_code",
+    "nzmc_no",
+    "hpi_no",
+    "is_active",
   ],
   comparisonRules: [
     // Professional identifiers - always version
-    { fieldName: "nhiNumber", compareType: "always_version", weight: 1.0 },
-    { fieldName: "providerCode", compareType: "always_version", weight: 1.0 },
-    { fieldName: "nzmcNo", compareType: "always_version", weight: 0.9 },
-    { fieldName: "hpiNo", compareType: "always_version", weight: 0.9 },
+    { fieldName: "nhi_number", compareType: "always_version", weight: 1.0 },
+    { fieldName: "provider_code", compareType: "always_version", weight: 1.0 },
+    { fieldName: "nzmc_no", compareType: "always_version", weight: 0.9 },
+    { fieldName: "hpi_no", compareType: "always_version", weight: 0.9 },
 
     // Name changes - significant
-    { fieldName: "firstName", compareType: "significant", weight: 0.7 },
-    { fieldName: "middleName", compareType: "significant", weight: 0.3 },
-    { fieldName: "familyName", compareType: "always_version", weight: 1.0 },
-    { fieldName: "fullName", compareType: "significant", weight: 0.8 },
+    { fieldName: "first_name", compareType: "significant", weight: 0.7 },
+    { fieldName: "middle_name", compareType: "significant", weight: 0.3 },
+    { fieldName: "family_name", compareType: "always_version", weight: 1.0 },
+    { fieldName: "full_name", compareType: "significant", weight: 0.8 },
 
     // Demographics
     { fieldName: "dob", compareType: "always_version", weight: 1.0 },
     { fieldName: "gender", compareType: "significant", weight: 0.5 },
 
     // Status - significant
-    { fieldName: "isActive", compareType: "always_version", weight: 0.8 },
+    { fieldName: "is_active", compareType: "always_version", weight: 0.8 },
 
     // Non-significant fields
-    { fieldName: "userRole", compareType: "never_version", weight: 0 },
+    { fieldName: "email", compareType: "never_version", weight: 0 },
+    { fieldName: "cell_number", compareType: "never_version", weight: 0 },
+    { fieldName: "user_role", compareType: "never_version", weight: 0 },
   ],
   changeThreshold: 0.5,
 };

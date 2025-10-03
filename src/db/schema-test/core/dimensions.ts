@@ -7,7 +7,6 @@ import {
   date,
   serial,
   uniqueIndex,
-  foreignKey,
 } from "drizzle-orm/pg-core";
 import { createTable } from "../../utils/create-table";
 
@@ -98,6 +97,13 @@ export const dimProvider = createTable(
     practiceId: text("practice_id").notNull(),
     perOrgId: text("per_org_id").notNull(),
 
+    // SCD2 attributes
+    effectiveFrom: timestamp("effective_from", {
+      withTimezone: true,
+    }).notNull(),
+    effectiveTo: timestamp("effective_to", { withTimezone: true }),
+    isCurrent: boolean("is_current").notNull().default(true),
+
     // Core provider attributes
     nhiNumber: text("nhi_number"),
     title: text("title"),
@@ -125,13 +131,6 @@ export const dimProvider = createTable(
     // Status
     isActive: boolean("is_active").notNull().default(true),
     isDeleted: boolean("is_deleted").notNull().default(false),
-
-    // SCD2 attributes
-    effectiveFrom: timestamp("effective_from", {
-      withTimezone: true,
-    }).notNull(),
-    effectiveTo: timestamp("effective_to", { withTimezone: true }),
-    isCurrent: boolean("is_current").notNull().default(true),
 
     // Lineage - link to load run for traceability
     loadRunId: uuid("load_run_id").notNull(),

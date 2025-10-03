@@ -17,23 +17,28 @@ const patientConfig: DimensionHandlerConfig = {
   targetTable: "core.patient",
   businessKeyFields: ["patient_id", "practice_id", "per_org_id"],
 
-  // Significant fields that trigger SCD2 versioning
+  // Significant fields that trigger SCD2 versioning (core demographics)
   significantFields: [
     "nhi_number",
     "first_name",
     "middle_name",
     "family_name",
     "full_name",
+    "preferred_name",
     "dob",
     "gender",
     "is_alive",
     "death_date",
     "ethnicity",
     "marital_status",
+    "residential_status",
+    "age_group",
   ],
 
-  // Non-significant fields (updated in place)
+  // Non-significant fields (contact & location info - updated in place)
   nonSignificantFields: [
+    "title",
+    "age",
     "email",
     "cell_number",
     "day_phone",
@@ -41,6 +46,12 @@ const patientConfig: DimensionHandlerConfig = {
     "permanent_address_city",
     "permanent_address_suburb",
     "permanent_address_postal_code",
+    "permanent_address_dhb_code",
+    "permanent_address_deprivation_quintile",
+    "provider_id",
+    "practice_name",
+    "is_active",
+    "is_deleted",
   ],
 
   fieldMappings: [
@@ -157,32 +168,79 @@ const patientSCD2Config: SCD2Config = {
     "middle_name",
     "family_name",
     "full_name",
+    "preferred_name",
     "dob",
     "gender",
     "is_alive",
     "death_date",
     "ethnicity",
     "marital_status",
+    "residential_status",
+    "age_group",
   ],
   comparisonRules: [
-    // Demographics - always version
+    // Critical identifiers - always create new version
     { fieldName: "nhi_number", compareType: "always_version", weight: 1.0 },
-    { fieldName: "first_name", compareType: "significant", weight: 0.8 },
-    { fieldName: "middle_name", compareType: "significant", weight: 0.3 },
-    { fieldName: "family_name", compareType: "always_version", weight: 1.0 },
-    { fieldName: "full_name", compareType: "significant", weight: 0.9 },
     { fieldName: "dob", compareType: "always_version", weight: 1.0 },
-    { fieldName: "gender", compareType: "significant", weight: 0.6 },
     { fieldName: "is_alive", compareType: "always_version", weight: 1.0 },
     { fieldName: "death_date", compareType: "always_version", weight: 1.0 },
+
+    // Core name fields - high significance
+    { fieldName: "family_name", compareType: "always_version", weight: 1.0 },
+    { fieldName: "full_name", compareType: "significant", weight: 0.9 },
+    { fieldName: "first_name", compareType: "significant", weight: 0.8 },
+    { fieldName: "preferred_name", compareType: "significant", weight: 0.7 },
+
+    // Demographics - medium significance
+    { fieldName: "middle_name", compareType: "significant", weight: 0.3 },
+    { fieldName: "gender", compareType: "significant", weight: 0.6 },
     { fieldName: "ethnicity", compareType: "significant", weight: 0.5 },
     { fieldName: "marital_status", compareType: "significant", weight: 0.3 },
+    {
+      fieldName: "residential_status",
+      compareType: "significant",
+      weight: 0.4,
+    },
+    { fieldName: "age_group", compareType: "significant", weight: 0.2 },
 
-    // Contact info - never version (updated in place)
+    // Contact & location - never version (updated in place)
+    { fieldName: "title", compareType: "never_version", weight: 0 },
+    { fieldName: "age", compareType: "never_version", weight: 0 },
     { fieldName: "email", compareType: "never_version", weight: 0 },
     { fieldName: "cell_number", compareType: "never_version", weight: 0 },
+    { fieldName: "day_phone", compareType: "never_version", weight: 0 },
+    { fieldName: "night_phone", compareType: "never_version", weight: 0 },
+    {
+      fieldName: "permanent_address_city",
+      compareType: "never_version",
+      weight: 0,
+    },
+    {
+      fieldName: "permanent_address_suburb",
+      compareType: "never_version",
+      weight: 0,
+    },
+    {
+      fieldName: "permanent_address_postal_code",
+      compareType: "never_version",
+      weight: 0,
+    },
+    {
+      fieldName: "permanent_address_dhb_code",
+      compareType: "never_version",
+      weight: 0,
+    },
+    {
+      fieldName: "permanent_address_deprivation_quintile",
+      compareType: "never_version",
+      weight: 0,
+    },
+    { fieldName: "provider_id", compareType: "never_version", weight: 0 },
+    { fieldName: "practice_name", compareType: "never_version", weight: 0 },
+    { fieldName: "is_active", compareType: "never_version", weight: 0 },
+    { fieldName: "is_deleted", compareType: "never_version", weight: 0 },
   ],
-  changeThreshold: 0.5, // 50% weighted significance to create new version
+  changeThreshold: 0.4, // Lower threshold - 40% weighted significance to create new version
 };
 
 /**

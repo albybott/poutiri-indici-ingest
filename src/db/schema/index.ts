@@ -3,9 +3,21 @@ export * from "./schemas";
 
 // Raw schemas - all source columns as text with lineage
 export * from "./raw/patients";
+export * from "./raw/providers";
+export * from "./raw/practice_info";
+export * from "./raw/appointments";
+export * from "./raw/medicine";
+export * from "./raw/vaccine";
+export * from "./raw/immunisation";
 
 // Staging schemas - typed columns with constraints and mapping tables
 export * from "./stg/patients";
+export * from "./stg/providers";
+export * from "./stg/practice_info";
+export * from "./stg/appointments";
+export * from "./stg/medicine";
+export * from "./stg/vaccine";
+export * from "./stg/immunisation";
 
 // Shared enums and types
 export * from "./shared/enums";
@@ -23,10 +35,22 @@ export * from "./etl/audit";
 // for dynamic schema management scenarios
 export const rawSchemas = {
   patients: () => import("./raw/patients"),
+  providers: () => import("./raw/providers"),
+  practice_info: () => import("./raw/practice_info"),
+  appointments: () => import("./raw/appointments"),
+  medicine: () => import("./raw/medicine"),
+  vaccine: () => import("./raw/vaccine"),
+  immunisation: () => import("./raw/immunisation"),
 };
 
 export const stgSchemas = {
   patients: () => import("./stg/patients"),
+  providers: () => import("./stg/providers"),
+  practice_info: () => import("./stg/practice_info"),
+  appointments: () => import("./stg/appointments"),
+  medicine: () => import("./stg/medicine"),
+  vaccine: () => import("./stg/vaccine"),
+  immunisation: () => import("./stg/immunisation"),
 };
 
 export const coreSchemas = {
