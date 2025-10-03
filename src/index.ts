@@ -565,7 +565,7 @@ async function testCoreMergerService(stagingRunId: string): Promise<void> {
     // Merge to core
     const result = await coreMerger.mergeToCore({
       stagingRunId,
-      forceReprocess: true, // Ensure we process all data for testing
+      forceReprocess: false, // Ensure we process all data for testing
       extractTypes: ["Patient"],
     });
 

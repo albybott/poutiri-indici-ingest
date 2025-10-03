@@ -52,26 +52,12 @@ export class CoreMergerService {
    * Merge staging data to core
    */
   async mergeToCore(options: CoreMergeOptions): Promise<CoreMergeResult> {
-    const mergeRunId = randomUUID();
     const startedAt = new Date();
 
     logger.info(`Starting core merge`, {
-      mergeRunId,
       stagingRunId: options.stagingRunId,
       extractTypes: options.extractTypes,
     });
-
-    // Check idempotency (unless forced)
-    if (!options.forceReprocess) {
-      const existing = await this.checkExistingMerge(options.stagingRunId);
-      if (existing && existing.status === "completed") {
-        logger.info(`Staging run already merged - returning cached result`, {
-          stagingRunId: options.stagingRunId,
-          mergeRunId: existing.mergeRunId,
-        });
-        return existing.result!;
-      }
-    }
 
     // Get staging run details to extract loadRunId and extractType
     const stagingRun = await this.getStagingRunDetails(options.stagingRunId);
@@ -79,12 +65,30 @@ export class CoreMergerService {
       throw new Error(`Staging run ${options.stagingRunId} not found`);
     }
 
-    // Record merge run start
-    await this.mergeRunService.createRun({
-      loadRunId: stagingRun.loadRunId,
-      stagingRunId: options.stagingRunId,
-      extractType: stagingRun.extractType,
-    });
+    // Check if staging run already merged
+    const existing = await this.checkExistingMerge(options.stagingRunId);
+
+    // If merge has already completed, return the cached result
+    if (
+      existing &&
+      existing.status === "completed" &&
+      !options.forceReprocess
+    ) {
+      logger.info(`Staging run already merged - returning cached result`, {
+        stagingRunId: options.stagingRunId,
+        mergeRunId: existing.mergeRunId,
+      });
+      return existing.result!;
+    }
+
+    // Create or use existing merge run id
+    const mergeRunId =
+      existing?.mergeRunId ??
+      (await this.mergeRunService.createRun({
+        loadRunId: stagingRun.loadRunId,
+        stagingRunId: options.stagingRunId,
+        extractType: stagingRun.extractType,
+      }));
 
     // Start monitoring
     // TODO: Calculate actual item count from staging data instead of using placeholder

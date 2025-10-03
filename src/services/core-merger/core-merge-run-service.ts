@@ -79,10 +79,6 @@ export class CoreMergeRunService extends BaseRunService<
       updateValues.result = params.result;
     }
 
-    console.log(
-      `📝 Updating core merge run ${runId} with values:`,
-      updateValues
-    );
     try {
       const result = await this.db
         .update(this.table)
@@ -90,10 +86,6 @@ export class CoreMergeRunService extends BaseRunService<
         .where(eq(this.table.mergeRunId, runId))
         .returning();
 
-      console.log(
-        `🔍 Database update result for core merge run ${runId}:`,
-        result
-      );
       if (result.length === 0) {
         console.error(
           `❌ No rows updated for core merge run ${runId} - record may not exist`
