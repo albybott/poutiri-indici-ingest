@@ -11,8 +11,8 @@ import type { FactLoadResult } from "./fact";
  * Options for core merge operation
  */
 export interface CoreMergeOptions {
-  /** Load run ID from staging */
-  loadRunId: string;
+  /** Staging run ID from staging transformation */
+  stagingRunId: string;
 
   /** Extract types to process (e.g., ['Patient', 'Appointment']) */
   extractTypes?: string[];
@@ -36,6 +36,9 @@ export interface CoreMergeOptions {
 export interface CoreMergeResult {
   /** Merge run ID */
   mergeRunId: string;
+
+  /** Staging run ID from staging transformation */
+  stagingRunId: string;
 
   /** Load run ID from staging */
   loadRunId: string;
@@ -90,6 +93,9 @@ export interface CoreMergeRunStatus {
   /** Merge run ID */
   mergeRunId: string;
 
+  /** Staging run ID from staging transformation */
+  stagingRunId: string;
+
   /** Load run ID from staging */
   loadRunId: string;
 
@@ -120,6 +126,8 @@ export type CoreMergeRunStatusType = "running" | "completed" | "failed";
 export interface CreateCoreMergeRunParams {
   /** Load run ID that this merge is processing */
   loadRunId: string;
+  /** Staging run ID that this merge is processing */
+  stagingRunId: string;
   /** Extract type being processed */
   extractType: string;
 }
@@ -154,6 +162,8 @@ export interface CoreMergeRunRecord {
   mergeRunId: string;
   /** Load run ID that this merge is processing */
   loadRunId: string;
+  /** Staging run ID that this merge is processing */
+  stagingRunId: string;
   /** Extract type being processed */
   extractType: string;
   /** Timestamp when the merge run started */

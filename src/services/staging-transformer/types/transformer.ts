@@ -23,6 +23,7 @@ export interface StagingTransformOptions {
  * Result of staging transformation operation
  */
 export interface TransformResult {
+  stagingRunId: string; // Unique identifier for this staging transformation run
   totalRowsRead: number; // Rows read from raw table
   totalRowsTransformed: number; // Rows successfully transformed
   totalRowsRejected: number; // Rows rejected due to validation

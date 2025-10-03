@@ -276,7 +276,9 @@ async function testRawLoaderService(
   }
 }
 
-async function testStagingTransformerService(loadRunId: string): Promise<void> {
+async function testStagingTransformerService(
+  loadRunId: string
+): Promise<{ stagingRunId: string }> {
   console.log(
     "\n🔄 Testing Staging Transformer Service (raw.* → stg.* tables)..."
   );
@@ -319,7 +321,7 @@ async function testStagingTransformerService(loadRunId: string): Promise<void> {
 
     if (!isHealthy) {
       console.log("⚠️  Skipping staging transformation - service unhealthy");
-      return;
+      throw new Error("Staging transformer service is unhealthy");
     }
 
     // Define Patient extract handler
@@ -518,6 +520,8 @@ async function testStagingTransformerService(loadRunId: string): Promise<void> {
 
     // Close connections
     await transformer.close();
+
+    return { stagingRunId: result.stagingRunId };
   } catch (error) {
     console.error("❌ Staging Transformer Service test failed:", error);
 
@@ -528,14 +532,12 @@ async function testStagingTransformerService(loadRunId: string): Promise<void> {
       });
     }
 
-    // Don't exit in test mode, just log the error
-    if (!config.testMode) {
-      throw error;
-    }
+    // In test mode, re-throw the error to fail the pipeline
+    throw error;
   }
 }
 
-async function testCoreMergerService(loadRunId: string): Promise<void> {
+async function testCoreMergerService(stagingRunId: string): Promise<void> {
   console.log("\n🔀 Testing Core Merger Service (stg.* → core.* tables)...");
 
   try {
@@ -556,11 +558,13 @@ async function testCoreMergerService(loadRunId: string): Promise<void> {
       return;
     }
 
-    console.log(`🔀 Merging staging data to core for load run: ${loadRunId}`);
+    console.log(
+      `🔀 Merging staging data to core for staging run: ${stagingRunId}`
+    );
 
     // Merge to core
     const result = await coreMerger.mergeToCore({
-      loadRunId,
+      stagingRunId,
       forceReprocess: true, // Ensure we process all data for testing
       extractTypes: ["Patient"],
     });
@@ -656,9 +660,14 @@ async function main(): Promise<void> {
       throw new Error("There was an error with the raw loader service");
     }
 
-    await testStagingTransformerService(loadRunId);
+    const { stagingRunId } = await testStagingTransformerService(loadRunId);
+    if (!stagingRunId) {
+      throw new Error(
+        "There was an error with the staging transformer service"
+      );
+    }
 
-    await testCoreMergerService(loadRunId);
+    await testCoreMergerService(stagingRunId);
 
     console.log("✅ Application completed successfully!");
   } catch (error) {

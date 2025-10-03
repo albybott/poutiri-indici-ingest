@@ -89,6 +89,9 @@ export interface FactLoadOptions {
   /** Load run ID for tracking */
   loadRunId: string;
 
+  /** Staging run ID for data selection */
+  stagingRunId: string;
+
   /** Extract type being processed */
   extractType: string;
 

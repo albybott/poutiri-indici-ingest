@@ -97,10 +97,30 @@ export class StagingRunService extends BaseRunService<
       updateValues.result = params.result;
     }
 
-    await this.db
-      .update(this.table)
-      .set(updateValues)
-      .where(eq(this.table.stagingRunId, runId));
+    console.log(`📝 Updating staging run ${runId} with values:`, updateValues);
+    try {
+      const result = await this.db
+        .update(this.table)
+        .set(updateValues)
+        .where(eq(this.table.stagingRunId, runId))
+        .returning();
+
+      console.log(
+        `🔍 Database update result for staging run ${runId}:`,
+        result
+      );
+      if (result.length === 0) {
+        console.error(
+          `❌ No rows updated for staging run ${runId} - record may not exist`
+        );
+      }
+    } catch (error) {
+      console.error(
+        `❌ Database update failed for staging run ${runId}:`,
+        error
+      );
+      throw error;
+    }
   }
 
   /**
@@ -120,12 +140,16 @@ export class StagingRunService extends BaseRunService<
    * Mark staging run as completed successfully with final statistics
    */
   async completeRun(runId: string, stats: Record<string, any>): Promise<void> {
+    console.log(
+      `🔄 Completing staging run ${runId} with completedAt: ${new Date().toISOString()}`
+    );
     await this.updateRun(runId, {
       status: "completed",
       completedAt: new Date(),
       result: JSON.stringify(stats), // Store full result
       ...stats,
     });
+    console.log(`✅ Staging run ${runId} completed successfully`);
   }
 
   /**

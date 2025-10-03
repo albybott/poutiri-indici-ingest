@@ -32,6 +32,7 @@ export class CoreMergeRunService extends BaseRunService<
       .insert(this.table)
       .values({
         loadRunId: params.loadRunId,
+        stagingRunId: params.stagingRunId,
         extractType: params.extractType,
         status: "running",
         dimensionsCreated: 0,
@@ -78,10 +79,33 @@ export class CoreMergeRunService extends BaseRunService<
       updateValues.result = params.result;
     }
 
-    await this.db
-      .update(this.table)
-      .set(updateValues)
-      .where(eq(this.table.mergeRunId, runId));
+    console.log(
+      `📝 Updating core merge run ${runId} with values:`,
+      updateValues
+    );
+    try {
+      const result = await this.db
+        .update(this.table)
+        .set(updateValues)
+        .where(eq(this.table.mergeRunId, runId))
+        .returning();
+
+      console.log(
+        `🔍 Database update result for core merge run ${runId}:`,
+        result
+      );
+      if (result.length === 0) {
+        console.error(
+          `❌ No rows updated for core merge run ${runId} - record may not exist`
+        );
+      }
+    } catch (error) {
+      console.error(
+        `❌ Database update failed for core merge run ${runId}:`,
+        error
+      );
+      throw error;
+    }
   }
 
   /**
@@ -101,12 +125,16 @@ export class CoreMergeRunService extends BaseRunService<
    * Mark merge run as completed successfully with final statistics
    */
   async completeRun(runId: string, stats: Record<string, any>): Promise<void> {
+    console.log(
+      `🔄 Completing core merge run ${runId} with completedAt: ${new Date().toISOString()}`
+    );
     await this.updateRun(runId, {
       status: "completed",
       completedAt: new Date(),
       result: JSON.stringify(stats), // Store full result
       ...stats,
     });
+    console.log(`✅ Core merge run ${runId} completed successfully`);
   }
 
   /**
@@ -126,18 +154,16 @@ export class CoreMergeRunService extends BaseRunService<
   }
 
   /**
-   * Check if a merge run already exists for the given load run and extract type
-   * Used for idempotency - ensures only one successful merge per load run per extract type
+   * Check if a merge run already exists for the given staging run
+   * Used for idempotency - ensures only one successful merge per staging run
    */
   async getExistingMergeRun(
-    loadRunId: string,
-    extractType: string
+    stagingRunId: string
   ): Promise<CoreMergeRunRecord | null> {
     const results = await this.db
       .select()
       .from(this.table)
-      .where(eq(this.table.loadRunId, loadRunId))
-      .where(eq(this.table.extractType, extractType))
+      .where(eq(this.table.stagingRunId, stagingRunId))
       .where(eq(this.table.status, "completed"))
       .limit(1);
 

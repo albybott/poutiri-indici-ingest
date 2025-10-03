@@ -902,6 +902,7 @@ CREATE TABLE "core"."fact_measurement" (
 CREATE TABLE "etl"."core_merge_runs" (
 	"merge_run_id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"load_run_id" uuid NOT NULL,
+	"staging_run_id" uuid NOT NULL,
 	"extract_type" text NOT NULL,
 	"started_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"completed_at" timestamp with time zone,
@@ -941,7 +942,7 @@ CREATE TABLE "etl"."load_run_files" (
 CREATE TABLE "etl"."load_runs" (
 	"load_run_id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"started_at" timestamp with time zone DEFAULT now() NOT NULL,
-	"finished_at" timestamp with time zone,
+	"completed_at" timestamp with time zone,
 	"status" text NOT NULL,
 	"triggered_by" text NOT NULL,
 	"notes" text,
@@ -952,8 +953,34 @@ CREATE TABLE "etl"."load_runs" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "etl"."staging_runs" (
+	"staging_run_id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"load_run_id" uuid NOT NULL,
+	"extract_type" text NOT NULL,
+	"source_table" text NOT NULL,
+	"target_table" text NOT NULL,
+	"started_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"completed_at" timestamp with time zone,
+	"status" text NOT NULL,
+	"total_rows_read" integer DEFAULT 0,
+	"total_rows_transformed" integer DEFAULT 0,
+	"total_rows_rejected" integer DEFAULT 0,
+	"total_rows_deduplicated" integer DEFAULT 0,
+	"successful_batches" integer DEFAULT 0,
+	"failed_batches" integer DEFAULT 0,
+	"duration_ms" integer,
+	"rows_per_second" integer,
+	"memory_usage_mb" integer,
+	"error" text,
+	"result" text,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
 ALTER TABLE "etl"."core_merge_runs" ADD CONSTRAINT "core_merge_runs_load_run_id_load_runs_load_run_id_fk" FOREIGN KEY ("load_run_id") REFERENCES "etl"."load_runs"("load_run_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "etl"."core_merge_runs" ADD CONSTRAINT "core_merge_runs_staging_run_id_staging_runs_staging_run_id_fk" FOREIGN KEY ("staging_run_id") REFERENCES "etl"."staging_runs"("staging_run_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "etl"."load_run_files" ADD CONSTRAINT "load_run_files_load_run_id_load_runs_load_run_id_fk" FOREIGN KEY ("load_run_id") REFERENCES "etl"."load_runs"("load_run_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "etl"."staging_runs" ADD CONSTRAINT "staging_runs_load_run_id_load_runs_load_run_id_fk" FOREIGN KEY ("load_run_id") REFERENCES "etl"."load_runs"("load_run_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 CREATE UNIQUE INDEX "patients_stg_natural_key_idx" ON "stg"."patients" USING btree ("patient_id","practice_id","per_org_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "dim_medicine_business_key_current_idx" ON "core"."medicine" USING btree ("medicine_id","practice_id","per_org_id","is_current");--> statement-breakpoint
 CREATE UNIQUE INDEX "dim_patient_business_key_current_idx" ON "core"."patient" USING btree ("patient_id","practice_id","per_org_id","is_current");--> statement-breakpoint
@@ -966,7 +993,12 @@ CREATE UNIQUE INDEX "fact_immunisation_business_key_idx" ON "core"."fact_immunis
 CREATE UNIQUE INDEX "fact_invoice_business_key_idx" ON "core"."fact_invoice" USING btree ("invoice_transaction_id","practice_id","per_org_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "fact_invoice_detail_business_key_idx" ON "core"."fact_invoice_detail" USING btree ("invoice_detail_id","practice_id","per_org_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "fact_measurement_business_key_idx" ON "core"."fact_measurement" USING btree ("patient_id","practice_id","per_org_id");--> statement-breakpoint
-CREATE UNIQUE INDEX "core_merge_runs_load_run_completed_idx" ON "etl"."core_merge_runs" USING btree ("load_run_id","extract_type") WHERE "etl"."core_merge_runs"."status" = 'completed';--> statement-breakpoint
+CREATE UNIQUE INDEX "core_merge_runs_staging_run_completed_idx" ON "etl"."core_merge_runs" USING btree ("staging_run_id") WHERE "etl"."core_merge_runs"."status" = 'completed';--> statement-breakpoint
 CREATE INDEX "core_merge_runs_status_idx" ON "etl"."core_merge_runs" USING btree ("status");--> statement-breakpoint
+CREATE INDEX "core_merge_runs_load_run_idx" ON "etl"."core_merge_runs" USING btree ("load_run_id");--> statement-breakpoint
+CREATE INDEX "core_merge_runs_staging_run_idx" ON "etl"."core_merge_runs" USING btree ("staging_run_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "load_run_files_unique_idx" ON "etl"."load_run_files" USING btree ("s3_version_id","file_hash");--> statement-breakpoint
-CREATE INDEX "load_run_files_load_run_idx" ON "etl"."load_run_files" USING btree ("load_run_id");
+CREATE INDEX "load_run_files_load_run_idx" ON "etl"."load_run_files" USING btree ("load_run_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "staging_runs_load_run_completed_idx" ON "etl"."staging_runs" USING btree ("load_run_id","extract_type") WHERE "etl"."staging_runs"."status" = 'completed';--> statement-breakpoint
+CREATE INDEX "staging_runs_status_idx" ON "etl"."staging_runs" USING btree ("status");--> statement-breakpoint
+CREATE INDEX "staging_runs_load_run_idx" ON "etl"."staging_runs" USING btree ("load_run_id");

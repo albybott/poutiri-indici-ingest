@@ -85,7 +85,7 @@ export class StagingTransformerService {
         );
         return existing.result
           ? JSON.parse(existing.result)
-          : this.emptyResult();
+          : this.emptyResult(existing.stagingRunId);
       }
     }
 
@@ -118,7 +118,7 @@ export class StagingTransformerService {
       console.log(`📊 Total rows to transform: ${totalRows}`);
 
       if (totalRows === 0) {
-        const emptyResult = this.emptyResult();
+        const emptyResult = this.emptyResult(stagingRunId);
         await this.stagingRunService.completeRun(stagingRunId, emptyResult);
         return emptyResult;
       }
@@ -127,7 +127,8 @@ export class StagingTransformerService {
       const result = await this.transformInBatches(
         handler,
         transformOptions,
-        totalRows
+        totalRows,
+        stagingRunId
       );
 
       // Calculate final metrics
@@ -149,7 +150,10 @@ export class StagingTransformerService {
       // Complete the staging run
       await this.stagingRunService.completeRun(stagingRunId, finalResult);
 
-      return finalResult;
+      return {
+        ...finalResult,
+        stagingRunId,
+      };
     } catch (error) {
       console.error("❌ Transformation failed:", error);
 
@@ -170,6 +174,7 @@ export class StagingTransformerService {
       });
 
       return {
+        stagingRunId,
         totalRowsRead: 0,
         totalRowsTransformed: 0,
         totalRowsRejected: 0,
@@ -191,7 +196,8 @@ export class StagingTransformerService {
   private async transformInBatches(
     handler: StagingExtractHandler,
     options: StagingTransformOptions,
-    totalRows: number
+    totalRows: number,
+    stagingRunId: string
   ): Promise<TransformResult> {
     const startTime = Date.now();
     const batchSize = options.batchSize || this.config.transformation.batchSize;
@@ -306,6 +312,7 @@ export class StagingTransformerService {
     const rowsPerSecond = (totalRowsTransformed / durationMs) * 1000;
 
     return {
+      stagingRunId,
       totalRowsRead,
       totalRowsTransformed,
       totalRowsRejected,
@@ -603,8 +610,9 @@ export class StagingTransformerService {
   /**
    * Return empty result
    */
-  private emptyResult(): TransformResult {
+  private emptyResult(stagingRunId: string): TransformResult {
     return {
+      stagingRunId,
       totalRowsRead: 0,
       totalRowsTransformed: 0,
       totalRowsRejected: 0,

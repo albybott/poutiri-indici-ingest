@@ -1,5 +1,5 @@
 {
-  "id": "29e3d7fb-d9be-4d10-9a01-7a1dbd38f433",
+  "id": "83e524c6-5584-4a9c-91d1-60b2d48da35a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -5689,6 +5689,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "staging_run_id": {
+          "name": "staging_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
         "extract_type": {
           "name": "extract_type",
           "type": "text",
@@ -5770,17 +5776,11 @@
         }
       },
       "indexes": {
-        "core_merge_runs_load_run_completed_idx": {
-          "name": "core_merge_runs_load_run_completed_idx",
+        "core_merge_runs_staging_run_completed_idx": {
+          "name": "core_merge_runs_staging_run_completed_idx",
           "columns": [
             {
-              "expression": "load_run_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "extract_type",
+              "expression": "staging_run_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -5806,6 +5806,36 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "core_merge_runs_load_run_idx": {
+          "name": "core_merge_runs_load_run_idx",
+          "columns": [
+            {
+              "expression": "load_run_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "core_merge_runs_staging_run_idx": {
+          "name": "core_merge_runs_staging_run_idx",
+          "columns": [
+            {
+              "expression": "staging_run_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
@@ -5819,6 +5849,20 @@
           ],
           "columnsTo": [
             "load_run_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "core_merge_runs_staging_run_id_staging_runs_staging_run_id_fk": {
+          "name": "core_merge_runs_staging_run_id_staging_runs_staging_run_id_fk",
+          "tableFrom": "core_merge_runs",
+          "tableTo": "staging_runs",
+          "schemaTo": "etl",
+          "columnsFrom": [
+            "staging_run_id"
+          ],
+          "columnsTo": [
+            "staging_run_id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -6032,8 +6076,8 @@
           "notNull": true,
           "default": "now()"
         },
-        "finished_at": {
-          "name": "finished_at",
+        "completed_at": {
+          "name": "completed_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
@@ -6094,6 +6138,223 @@
       },
       "indexes": {},
       "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "etl.staging_runs": {
+      "name": "staging_runs",
+      "schema": "etl",
+      "columns": {
+        "staging_run_id": {
+          "name": "staging_run_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "load_run_id": {
+          "name": "load_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "extract_type": {
+          "name": "extract_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source_table": {
+          "name": "source_table",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "target_table": {
+          "name": "target_table",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total_rows_read": {
+          "name": "total_rows_read",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "total_rows_transformed": {
+          "name": "total_rows_transformed",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "total_rows_rejected": {
+          "name": "total_rows_rejected",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "total_rows_deduplicated": {
+          "name": "total_rows_deduplicated",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "successful_batches": {
+          "name": "successful_batches",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "failed_batches": {
+          "name": "failed_batches",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "duration_ms": {
+          "name": "duration_ms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rows_per_second": {
+          "name": "rows_per_second",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "memory_usage_mb": {
+          "name": "memory_usage_mb",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "error": {
+          "name": "error",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "result": {
+          "name": "result",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "staging_runs_load_run_completed_idx": {
+          "name": "staging_runs_load_run_completed_idx",
+          "columns": [
+            {
+              "expression": "load_run_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "extract_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"etl\".\"staging_runs\".\"status\" = 'completed'",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "staging_runs_status_idx": {
+          "name": "staging_runs_status_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "staging_runs_load_run_idx": {
+          "name": "staging_runs_load_run_idx",
+          "columns": [
+            {
+              "expression": "load_run_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "staging_runs_load_run_id_load_runs_load_run_id_fk": {
+          "name": "staging_runs_load_run_id_load_runs_load_run_id_fk",
+          "tableFrom": "staging_runs",
+          "tableTo": "load_runs",
+          "schemaTo": "etl",
+          "columnsFrom": [
+            "load_run_id"
+          ],
+          "columnsTo": [
+            "load_run_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},

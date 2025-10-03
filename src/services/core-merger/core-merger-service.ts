@@ -57,26 +57,33 @@ export class CoreMergerService {
 
     logger.info(`Starting core merge`, {
       mergeRunId,
-      loadRunId: options.loadRunId,
+      stagingRunId: options.stagingRunId,
       extractTypes: options.extractTypes,
     });
 
     // Check idempotency (unless forced)
     if (!options.forceReprocess) {
-      const existing = await this.checkExistingMerge(options.loadRunId);
+      const existing = await this.checkExistingMerge(options.stagingRunId);
       if (existing && existing.status === "completed") {
-        logger.info(`Load run already merged - returning cached result`, {
-          loadRunId: options.loadRunId,
+        logger.info(`Staging run already merged - returning cached result`, {
+          stagingRunId: options.stagingRunId,
           mergeRunId: existing.mergeRunId,
         });
         return existing.result!;
       }
     }
 
+    // Get staging run details to extract loadRunId and extractType
+    const stagingRun = await this.getStagingRunDetails(options.stagingRunId);
+    if (!stagingRun) {
+      throw new Error(`Staging run ${options.stagingRunId} not found`);
+    }
+
     // Record merge run start
     await this.mergeRunService.createRun({
-      loadRunId: options.loadRunId,
-      extractType: "Multiple", // Can track multiple extract types
+      loadRunId: stagingRun.loadRunId,
+      stagingRunId: options.stagingRunId,
+      extractType: stagingRun.extractType,
     });
 
     // Start monitoring
@@ -86,7 +93,8 @@ export class CoreMergerService {
 
     const result: CoreMergeResult = {
       mergeRunId,
-      loadRunId: options.loadRunId,
+      stagingRunId: options.stagingRunId,
+      loadRunId: stagingRun.loadRunId,
       extractTypes: options.extractTypes ?? [],
       dimensionResults: new Map(),
       factResults: new Map(),
@@ -105,7 +113,7 @@ export class CoreMergerService {
     try {
       // Phase 1: Load dimensions (in dependency order)
       this.loadMonitor.updatePhase(mergeRunId, "dimensions");
-      await this.loadDimensions(mergeRunId, options, result);
+      await this.loadDimensions(mergeRunId, options, result, stagingRun);
 
       // Phase 2: Preload dimension cache for FK resolution
       logger.info("Preloading dimension cache for FK resolution");
@@ -113,7 +121,7 @@ export class CoreMergerService {
 
       // Phase 3: Load facts
       this.loadMonitor.updatePhase(mergeRunId, "facts");
-      await this.loadFacts(mergeRunId, options, result);
+      await this.loadFacts(mergeRunId, options, result, stagingRun);
 
       // Complete
       result.status = "completed";
@@ -160,7 +168,8 @@ export class CoreMergerService {
   private async loadDimensions(
     mergeRunId: string,
     options: CoreMergeOptions,
-    result: CoreMergeResult
+    result: CoreMergeResult,
+    stagingRun: { loadRunId: string; extractType: string }
   ): Promise<void> {
     // Define load order (based on dependencies)
     const dimensionLoadOrder = [
@@ -192,7 +201,8 @@ export class CoreMergerService {
         );
 
         const dimResult = await loader.loadDimension({
-          loadRunId: options.loadRunId,
+          loadRunId: stagingRun.loadRunId,
+          stagingRunId: options.stagingRunId,
           extractType,
           batchSize: options.batchSize ?? this.config.dimension.batchSize,
           enableSCD2: this.config.dimension.enableSCD2,
@@ -229,7 +239,8 @@ export class CoreMergerService {
   private async loadFacts(
     mergeRunId: string,
     options: CoreMergeOptions,
-    result: CoreMergeResult
+    result: CoreMergeResult,
+    stagingRun: { loadRunId: string; extractType: string }
   ): Promise<void> {
     // Define fact load order
     const factLoadOrder = [
@@ -259,7 +270,8 @@ export class CoreMergerService {
         );
 
         const factResult = await factLoader.loadFacts({
-          loadRunId: options.loadRunId,
+          loadRunId: stagingRun.loadRunId,
+          stagingRunId: options.stagingRunId,
           extractType,
           batchSize: options.batchSize ?? this.config.fact.batchSize,
           validateFKs: this.config.fact.enableFKValidation,
@@ -351,19 +363,18 @@ export class CoreMergerService {
    * Check if load run already merged
    */
   private async checkExistingMerge(
-    loadRunId: string
+    stagingRunId: string
   ): Promise<CoreMergeRunStatus | null> {
     try {
-      const existingRun = await this.mergeRunService.getExistingMergeRun(
-        loadRunId,
-        "Multiple"
-      );
+      const existingRun =
+        await this.mergeRunService.getExistingMergeRun(stagingRunId);
       if (!existingRun) {
         return null;
       }
 
       return {
         mergeRunId: existingRun.mergeRunId,
+        stagingRunId: existingRun.stagingRunId,
         loadRunId: existingRun.loadRunId,
         extractType: existingRun.extractType,
         status: existingRun.status as "running" | "completed" | "failed",
@@ -373,6 +384,37 @@ export class CoreMergerService {
       };
     } catch (error) {
       logger.warn("Failed to check existing merge", {
+        stagingRunId,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return null;
+    }
+  }
+
+  /**
+   * Get staging run details needed for merge operation
+   */
+  private async getStagingRunDetails(stagingRunId: string): Promise<{
+    loadRunId: string;
+    extractType: string;
+  } | null> {
+    try {
+      const stagingRunService = new (
+        await import("../../services/staging-transformer/staging-run-service")
+      ).StagingRunService();
+      const stagingRun = await stagingRunService.getRun(stagingRunId);
+
+      if (!stagingRun) {
+        return null;
+      }
+
+      return {
+        loadRunId: stagingRun.loadRunId,
+        extractType: stagingRun.extractType,
+      };
+    } catch (error) {
+      logger.error("Failed to get staging run details", {
+        stagingRunId,
         error: error instanceof Error ? error.message : String(error),
       });
       return null;

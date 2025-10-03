@@ -126,6 +126,9 @@ export const coreMergeRuns = createTable(
     loadRunId: uuid("load_run_id")
       .notNull()
       .references(() => loadRuns.loadRunId),
+    stagingRunId: uuid("staging_run_id")
+      .notNull()
+      .references(() => stagingRuns.stagingRunId),
     extractType: text("extract_type").notNull(),
     startedAt: timestamp("started_at", { withTimezone: true })
       .notNull()
@@ -146,11 +149,15 @@ export const coreMergeRuns = createTable(
       .defaultNow(),
   },
   (table) => [
-    // Unique constraint for idempotency - one completed merge per load_run
-    uniqueIndex("core_merge_runs_load_run_completed_idx")
-      .on(table.loadRunId, table.extractType)
+    // Unique constraint for idempotency - one completed merge per staging_run
+    uniqueIndex("core_merge_runs_staging_run_completed_idx")
+      .on(table.stagingRunId)
       .where(sql`${table.status} = 'completed'`),
     // Index for querying by status
     index("core_merge_runs_status_idx").on(table.status),
+    // Index for querying by load run (for legacy compatibility)
+    index("core_merge_runs_load_run_idx").on(table.loadRunId),
+    // Index for querying by staging run
+    index("core_merge_runs_staging_run_idx").on(table.stagingRunId),
   ]
 );
