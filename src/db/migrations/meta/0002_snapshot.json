@@ -1,0 +1,6397 @@
+{
+  "id": "cb3a9117-1180-4577-918c-55f805897e40",
+  "prevId": "e369bea8-796f-4e27-9ba5-0407804efa72",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "raw.patients": {
+      "name": "patients",
+      "schema": "raw",
+      "columns": {
+        "patient_id": {
+          "name": "patient_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nhi_number": {
+          "name": "nhi_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_nhi_validate": {
+          "name": "is_nhi_validate",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "first_name": {
+          "name": "first_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "middle_name": {
+          "name": "middle_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "family_name": {
+          "name": "family_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "full_name": {
+          "name": "full_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "preferred_name": {
+          "name": "preferred_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "other_maiden_name": {
+          "name": "other_maiden_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "marital_status_id": {
+          "name": "marital_status_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "marital_status": {
+          "name": "marital_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gender_id": {
+          "name": "gender_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gender": {
+          "name": "gender",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dob": {
+          "name": "dob",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "age": {
+          "name": "age",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "age_type": {
+          "name": "age_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "age_group": {
+          "name": "age_group",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_alive": {
+          "name": "is_alive",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "death_date": {
+          "name": "death_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dob_source": {
+          "name": "dob_source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "picture_path": {
+          "name": "picture_path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "consented_to_share": {
+          "name": "consented_to_share",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "place_of_birth": {
+          "name": "place_of_birth",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "country_of_birth_id": {
+          "name": "country_of_birth_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "country_of_birth": {
+          "name": "country_of_birth",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cell_number": {
+          "name": "cell_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "day_phone": {
+          "name": "day_phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "night_phone": {
+          "name": "night_phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "secondary_email": {
+          "name": "secondary_email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "preferred_contact_method": {
+          "name": "preferred_contact_method",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "consent_text_messaging": {
+          "name": "consent_text_messaging",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_portal_user": {
+          "name": "is_portal_user",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_deleted": {
+          "name": "is_deleted",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inserted_by": {
+          "name": "inserted_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inserted_at": {
+          "name": "inserted_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_gender_self_identified": {
+          "name": "is_gender_self_identified",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sex_related_gender": {
+          "name": "sex_related_gender",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_worked_visa_required": {
+          "name": "is_worked_visa_required",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "balance": {
+          "name": "balance",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "med_tech_balance": {
+          "name": "med_tech_balance",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "med_tech_date_last_pay": {
+          "name": "med_tech_date_last_pay",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "med_tech_date_last_stmt": {
+          "name": "med_tech_date_last_stmt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "register_status_id": {
+          "name": "register_status_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "register_status": {
+          "name": "register_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "med_tech_nok": {
+          "name": "med_tech_nok",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_name": {
+          "name": "practice_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "calculated_balance": {
+          "name": "calculated_balance",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_statement_date": {
+          "name": "last_statement_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_invoice_date": {
+          "name": "last_invoice_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_payment_date": {
+          "name": "last_payment_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provider_name": {
+          "name": "provider_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "chart_number": {
+          "name": "chart_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "extention": {
+          "name": "extention",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_remarks": {
+          "name": "practice_remarks",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_insured": {
+          "name": "is_insured",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "insured_remarks": {
+          "name": "insured_remarks",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "smoking_type": {
+          "name": "smoking_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "account_holder": {
+          "name": "account_holder",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "account_holder_employer": {
+          "name": "account_holder_employer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_community_service_card": {
+          "name": "is_community_service_card",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "community_service_card_no": {
+          "name": "community_service_card_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "community_service_card_exipry_date": {
+          "name": "community_service_card_exipry_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "community_service_card_sighted": {
+          "name": "community_service_card_sighted",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_health_card": {
+          "name": "is_health_card",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "health_card_no": {
+          "name": "health_card_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "health_card_expiry_date": {
+          "name": "health_card_expiry_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "health_card_sighted": {
+          "name": "health_card_sighted",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "winz": {
+          "name": "winz",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_transfer_of_records": {
+          "name": "is_transfer_of_records",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "transfer_of_records_remarks": {
+          "name": "transfer_of_records_remarks",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enrolment_type": {
+          "name": "enrolment_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enrolment_status_id": {
+          "name": "enrolment_status_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enrolment_status": {
+          "name": "enrolment_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enrolment_date": {
+          "name": "enrolment_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enrolment_method": {
+          "name": "enrolment_method",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enrolment_verifier": {
+          "name": "enrolment_verifier",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "funding_status_id": {
+          "name": "funding_status_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "funding_status": {
+          "name": "funding_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rejection_reason": {
+          "name": "rejection_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "funding_from": {
+          "name": "funding_from",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "funding_to": {
+          "name": "funding_to",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "account_group": {
+          "name": "account_group",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gms_code": {
+          "name": "gms_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "residential_status": {
+          "name": "residential_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_nka": {
+          "name": "is_nka",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_high_care": {
+          "name": "is_high_care",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "high_care_reason": {
+          "name": "high_care_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_care_plan": {
+          "name": "is_care_plan",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_new_registeration": {
+          "name": "is_new_registeration",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_opt_off": {
+          "name": "is_opt_off",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_bp_graph": {
+          "name": "is_bp_graph",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_bmi_graph": {
+          "name": "is_bmi_graph",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_inr_graph": {
+          "name": "is_inr_graph",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_hba1c_graph": {
+          "name": "is_hba1c_graph",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "asr_mark_status": {
+          "name": "asr_mark_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_height_graph": {
+          "name": "is_height_graph",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_weight_graph": {
+          "name": "is_weight_graph",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_hc_graph": {
+          "name": "is_hc_graph",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nes_status": {
+          "name": "nes_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nes_comments": {
+          "name": "nes_comments",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "med_tech_balance_date": {
+          "name": "med_tech_balance_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_heart_rate": {
+          "name": "is_heart_rate",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_premature": {
+          "name": "is_premature",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "premature_week": {
+          "name": "premature_week",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "patient_pho_id": {
+          "name": "patient_pho_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "consult_updated_at": {
+          "name": "consult_updated_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "occupation": {
+          "name": "occupation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "emergency_contact": {
+          "name": "emergency_contact",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "emergency_contact_name": {
+          "name": "emergency_contact_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "secondary_contact": {
+          "name": "secondary_contact",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "secondary_contact_name": {
+          "name": "secondary_contact_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provider_id": {
+          "name": "provider_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_id": {
+          "name": "practice_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "portal_registration_status": {
+          "name": "portal_registration_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "registration_date": {
+          "name": "registration_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "med_tech_id": {
+          "name": "med_tech_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_house_number": {
+          "name": "permanent_address_house_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_building_number": {
+          "name": "permanent_address_building_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_street_number": {
+          "name": "permanent_address_street_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_suburb_town_id": {
+          "name": "permanent_address_suburb_town_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_suburb": {
+          "name": "permanent_address_suburb",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_city_area_id": {
+          "name": "permanent_address_city_area_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_city": {
+          "name": "permanent_address_city",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_postal_code": {
+          "name": "permanent_address_postal_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_latitude": {
+          "name": "permanent_address_latitude",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_longitude": {
+          "name": "permanent_address_longitude",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_country_id": {
+          "name": "permanent_address_country_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_country": {
+          "name": "permanent_address_country",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address": {
+          "name": "permanent_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_dhb_code": {
+          "name": "permanent_address_dhb_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_domicile_code": {
+          "name": "permanent_address_domicile_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_deprivation_quintile": {
+          "name": "permanent_address_deprivation_quintile",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_deprivation_decile": {
+          "name": "permanent_address_deprivation_decile",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_meshblock": {
+          "name": "permanent_address_meshblock",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_match_score": {
+          "name": "permanent_address_match_score",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_uncertainty_code": {
+          "name": "permanent_address_uncertainty_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "temporary_address": {
+          "name": "temporary_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_house_number": {
+          "name": "postal_address_house_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_building_number": {
+          "name": "postal_address_building_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_street_number": {
+          "name": "postal_address_street_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_suburb_town_id": {
+          "name": "postal_address_suburb_town_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_suburb": {
+          "name": "postal_address_suburb",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_city_area_id": {
+          "name": "postal_address_city_area_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_city": {
+          "name": "postal_address_city",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_postal_code": {
+          "name": "postal_address_postal_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_latitude": {
+          "name": "postal_address_latitude",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_longitude": {
+          "name": "postal_address_longitude",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_country_id": {
+          "name": "postal_address_country_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_country": {
+          "name": "postal_address_country",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address": {
+          "name": "postal_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_dhb_code": {
+          "name": "postal_address_dhb_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_domicile_code": {
+          "name": "postal_address_domicile_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_deprivation_quintile": {
+          "name": "postal_address_deprivation_quintile",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_deprivation_decile": {
+          "name": "postal_address_deprivation_decile",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_meshblock": {
+          "name": "postal_address_meshblock",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_match_score": {
+          "name": "postal_address_match_score",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_uncertainty_code": {
+          "name": "postal_address_uncertainty_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ethnicity_id": {
+          "name": "ethnicity_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ethnicity": {
+          "name": "ethnicity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ethcode": {
+          "name": "ethcode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ethcode2": {
+          "name": "ethcode2",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "secondary_ethnicity_id": {
+          "name": "secondary_ethnicity_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "secondary_ethnicity": {
+          "name": "secondary_ethnicity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ethcode3": {
+          "name": "ethcode3",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "other_ethnicity_id": {
+          "name": "other_ethnicity_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "other_ethnicity": {
+          "name": "other_ethnicity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enrolment_id": {
+          "name": "enrolment_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pho_name": {
+          "name": "pho_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enrolment_expiry_date": {
+          "name": "enrolment_expiry_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_consent_to_share": {
+          "name": "is_consent_to_share",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_work_visa": {
+          "name": "is_work_visa",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "work_visa_start_date": {
+          "name": "work_visa_start_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "work_visa_expiry_date": {
+          "name": "work_visa_expiry_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enrolment_quarter": {
+          "name": "enrolment_quarter",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_location": {
+          "name": "practice_location",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "account_holder_type_id": {
+          "name": "account_holder_type_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "patient_type": {
+          "name": "patient_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "breast_screen_id": {
+          "name": "breast_screen_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "breast_screen": {
+          "name": "breast_screen",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_pregnant": {
+          "name": "is_pregnant",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "apply_charges": {
+          "name": "apply_charges",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "include_in_print": {
+          "name": "include_in_print",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_careplus": {
+          "name": "is_careplus",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "care_plus_start_date": {
+          "name": "care_plus_start_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "care_plus_enddate": {
+          "name": "care_plus_enddate",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "care_plus_linc_status_id": {
+          "name": "care_plus_linc_status_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "care_plus_linc_status": {
+          "name": "care_plus_linc_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nhi_status_id": {
+          "name": "nhi_status_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nhi_status": {
+          "name": "nhi_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "per_org_id": {
+          "name": "per_org_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "loaded_date_time": {
+          "name": "loaded_date_time",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "account_holder_profile_id": {
+          "name": "account_holder_profile_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "comunity_service_effective_date": {
+          "name": "comunity_service_effective_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "default_gpmc_no": {
+          "name": "default_gpmc_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "default_gp_name": {
+          "name": "default_gp_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "default_practice_edi": {
+          "name": "default_practice_edi",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "default_practice_name": {
+          "name": "default_practice_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enrolment_end_date": {
+          "name": "enrolment_end_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_capitated": {
+          "name": "is_capitated",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_consent_auto_reminder_text_messaging": {
+          "name": "is_consent_auto_reminder_text_messaging",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_consent_for_experience_survey": {
+          "name": "is_consent_for_experience_survey",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_consent_to_import_clinical_records": {
+          "name": "is_consent_to_import_clinical_records",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_consent_to_private_email_address": {
+          "name": "is_consent_to_private_email_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_consent_to_share_clinical_records": {
+          "name": "is_consent_to_share_clinical_records",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_consent_to_share_health1": {
+          "name": "is_consent_to_share_health1",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_consent_to_share_my_record_on_sehr": {
+          "name": "is_consent_to_share_my_record_on_sehr",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_consent_to_share_pho_data_collection": {
+          "name": "is_consent_to_share_pho_data_collection",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_include_account_fee": {
+          "name": "is_include_account_fee",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_include_statement_fee": {
+          "name": "is_include_statement_fee",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_linked_csc_exists": {
+          "name": "is_linked_csc_exists",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_test_record": {
+          "name": "is_test_record",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pharmacy_id": {
+          "name": "pharmacy_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "residential_status_id": {
+          "name": "residential_status_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "visa_expiry": {
+          "name": "visa_expiry",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "load_run_file_id": {
+          "name": "load_run_file_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "stg.patients": {
+      "name": "patients",
+      "schema": "stg",
+      "columns": {
+        "patient_id": {
+          "name": "patient_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nhi_number": {
+          "name": "nhi_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_nhi_validate": {
+          "name": "is_nhi_validate",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "first_name": {
+          "name": "first_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "middle_name": {
+          "name": "middle_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "family_name": {
+          "name": "family_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "full_name": {
+          "name": "full_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "preferred_name": {
+          "name": "preferred_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "other_maiden_name": {
+          "name": "other_maiden_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "marital_status_id": {
+          "name": "marital_status_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "marital_status": {
+          "name": "marital_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gender_id": {
+          "name": "gender_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gender": {
+          "name": "gender",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dob": {
+          "name": "dob",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "age": {
+          "name": "age",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "age_type": {
+          "name": "age_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "age_group": {
+          "name": "age_group",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_alive": {
+          "name": "is_alive",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "death_date": {
+          "name": "death_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dob_source": {
+          "name": "dob_source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "picture_path": {
+          "name": "picture_path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "consented_to_share": {
+          "name": "consented_to_share",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "place_of_birth": {
+          "name": "place_of_birth",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "country_of_birth_id": {
+          "name": "country_of_birth_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "country_of_birth": {
+          "name": "country_of_birth",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cell_number": {
+          "name": "cell_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "day_phone": {
+          "name": "day_phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "night_phone": {
+          "name": "night_phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "secondary_email": {
+          "name": "secondary_email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "preferred_contact_method": {
+          "name": "preferred_contact_method",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "consent_text_messaging": {
+          "name": "consent_text_messaging",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_portal_user": {
+          "name": "is_portal_user",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_deleted": {
+          "name": "is_deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inserted_by": {
+          "name": "inserted_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inserted_at": {
+          "name": "inserted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_gender_self_identified": {
+          "name": "is_gender_self_identified",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sex_related_gender": {
+          "name": "sex_related_gender",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_worked_visa_required": {
+          "name": "is_worked_visa_required",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "balance": {
+          "name": "balance",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "med_tech_balance": {
+          "name": "med_tech_balance",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "med_tech_date_last_pay": {
+          "name": "med_tech_date_last_pay",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "med_tech_date_last_stmt": {
+          "name": "med_tech_date_last_stmt",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "register_status_id": {
+          "name": "register_status_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "register_status": {
+          "name": "register_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "med_tech_nok": {
+          "name": "med_tech_nok",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_name": {
+          "name": "practice_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "calculated_balance": {
+          "name": "calculated_balance",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_statement_date": {
+          "name": "last_statement_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_invoice_date": {
+          "name": "last_invoice_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_payment_date": {
+          "name": "last_payment_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provider_name": {
+          "name": "provider_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "chart_number": {
+          "name": "chart_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "extention": {
+          "name": "extention",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_remarks": {
+          "name": "practice_remarks",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_insured": {
+          "name": "is_insured",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "insured_remarks": {
+          "name": "insured_remarks",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "smoking_type": {
+          "name": "smoking_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "account_holder": {
+          "name": "account_holder",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "account_holder_employer": {
+          "name": "account_holder_employer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_community_service_card": {
+          "name": "is_community_service_card",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "community_service_card_no": {
+          "name": "community_service_card_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "community_service_card_exipry_date": {
+          "name": "community_service_card_exipry_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "community_service_card_sighted": {
+          "name": "community_service_card_sighted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_health_card": {
+          "name": "is_health_card",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "health_card_no": {
+          "name": "health_card_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "health_card_expiry_date": {
+          "name": "health_card_expiry_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "health_card_sighted": {
+          "name": "health_card_sighted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "winz": {
+          "name": "winz",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_transfer_of_records": {
+          "name": "is_transfer_of_records",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "transfer_of_records_remarks": {
+          "name": "transfer_of_records_remarks",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enrolment_type": {
+          "name": "enrolment_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enrolment_status_id": {
+          "name": "enrolment_status_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enrolment_status": {
+          "name": "enrolment_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enrolment_date": {
+          "name": "enrolment_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enrolment_method": {
+          "name": "enrolment_method",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enrolment_verifier": {
+          "name": "enrolment_verifier",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "funding_status_id": {
+          "name": "funding_status_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "funding_status": {
+          "name": "funding_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rejection_reason": {
+          "name": "rejection_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "funding_from": {
+          "name": "funding_from",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "funding_to": {
+          "name": "funding_to",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "account_group": {
+          "name": "account_group",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gms_code": {
+          "name": "gms_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "residential_status": {
+          "name": "residential_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_nka": {
+          "name": "is_nka",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_high_care": {
+          "name": "is_high_care",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "high_care_reason": {
+          "name": "high_care_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_care_plan": {
+          "name": "is_care_plan",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_new_registeration": {
+          "name": "is_new_registeration",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_opt_off": {
+          "name": "is_opt_off",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_bp_graph": {
+          "name": "is_bp_graph",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_bmi_graph": {
+          "name": "is_bmi_graph",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_inr_graph": {
+          "name": "is_inr_graph",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_hba1c_graph": {
+          "name": "is_hba1c_graph",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "asr_mark_status": {
+          "name": "asr_mark_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_height_graph": {
+          "name": "is_height_graph",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_weight_graph": {
+          "name": "is_weight_graph",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_hc_graph": {
+          "name": "is_hc_graph",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nes_status": {
+          "name": "nes_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nes_comments": {
+          "name": "nes_comments",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "med_tech_balance_date": {
+          "name": "med_tech_balance_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_heart_rate": {
+          "name": "is_heart_rate",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_premature": {
+          "name": "is_premature",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "premature_week": {
+          "name": "premature_week",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "patient_pho_id": {
+          "name": "patient_pho_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "consult_updated_at": {
+          "name": "consult_updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "occupation": {
+          "name": "occupation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "emergency_contact": {
+          "name": "emergency_contact",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "emergency_contact_name": {
+          "name": "emergency_contact_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "secondary_contact": {
+          "name": "secondary_contact",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "secondary_contact_name": {
+          "name": "secondary_contact_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provider_id": {
+          "name": "provider_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_id": {
+          "name": "practice_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "portal_registration_status": {
+          "name": "portal_registration_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "registration_date": {
+          "name": "registration_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "med_tech_id": {
+          "name": "med_tech_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_house_number": {
+          "name": "permanent_address_house_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_building_number": {
+          "name": "permanent_address_building_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_street_number": {
+          "name": "permanent_address_street_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_suburb_town_id": {
+          "name": "permanent_address_suburb_town_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_suburb": {
+          "name": "permanent_address_suburb",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_city_area_id": {
+          "name": "permanent_address_city_area_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_city": {
+          "name": "permanent_address_city",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_postal_code": {
+          "name": "permanent_address_postal_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_latitude": {
+          "name": "permanent_address_latitude",
+          "type": "numeric(10, 8)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_longitude": {
+          "name": "permanent_address_longitude",
+          "type": "numeric(11, 8)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_country_id": {
+          "name": "permanent_address_country_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_country": {
+          "name": "permanent_address_country",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address": {
+          "name": "permanent_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_dhb_code": {
+          "name": "permanent_address_dhb_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_domicile_code": {
+          "name": "permanent_address_domicile_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_deprivation_quintile": {
+          "name": "permanent_address_deprivation_quintile",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_deprivation_decile": {
+          "name": "permanent_address_deprivation_decile",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_meshblock": {
+          "name": "permanent_address_meshblock",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_match_score": {
+          "name": "permanent_address_match_score",
+          "type": "numeric(5, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_uncertainty_code": {
+          "name": "permanent_address_uncertainty_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "temporary_address": {
+          "name": "temporary_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_house_number": {
+          "name": "postal_address_house_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_building_number": {
+          "name": "postal_address_building_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_street_number": {
+          "name": "postal_address_street_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_suburb_town_id": {
+          "name": "postal_address_suburb_town_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_suburb": {
+          "name": "postal_address_suburb",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_city_area_id": {
+          "name": "postal_address_city_area_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_city": {
+          "name": "postal_address_city",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_postal_code": {
+          "name": "postal_address_postal_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_latitude": {
+          "name": "postal_address_latitude",
+          "type": "numeric(10, 8)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_longitude": {
+          "name": "postal_address_longitude",
+          "type": "numeric(11, 8)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_country_id": {
+          "name": "postal_address_country_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_country": {
+          "name": "postal_address_country",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address": {
+          "name": "postal_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_dhb_code": {
+          "name": "postal_address_dhb_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_domicile_code": {
+          "name": "postal_address_domicile_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_deprivation_quintile": {
+          "name": "postal_address_deprivation_quintile",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_deprivation_decile": {
+          "name": "postal_address_deprivation_decile",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_meshblock": {
+          "name": "postal_address_meshblock",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_match_score": {
+          "name": "postal_address_match_score",
+          "type": "numeric(5, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address_uncertainty_code": {
+          "name": "postal_address_uncertainty_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ethnicity_id": {
+          "name": "ethnicity_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ethnicity": {
+          "name": "ethnicity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ethcode": {
+          "name": "ethcode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ethcode2": {
+          "name": "ethcode2",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "secondary_ethnicity_id": {
+          "name": "secondary_ethnicity_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "secondary_ethnicity": {
+          "name": "secondary_ethnicity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ethcode3": {
+          "name": "ethcode3",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "other_ethnicity_id": {
+          "name": "other_ethnicity_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "other_ethnicity": {
+          "name": "other_ethnicity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enrolment_id": {
+          "name": "enrolment_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pho_name": {
+          "name": "pho_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enrolment_expiry_date": {
+          "name": "enrolment_expiry_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_consent_to_share": {
+          "name": "is_consent_to_share",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_work_visa": {
+          "name": "is_work_visa",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "work_visa_start_date": {
+          "name": "work_visa_start_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "work_visa_expiry_date": {
+          "name": "work_visa_expiry_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enrolment_quarter": {
+          "name": "enrolment_quarter",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_location": {
+          "name": "practice_location",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "account_holder_type_id": {
+          "name": "account_holder_type_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "patient_type": {
+          "name": "patient_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "breast_screen_id": {
+          "name": "breast_screen_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "breast_screen": {
+          "name": "breast_screen",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_pregnant": {
+          "name": "is_pregnant",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "apply_charges": {
+          "name": "apply_charges",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "include_in_print": {
+          "name": "include_in_print",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_careplus": {
+          "name": "is_careplus",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "care_plus_start_date": {
+          "name": "care_plus_start_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "care_plus_enddate": {
+          "name": "care_plus_enddate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "care_plus_linc_status_id": {
+          "name": "care_plus_linc_status_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "care_plus_linc_status": {
+          "name": "care_plus_linc_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nhi_status_id": {
+          "name": "nhi_status_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nhi_status": {
+          "name": "nhi_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "per_org_id": {
+          "name": "per_org_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "loaded_date_time": {
+          "name": "loaded_date_time",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "load_run_file_id": {
+          "name": "load_run_file_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "load_ts": {
+          "name": "load_ts",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "patients_stg_natural_key_idx": {
+          "name": "patients_stg_natural_key_idx",
+          "columns": [
+            {
+              "expression": "patient_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "practice_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "per_org_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "core.medicine": {
+      "name": "medicine",
+      "schema": "core",
+      "columns": {
+        "medicine_key": {
+          "name": "medicine_key",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "medicine_id": {
+          "name": "medicine_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "practice_id": {
+          "name": "practice_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "per_org_id": {
+          "name": "per_org_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "effective_from": {
+          "name": "effective_from",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "effective_to": {
+          "name": "effective_to",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_current": {
+          "name": "is_current",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "medicine_name": {
+          "name": "medicine_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "medicine_short_name": {
+          "name": "medicine_short_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sctid": {
+          "name": "sctid",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pharma_code": {
+          "name": "pharma_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "is_deleted": {
+          "name": "is_deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "load_run_id": {
+          "name": "load_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "load_ts": {
+          "name": "load_ts",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "dim_medicine_business_key_current_idx": {
+          "name": "dim_medicine_business_key_current_idx",
+          "columns": [
+            {
+              "expression": "medicine_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "practice_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "per_org_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "is_current",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "core.patient": {
+      "name": "patient",
+      "schema": "core",
+      "columns": {
+        "patient_key": {
+          "name": "patient_key",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "patient_id": {
+          "name": "patient_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "practice_id": {
+          "name": "practice_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "per_org_id": {
+          "name": "per_org_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nhi_number": {
+          "name": "nhi_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "first_name": {
+          "name": "first_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "middle_name": {
+          "name": "middle_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "family_name": {
+          "name": "family_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "full_name": {
+          "name": "full_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "preferred_name": {
+          "name": "preferred_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gender": {
+          "name": "gender",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dob": {
+          "name": "dob",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "age": {
+          "name": "age",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "age_group": {
+          "name": "age_group",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_alive": {
+          "name": "is_alive",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "death_date": {
+          "name": "death_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "marital_status": {
+          "name": "marital_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ethnicity": {
+          "name": "ethnicity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "residential_status": {
+          "name": "residential_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "is_deleted": {
+          "name": "is_deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "cell_number": {
+          "name": "cell_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "day_phone": {
+          "name": "day_phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "night_phone": {
+          "name": "night_phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_city": {
+          "name": "permanent_address_city",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_suburb": {
+          "name": "permanent_address_suburb",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_postal_code": {
+          "name": "permanent_address_postal_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_dhb_code": {
+          "name": "permanent_address_dhb_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_deprivation_quintile": {
+          "name": "permanent_address_deprivation_quintile",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provider_id": {
+          "name": "provider_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_name": {
+          "name": "practice_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "effective_from": {
+          "name": "effective_from",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "effective_to": {
+          "name": "effective_to",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_current": {
+          "name": "is_current",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "load_run_id": {
+          "name": "load_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "load_ts": {
+          "name": "load_ts",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "dim_patient_business_key_current_idx": {
+          "name": "dim_patient_business_key_current_idx",
+          "columns": [
+            {
+              "expression": "patient_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "practice_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "per_org_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "is_current",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "core.practice": {
+      "name": "practice",
+      "schema": "core",
+      "columns": {
+        "practice_key": {
+          "name": "practice_key",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "practice_id": {
+          "name": "practice_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "per_org_id": {
+          "name": "per_org_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "effective_from": {
+          "name": "effective_from",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "effective_to": {
+          "name": "effective_to",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_current": {
+          "name": "is_current",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "practice_name": {
+          "name": "practice_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "practice_category": {
+          "name": "practice_category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_speciality": {
+          "name": "practice_speciality",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pho": {
+          "name": "pho",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "organization_type": {
+          "name": "organization_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "org_short_name": {
+          "name": "org_short_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "org_code": {
+          "name": "org_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "edi_account": {
+          "name": "edi_account",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "legal_entity_title": {
+          "name": "legal_entity_title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "legal_status": {
+          "name": "legal_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "incorporation_number": {
+          "name": "incorporation_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ownership_model": {
+          "name": "ownership_model",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rural": {
+          "name": "rural",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "primary_phone": {
+          "name": "primary_phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "secondary_phone": {
+          "name": "secondary_phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "primary_email": {
+          "name": "primary_email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "secondary_email": {
+          "name": "secondary_email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "health_facility_no": {
+          "name": "health_facility_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hpi_facility_no": {
+          "name": "hpi_facility_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gst_no": {
+          "name": "gst_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "acc_no": {
+          "name": "acc_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "is_deleted": {
+          "name": "is_deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "load_run_id": {
+          "name": "load_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "load_ts": {
+          "name": "load_ts",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "dim_practice_business_key_current_idx": {
+          "name": "dim_practice_business_key_current_idx",
+          "columns": [
+            {
+              "expression": "practice_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "per_org_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "is_current",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "core.provider": {
+      "name": "provider",
+      "schema": "core",
+      "columns": {
+        "provider_key": {
+          "name": "provider_key",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "provider_id": {
+          "name": "provider_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "practice_id": {
+          "name": "practice_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "per_org_id": {
+          "name": "per_org_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "effective_from": {
+          "name": "effective_from",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "effective_to": {
+          "name": "effective_to",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_current": {
+          "name": "is_current",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "nhi_number": {
+          "name": "nhi_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "first_name": {
+          "name": "first_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "middle_name": {
+          "name": "middle_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "family_name": {
+          "name": "family_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "full_name": {
+          "name": "full_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "preferred_name": {
+          "name": "preferred_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gender": {
+          "name": "gender",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dob": {
+          "name": "dob",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_alive": {
+          "name": "is_alive",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "death_date": {
+          "name": "death_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nzmc_no": {
+          "name": "nzmc_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "npi_no": {
+          "name": "npi_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provider_code": {
+          "name": "provider_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "accreditation_no": {
+          "name": "accreditation_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hpi_no": {
+          "name": "hpi_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_name": {
+          "name": "practice_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_role": {
+          "name": "user_role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "is_deleted": {
+          "name": "is_deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "load_run_id": {
+          "name": "load_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "load_ts": {
+          "name": "load_ts",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "dim_provider_business_key_current_idx": {
+          "name": "dim_provider_business_key_current_idx",
+          "columns": [
+            {
+              "expression": "provider_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "practice_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "per_org_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "is_current",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "core.vaccine": {
+      "name": "vaccine",
+      "schema": "core",
+      "columns": {
+        "vaccine_key": {
+          "name": "vaccine_key",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "vaccine_id": {
+          "name": "vaccine_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "practice_id": {
+          "name": "practice_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "per_org_id": {
+          "name": "per_org_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "effective_from": {
+          "name": "effective_from",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "effective_to": {
+          "name": "effective_to",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_current": {
+          "name": "is_current",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "vaccine_code": {
+          "name": "vaccine_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "vaccine_name": {
+          "name": "vaccine_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "long_description": {
+          "name": "long_description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "coding_system": {
+          "name": "coding_system",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gender": {
+          "name": "gender",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_nir": {
+          "name": "is_nir",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "is_deleted": {
+          "name": "is_deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "load_run_id": {
+          "name": "load_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "load_ts": {
+          "name": "load_ts",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "dim_vaccine_business_key_current_idx": {
+          "name": "dim_vaccine_business_key_current_idx",
+          "columns": [
+            {
+              "expression": "vaccine_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "practice_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "per_org_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "is_current",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "core.fact_appointment": {
+      "name": "fact_appointment",
+      "schema": "core",
+      "columns": {
+        "appointment_key": {
+          "name": "appointment_key",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "appointment_id": {
+          "name": "appointment_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "practice_id": {
+          "name": "practice_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "per_org_id": {
+          "name": "per_org_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "patient_key": {
+          "name": "patient_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provider_key": {
+          "name": "provider_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_key": {
+          "name": "practice_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "appointment_type": {
+          "name": "appointment_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "appointment_status": {
+          "name": "appointment_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status_group": {
+          "name": "status_group",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "schedule_date": {
+          "name": "schedule_date",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "start_time": {
+          "name": "start_time",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "end_time": {
+          "name": "end_time",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "consult_start_time": {
+          "name": "consult_start_time",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "consult_end_time": {
+          "name": "consult_end_time",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "duration": {
+          "name": "duration",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "consult_time": {
+          "name": "consult_time",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "arrived": {
+          "name": "arrived",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "is_arrived": {
+          "name": "is_arrived",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "waiting_for_payment": {
+          "name": "waiting_for_payment",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "appointment_completed": {
+          "name": "appointment_completed",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "is_consult_parked": {
+          "name": "is_consult_parked",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "is_dummy": {
+          "name": "is_dummy",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "is_confidential": {
+          "name": "is_confidential",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "is_consent_to_share": {
+          "name": "is_consent_to_share",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "gp_queue_time": {
+          "name": "gp_queue_time",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nurse_queue_time": {
+          "name": "nurse_queue_time",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "triage_queue_time": {
+          "name": "triage_queue_time",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "virtual_queue_time": {
+          "name": "virtual_queue_time",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "self_assessment_queue_time": {
+          "name": "self_assessment_queue_time",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "on_hold_time": {
+          "name": "on_hold_time",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "read_only_time": {
+          "name": "read_only_time",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "arrived_time": {
+          "name": "arrived_time",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancelled_time": {
+          "name": "cancelled_time",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "not_arrived_time": {
+          "name": "not_arrived_time",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "booked": {
+          "name": "booked",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "generated_time": {
+          "name": "generated_time",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "self_assessment_completed_time": {
+          "name": "self_assessment_completed_time",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reason_for_visit": {
+          "name": "reason_for_visit",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancel_reason": {
+          "name": "cancel_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parked_reason": {
+          "name": "parked_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "priority_id": {
+          "name": "priority_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "appointment_outcome_id": {
+          "name": "appointment_outcome_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "appointment_outcome": {
+          "name": "appointment_outcome",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "appointment_type_id": {
+          "name": "appointment_type_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "booking_source_id": {
+          "name": "booking_source_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "booking_source": {
+          "name": "booking_source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "consult_timer_status_id": {
+          "name": "consult_timer_status_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_appointment_status_date": {
+          "name": "last_appointment_status_date",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_appointment_status_id": {
+          "name": "last_appointment_status_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_location_id": {
+          "name": "practice_location_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "location_name": {
+          "name": "location_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_latitude": {
+          "name": "permanent_address_latitude",
+          "type": "numeric(10, 8)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_longitude": {
+          "name": "permanent_address_longitude",
+          "type": "numeric(11, 8)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "load_run_id": {
+          "name": "load_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "load_ts": {
+          "name": "load_ts",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "fact_appointment_business_key_idx": {
+          "name": "fact_appointment_business_key_idx",
+          "columns": [
+            {
+              "expression": "appointment_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "practice_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "per_org_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "core.fact_diagnosis": {
+      "name": "fact_diagnosis",
+      "schema": "core",
+      "columns": {
+        "diagnosis_key": {
+          "name": "diagnosis_key",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "diagnosis_id": {
+          "name": "diagnosis_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "practice_id": {
+          "name": "practice_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "per_org_id": {
+          "name": "per_org_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "patient_key": {
+          "name": "patient_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provider_key": {
+          "name": "provider_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_key": {
+          "name": "practice_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "appointment_id": {
+          "name": "appointment_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "patient_id": {
+          "name": "patient_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "disease_id": {
+          "name": "disease_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "disease": {
+          "name": "disease",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "diagnosis_date": {
+          "name": "diagnosis_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "diagnosis_by_id": {
+          "name": "diagnosis_by_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "diagnosis_by": {
+          "name": "diagnosis_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "summary": {
+          "name": "summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_long_term": {
+          "name": "is_long_term",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "addto_problem": {
+          "name": "addto_problem",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_highlighted": {
+          "name": "is_highlighted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sequence_no": {
+          "name": "sequence_no",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_confidential": {
+          "name": "is_confidential",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "diagnosis_type_id": {
+          "name": "diagnosis_type_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "diagnosis_type": {
+          "name": "diagnosis_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "classification_record": {
+          "name": "classification_record",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "med_tech_id": {
+          "name": "med_tech_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "med_tech_read_code": {
+          "name": "med_tech_read_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "med_tech_read_term": {
+          "name": "med_tech_read_term",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_mapped": {
+          "name": "is_mapped",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "on_set_date": {
+          "name": "on_set_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "recall_id": {
+          "name": "recall_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "recall": {
+          "name": "recall",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "exclusion_start_date": {
+          "name": "exclusion_start_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "exclusion_end_date": {
+          "name": "exclusion_end_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "show_on_portal": {
+          "name": "show_on_portal",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ext_appointment_id": {
+          "name": "ext_appointment_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "patient_med_tech_id": {
+          "name": "patient_med_tech_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "snomed_id": {
+          "name": "snomed_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "snomed_term": {
+          "name": "snomed_term",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "concept_id": {
+          "name": "concept_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_location_id": {
+          "name": "practice_location_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "location_name": {
+          "name": "location_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_latitude": {
+          "name": "permanent_address_latitude",
+          "type": "numeric(10, 8)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_longitude": {
+          "name": "permanent_address_longitude",
+          "type": "numeric(11, 8)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_deleted": {
+          "name": "is_deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inserted_at": {
+          "name": "inserted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inserted_by_id": {
+          "name": "inserted_by_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_by_id": {
+          "name": "updated_by_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inserted_by": {
+          "name": "inserted_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "load_run_id": {
+          "name": "load_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "load_ts": {
+          "name": "load_ts",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "fact_diagnosis_business_key_idx": {
+          "name": "fact_diagnosis_business_key_idx",
+          "columns": [
+            {
+              "expression": "diagnosis_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "practice_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "per_org_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "core.fact_immunisation": {
+      "name": "fact_immunisation",
+      "schema": "core",
+      "columns": {
+        "immunisation_key": {
+          "name": "immunisation_key",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "appointment_immunisation_id": {
+          "name": "appointment_immunisation_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "practice_id": {
+          "name": "practice_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "per_org_id": {
+          "name": "per_org_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "patient_key": {
+          "name": "patient_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provider_key": {
+          "name": "provider_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_key": {
+          "name": "practice_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vaccine_key": {
+          "name": "vaccine_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "appointment_id": {
+          "name": "appointment_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "patient_schedule_id": {
+          "name": "patient_schedule_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vaccine_id": {
+          "name": "vaccine_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vaccine_name": {
+          "name": "vaccine_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vaccine_code": {
+          "name": "vaccine_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dose": {
+          "name": "dose",
+          "type": "numeric(8, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dose_number": {
+          "name": "dose_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "administration_site_id": {
+          "name": "administration_site_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "administration_site": {
+          "name": "administration_site",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "route_id": {
+          "name": "route_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "route": {
+          "name": "route",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "batch_number": {
+          "name": "batch_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "expiry_date": {
+          "name": "expiry_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "immunisation_status_id": {
+          "name": "immunisation_status_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "immunisation_status": {
+          "name": "immunisation_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vaccine_outcome_id": {
+          "name": "vaccine_outcome_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vaccine_outcome": {
+          "name": "vaccine_outcome",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_nir_ack": {
+          "name": "is_nir_ack",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reason": {
+          "name": "reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "comments": {
+          "name": "comments",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "administration_time": {
+          "name": "administration_time",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vaccine_indication_id": {
+          "name": "vaccine_indication_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vaccine_indication": {
+          "name": "vaccine_indication",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vaccine_indication_code": {
+          "name": "vaccine_indication_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "needle_length": {
+          "name": "needle_length",
+          "type": "numeric(5, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "has_diluent": {
+          "name": "has_diluent",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "diluent_batch_no": {
+          "name": "diluent_batch_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "diluent_expiry_date": {
+          "name": "diluent_expiry_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_confidential": {
+          "name": "is_confidential",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "costing_code_id": {
+          "name": "costing_code_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "costing_code": {
+          "name": "costing_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "brand_id": {
+          "name": "brand_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "brand": {
+          "name": "brand",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_deleted": {
+          "name": "is_deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_parked": {
+          "name": "is_parked",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_auto_bill": {
+          "name": "is_auto_bill",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vaccinator_id": {
+          "name": "vaccinator_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vaccinator": {
+          "name": "vaccinator",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vaccinator_code": {
+          "name": "vaccinator_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nir_sent_date": {
+          "name": "nir_sent_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "show_on_portal": {
+          "name": "show_on_portal",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vaccine_group_id": {
+          "name": "vaccine_group_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vaccine_group": {
+          "name": "vaccine_group",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_location_id": {
+          "name": "practice_location_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "location_name": {
+          "name": "location_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_latitude": {
+          "name": "permanent_address_latitude",
+          "type": "numeric(10, 8)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_longitude": {
+          "name": "permanent_address_longitude",
+          "type": "numeric(11, 8)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "load_run_id": {
+          "name": "load_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "load_ts": {
+          "name": "load_ts",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "fact_immunisation_business_key_idx": {
+          "name": "fact_immunisation_business_key_idx",
+          "columns": [
+            {
+              "expression": "appointment_immunisation_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "practice_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "per_org_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "core.fact_invoice": {
+      "name": "fact_invoice",
+      "schema": "core",
+      "columns": {
+        "invoice_key": {
+          "name": "invoice_key",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "invoice_transaction_id": {
+          "name": "invoice_transaction_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "practice_id": {
+          "name": "practice_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "per_org_id": {
+          "name": "per_org_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "patient_key": {
+          "name": "patient_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provider_key": {
+          "name": "provider_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_key": {
+          "name": "practice_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "patient_id": {
+          "name": "patient_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "acdate": {
+          "name": "acdate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "medtech_id": {
+          "name": "medtech_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "payment_mode": {
+          "name": "payment_mode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "total_amount": {
+          "name": "total_amount",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "unpaid_amount": {
+          "name": "unpaid_amount",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "claim_notes": {
+          "name": "claim_notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "income_provider": {
+          "name": "income_provider",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "invoice_payment_no": {
+          "name": "invoice_payment_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provider": {
+          "name": "provider",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "domicile_code": {
+          "name": "domicile_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "transaction_type": {
+          "name": "transaction_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_location_id": {
+          "name": "practice_location_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "location_name": {
+          "name": "location_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_latitude": {
+          "name": "permanent_address_latitude",
+          "type": "numeric(10, 8)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_longitude": {
+          "name": "permanent_address_longitude",
+          "type": "numeric(11, 8)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inserted_at": {
+          "name": "inserted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inserted_by": {
+          "name": "inserted_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "load_run_id": {
+          "name": "load_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "load_ts": {
+          "name": "load_ts",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "fact_invoice_business_key_idx": {
+          "name": "fact_invoice_business_key_idx",
+          "columns": [
+            {
+              "expression": "invoice_transaction_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "practice_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "per_org_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "core.fact_invoice_detail": {
+      "name": "fact_invoice_detail",
+      "schema": "core",
+      "columns": {
+        "invoice_detail_key": {
+          "name": "invoice_detail_key",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "invoice_detail_id": {
+          "name": "invoice_detail_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "practice_id": {
+          "name": "practice_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "per_org_id": {
+          "name": "per_org_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "invoice_key": {
+          "name": "invoice_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "invoice_transaction_id": {
+          "name": "invoice_transaction_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "master_service_sub_service_id": {
+          "name": "master_service_sub_service_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "appointment_service_id": {
+          "name": "appointment_service_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "comments": {
+          "name": "comments",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "quantity": {
+          "name": "quantity",
+          "type": "numeric(10, 3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "claim_amount": {
+          "name": "claim_amount",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "co_payment": {
+          "name": "co_payment",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gross_claim_amount": {
+          "name": "gross_claim_amount",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gross_co_payment": {
+          "name": "gross_co_payment",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_billing_amount": {
+          "name": "is_billing_amount",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "funder_id": {
+          "name": "funder_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "funder_name": {
+          "name": "funder_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "contract_service_id": {
+          "name": "contract_service_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "contract_service_name": {
+          "name": "contract_service_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_funded": {
+          "name": "is_funded",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "submission_status": {
+          "name": "submission_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "case_no": {
+          "name": "case_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sequence_no": {
+          "name": "sequence_no",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "billing_claim_status_id": {
+          "name": "billing_claim_status_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "master_service_name": {
+          "name": "master_service_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "master_service_code": {
+          "name": "master_service_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "master_service_description": {
+          "name": "master_service_description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "service_name": {
+          "name": "service_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "code": {
+          "name": "code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fee_code": {
+          "name": "fee_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "service_code": {
+          "name": "service_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sub_service_description": {
+          "name": "sub_service_description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "duration": {
+          "name": "duration",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_common_service": {
+          "name": "is_common_service",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "service_code_for_claim": {
+          "name": "service_code_for_claim",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_deleted": {
+          "name": "is_deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_location_id": {
+          "name": "practice_location_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "location_name": {
+          "name": "location_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_latitude": {
+          "name": "permanent_address_latitude",
+          "type": "numeric(10, 8)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_longitude": {
+          "name": "permanent_address_longitude",
+          "type": "numeric(11, 8)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inserted_at": {
+          "name": "inserted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inserted_by_id": {
+          "name": "inserted_by_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_by_id": {
+          "name": "updated_by_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inserted_by": {
+          "name": "inserted_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "load_run_id": {
+          "name": "load_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "load_ts": {
+          "name": "load_ts",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "fact_invoice_detail_business_key_idx": {
+          "name": "fact_invoice_detail_business_key_idx",
+          "columns": [
+            {
+              "expression": "invoice_detail_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "practice_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "per_org_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "core.fact_measurement": {
+      "name": "fact_measurement",
+      "schema": "core",
+      "columns": {
+        "measurement_key": {
+          "name": "measurement_key",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "patient_id": {
+          "name": "patient_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "practice_id": {
+          "name": "practice_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "per_org_id": {
+          "name": "per_org_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "patient_key": {
+          "name": "patient_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_key": {
+          "name": "practice_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "screaning_id": {
+          "name": "screaning_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "appointment_id": {
+          "name": "appointment_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "screening_date": {
+          "name": "screening_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "scncode": {
+          "name": "scncode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "screening_type": {
+          "name": "screening_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "screening_group": {
+          "name": "screening_group",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "outcome": {
+          "name": "outcome",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "outcome_description": {
+          "name": "outcome_description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "patient_med_tech_id": {
+          "name": "patient_med_tech_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provider_id": {
+          "name": "provider_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provider_code": {
+          "name": "provider_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provider_name": {
+          "name": "provider_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hbaic": {
+          "name": "hbaic",
+          "type": "numeric(5, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "care_plan_id": {
+          "name": "care_plan_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "care_plane_name": {
+          "name": "care_plane_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_confidential": {
+          "name": "is_confidential",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_gp2gp": {
+          "name": "is_gp2gp",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_patient_portal": {
+          "name": "is_patient_portal",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_showon_time_line": {
+          "name": "is_showon_time_line",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "med_tech_id": {
+          "name": "med_tech_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "screening_source_type_id": {
+          "name": "screening_source_type_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "service_template_id": {
+          "name": "service_template_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "service_template_name": {
+          "name": "service_template_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "score": {
+          "name": "score",
+          "type": "numeric(8, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "screening_type_id": {
+          "name": "screening_type_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "field1": {
+          "name": "field1",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "field2": {
+          "name": "field2",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "field3": {
+          "name": "field3",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_location_id": {
+          "name": "practice_location_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "location_name": {
+          "name": "location_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_latitude": {
+          "name": "permanent_address_latitude",
+          "type": "numeric(10, 8)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_longitude": {
+          "name": "permanent_address_longitude",
+          "type": "numeric(11, 8)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_deleted": {
+          "name": "is_deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inserted_at": {
+          "name": "inserted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inserted_by_id": {
+          "name": "inserted_by_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_by_id": {
+          "name": "updated_by_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inserted_by": {
+          "name": "inserted_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "load_run_id": {
+          "name": "load_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "load_ts": {
+          "name": "load_ts",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "fact_measurement_business_key_idx": {
+          "name": "fact_measurement_business_key_idx",
+          "columns": [
+            {
+              "expression": "patient_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "practice_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "per_org_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "etl.core_merge_runs": {
+      "name": "core_merge_runs",
+      "schema": "etl",
+      "columns": {
+        "merge_run_id": {
+          "name": "merge_run_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "load_run_id": {
+          "name": "load_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "extract_type": {
+          "name": "extract_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dimensions_created": {
+          "name": "dimensions_created",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "dimensions_updated": {
+          "name": "dimensions_updated",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "facts_inserted": {
+          "name": "facts_inserted",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "facts_updated": {
+          "name": "facts_updated",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "error": {
+          "name": "error",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "result": {
+          "name": "result",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "core_merge_runs_load_run_completed_idx": {
+          "name": "core_merge_runs_load_run_completed_idx",
+          "columns": [
+            {
+              "expression": "load_run_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "extract_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"etl\".\"core_merge_runs\".\"status\" = 'completed'",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "core_merge_runs_status_idx": {
+          "name": "core_merge_runs_status_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "core_merge_runs_load_run_id_load_runs_load_run_id_fk": {
+          "name": "core_merge_runs_load_run_id_load_runs_load_run_id_fk",
+          "tableFrom": "core_merge_runs",
+          "tableTo": "load_runs",
+          "schemaTo": "etl",
+          "columnsFrom": [
+            "load_run_id"
+          ],
+          "columnsTo": [
+            "load_run_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "etl.load_run_files": {
+      "name": "load_run_files",
+      "schema": "etl",
+      "columns": {
+        "load_run_file_id": {
+          "name": "load_run_file_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "load_run_id": {
+          "name": "load_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "s3_bucket": {
+          "name": "s3_bucket",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "s3_key": {
+          "name": "s3_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "s3_version_id": {
+          "name": "s3_version_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "file_hash": {
+          "name": "file_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date_extracted": {
+          "name": "date_extracted",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "extract_type": {
+          "name": "extract_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "per_org_id": {
+          "name": "per_org_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "practice_id": {
+          "name": "practice_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rows_read": {
+          "name": "rows_read",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "rows_ingested": {
+          "name": "rows_ingested",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "rows_rejected": {
+          "name": "rows_rejected",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "finished_at": {
+          "name": "finished_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "error_message": {
+          "name": "error_message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "load_run_files_unique_idx": {
+          "name": "load_run_files_unique_idx",
+          "columns": [
+            {
+              "expression": "s3_version_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "file_hash",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "load_run_files_load_run_idx": {
+          "name": "load_run_files_load_run_idx",
+          "columns": [
+            {
+              "expression": "load_run_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "load_run_files_load_run_id_load_runs_load_run_id_fk": {
+          "name": "load_run_files_load_run_id_load_runs_load_run_id_fk",
+          "tableFrom": "load_run_files",
+          "tableTo": "load_runs",
+          "schemaTo": "etl",
+          "columnsFrom": [
+            "load_run_id"
+          ],
+          "columnsTo": [
+            "load_run_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "etl.load_runs": {
+      "name": "load_runs",
+      "schema": "etl",
+      "columns": {
+        "load_run_id": {
+          "name": "load_run_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "triggered_by": {
+          "name": "triggered_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "total_files_processed": {
+          "name": "total_files_processed",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "total_rows_ingested": {
+          "name": "total_rows_ingested",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "total_rows_rejected": {
+          "name": "total_rows_rejected",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "etl.staging_runs": {
+      "name": "staging_runs",
+      "schema": "etl",
+      "columns": {
+        "staging_run_id": {
+          "name": "staging_run_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "load_run_id": {
+          "name": "load_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "extract_type": {
+          "name": "extract_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source_table": {
+          "name": "source_table",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "target_table": {
+          "name": "target_table",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total_rows_read": {
+          "name": "total_rows_read",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "total_rows_transformed": {
+          "name": "total_rows_transformed",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "total_rows_rejected": {
+          "name": "total_rows_rejected",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "total_rows_deduplicated": {
+          "name": "total_rows_deduplicated",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "successful_batches": {
+          "name": "successful_batches",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "failed_batches": {
+          "name": "failed_batches",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "duration_ms": {
+          "name": "duration_ms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rows_per_second": {
+          "name": "rows_per_second",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "memory_usage_mb": {
+          "name": "memory_usage_mb",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "error": {
+          "name": "error",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "result": {
+          "name": "result",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "staging_runs_load_run_completed_idx": {
+          "name": "staging_runs_load_run_completed_idx",
+          "columns": [
+            {
+              "expression": "load_run_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "extract_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"etl\".\"staging_runs\".\"status\" = 'completed'",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "staging_runs_status_idx": {
+          "name": "staging_runs_status_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "staging_runs_load_run_idx": {
+          "name": "staging_runs_load_run_idx",
+          "columns": [
+            {
+              "expression": "load_run_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "staging_runs_load_run_id_load_runs_load_run_id_fk": {
+          "name": "staging_runs_load_run_id_load_runs_load_run_id_fk",
+          "tableFrom": "staging_runs",
+          "tableTo": "load_runs",
+          "schemaTo": "etl",
+          "columnsFrom": [
+            "load_run_id"
+          ],
+          "columnsTo": [
+            "load_run_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.appointment_status": {
+      "name": "appointment_status",
+      "schema": "public",
+      "values": [
+        "scheduled",
+        "confirmed",
+        "arrived",
+        "in_progress",
+        "completed",
+        "cancelled",
+        "no_show",
+        "rescheduled"
+      ]
+    },
+    "public.extract_type": {
+      "name": "extract_type",
+      "schema": "public",
+      "values": [
+        "Patient",
+        "Appointments",
+        "Immunisation",
+        "Invoices",
+        "InvoiceDetail",
+        "Provider",
+        "PracticeInfo",
+        "Measurements",
+        "Diagnosis",
+        "Recalls",
+        "Inbox",
+        "InboxDetail",
+        "Medicine",
+        "NextOfKin",
+        "Vaccine",
+        "Allergies",
+        "AppointmentMedications",
+        "PatientAlerts"
+      ]
+    },
+    "public.immunisation_status": {
+      "name": "immunisation_status",
+      "schema": "public",
+      "values": [
+        "completed",
+        "pending",
+        "overdue",
+        "cancelled",
+        "not_required"
+      ]
+    },
+    "public.status_group": {
+      "name": "status_group",
+      "schema": "public",
+      "values": [
+        "active",
+        "completed",
+        "cancelled",
+        "no_show"
+      ]
+    }
+  },
+  "schemas": {
+    "core": "core",
+    "etl": "etl",
+    "raw": "raw",
+    "stg": "stg"
+  },
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

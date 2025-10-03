@@ -52,8 +52,8 @@ export class LoadRunService extends BaseRunService<
     if (params.status !== undefined) {
       updateValues.status = params.status;
     }
-    if (params.finishedAt !== undefined) {
-      updateValues.finishedAt = params.finishedAt;
+    if (params.completedAt !== undefined) {
+      updateValues.completedAt = params.completedAt;
     }
     if (params.totalFilesProcessed !== undefined) {
       updateValues.totalFilesProcessed = params.totalFilesProcessed;

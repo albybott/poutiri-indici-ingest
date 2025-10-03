@@ -15,6 +15,13 @@
       "when": 1759453383675,
       "tag": "0001_lying_mathemanic",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1759454372027,
+      "tag": "0002_talented_beyonder",
+      "breakpoints": true
     }
   ]
 }

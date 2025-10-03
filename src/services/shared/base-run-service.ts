@@ -16,7 +16,7 @@ export abstract class BaseRunService<
 > implements IRunService<TCreateParams, TUpdateParams, TRecord, TStatus>
 {
   protected constructor(
-    protected db: typeof db,
+    protected db: any,
     protected table: TTable
   ) {}
 
@@ -34,7 +34,7 @@ export abstract class BaseRunService<
   async completeRun(runId: string, stats: Record<string, any>): Promise<void> {
     await this.updateRun(runId, {
       status: "completed",
-      finishedAt: new Date(),
+      completedAt: new Date(),
       ...stats,
     } as any);
   }
@@ -50,7 +50,7 @@ export abstract class BaseRunService<
   ): Promise<void> {
     await this.updateRun(runId, {
       status: "failed",
-      finishedAt: new Date(),
+      completedAt: new Date(),
       notes: errorMessage,
       ...stats,
     } as any);
@@ -63,7 +63,7 @@ export abstract class BaseRunService<
   async cancelRun(runId: string, reason?: string): Promise<void> {
     await this.updateRun(runId, {
       status: "cancelled",
-      finishedAt: new Date(),
+      completedAt: new Date(),
       notes: reason,
     } as any);
   }
@@ -73,7 +73,7 @@ export abstract class BaseRunService<
    */
   async getRunStatus(runId: string): Promise<TStatus | null> {
     const run = await this.getRun(runId);
-    return run?.status ?? null;
+    return (run as any)?.status ?? null;
   }
 
   /**
@@ -86,7 +86,7 @@ export abstract class BaseRunService<
     amount: number = 1
   ): Promise<void> {
     const current = await this.getRun(runId);
-    if (current && field in current) {
+    if (current && (current as any)[field] !== undefined) {
       const currentValue = (current as any)[field] || 0;
       await this.updateRun(runId, {
         [field]: currentValue + amount,
@@ -104,14 +104,14 @@ export abstract class BaseRunService<
       const updateValues: Record<string, any> = {};
 
       for (const [field, increment] of Object.entries(stats)) {
-        if (field in current) {
+        if ((current as any)[field] !== undefined) {
           const currentValue = (current as any)[field] || 0;
           updateValues[field] = currentValue + increment;
         }
       }
 
       if (Object.keys(updateValues).length > 0) {
-        await this.updateRun(runId, updateValues);
+        await this.updateRun(runId, updateValues as any);
       }
     }
   }

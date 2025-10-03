@@ -350,8 +350,8 @@ export interface CreateLoadRunParams {
 export interface UpdateLoadRunParams {
   /** Current status of the load run */
   status?: LoadRunStatus;
-  /** Timestamp when the load run finished */
-  finishedAt?: Date;
+  /** Timestamp when the load run completed */
+  completedAt?: Date;
   /** Total number of files processed in this run */
   totalFilesProcessed?: number;
   /** Total number of rows successfully ingested */
@@ -371,8 +371,8 @@ export interface LoadRunRecord {
   loadRunId: string;
   /** Timestamp when the load run started */
   startedAt: Date;
-  /** Timestamp when the load run finished (null if still running) */
-  finishedAt: Date | null;
+  /** Timestamp when the load run completed (null if still running) */
+  completedAt: Date | null;
   /** Current status of the load run */
   status: string;
   /** Source that triggered this load run */

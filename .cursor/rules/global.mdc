@@ -26,6 +26,7 @@ Follow these rules when you write code:
 - Use kebab-case for naming files
 - Use early returns whenever possible to make the code more readable
 - Use descriptive variable and function/const names
+- Avoid using the `any` type; always specify explicit, meaningful types
 - Follow TypeScript strict mode guidelines
 - Use ESM modules (import/export syntax)
 - Implement comprehensive error handling and logging

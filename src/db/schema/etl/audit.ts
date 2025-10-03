@@ -16,7 +16,7 @@ export const loadRuns = createTable("etl.load_runs", {
   startedAt: timestamp("started_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
-  finishedAt: timestamp("finished_at", { withTimezone: true }),
+  completedAt: timestamp("completed_at", { withTimezone: true }),
   status: text("status").notNull(), // 'running', 'completed', 'failed', 'cancelled'
   triggeredBy: text("triggered_by").notNull(), // 'scheduled', 'manual', 'backfill'
   notes: text("notes"),
