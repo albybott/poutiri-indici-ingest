@@ -13,12 +13,14 @@ import { ForeignKeyResolver } from "./fact/foreign-key-resolver";
 import { FactLoader } from "./fact/fact-loader";
 import { appointmentFactConfig } from "./fact/handlers/appointment-fact-handler";
 import { CoreAuditService } from "./core-audit-service";
+import { CoreMergeRunService } from "./core-merge-run-service";
 import { LoadMonitor } from "./load-monitor";
 import type {
   CoreMergeOptions,
   CoreMergeResult,
   CoreMergeRunStatus,
 } from "./types/core-merger";
+
 import type { CoreMergerConfig } from "./types/config";
 import { DimensionType } from "./types/scd2";
 import { FactType } from "./types/fact";
@@ -29,6 +31,7 @@ export class CoreMergerService {
   private config: CoreMergerConfig;
   private fkResolver: ForeignKeyResolver;
   private auditService: CoreAuditService;
+  private mergeRunService: CoreMergeRunService;
   private loadMonitor: LoadMonitor;
 
   constructor(pool: Pool, config: CoreMergerConfig) {
@@ -41,6 +44,7 @@ export class CoreMergerService {
       config.cache.cacheTtlMs
     );
     this.auditService = new CoreAuditService(pool);
+    this.mergeRunService = new CoreMergeRunService();
     this.loadMonitor = new LoadMonitor();
   }
 
@@ -70,7 +74,10 @@ export class CoreMergerService {
     }
 
     // Record merge run start
-    await this.recordMergeRunStart(mergeRunId, options.loadRunId);
+    await this.mergeRunService.createRun({
+      loadRunId: options.loadRunId,
+      extractType: "Multiple", // Can track multiple extract types
+    });
 
     // Start monitoring
     // TODO: Calculate actual item count from staging data instead of using placeholder
@@ -116,7 +123,7 @@ export class CoreMergerService {
       this.loadMonitor.completeMonitoring(mergeRunId);
 
       // Record merge run completion
-      await this.recordMergeRunComplete(mergeRunId, options.loadRunId, result);
+      await this.mergeRunService.completeRun(mergeRunId, result);
 
       logger.info(`Core merge completed`, {
         mergeRunId,
@@ -136,9 +143,8 @@ export class CoreMergerService {
       });
 
       // Record failure
-      await this.recordMergeRunFailure(
+      await this.mergeRunService.failRun(
         mergeRunId,
-        options.loadRunId,
         error instanceof Error ? error.message : String(error)
       );
 
@@ -347,136 +353,29 @@ export class CoreMergerService {
   private async checkExistingMerge(
     loadRunId: string
   ): Promise<CoreMergeRunStatus | null> {
-    const query = `
-      SELECT *
-      FROM etl.core_merge_runs
-      WHERE load_run_id = $1
-        AND status = 'completed'
-      ORDER BY started_at DESC
-      LIMIT 1
-    `;
-
     try {
-      const result = await this.pool.query(query, [loadRunId]);
-      if (result.rows.length === 0) {
+      const existingRun = await this.mergeRunService.getExistingMergeRun(
+        loadRunId,
+        "Multiple"
+      );
+      if (!existingRun) {
         return null;
       }
 
-      const row = result.rows[0];
       return {
-        mergeRunId: row.merge_run_id,
-        loadRunId: row.load_run_id,
-        extractType: row.extract_type,
-        status: row.status,
-        startedAt: row.started_at,
-        completedAt: row.completed_at,
-        result: row.result ? JSON.parse(row.result) : undefined,
+        mergeRunId: existingRun.mergeRunId,
+        loadRunId: existingRun.loadRunId,
+        extractType: existingRun.extractType,
+        status: existingRun.status as "running" | "completed" | "failed",
+        startedAt: existingRun.startedAt,
+        completedAt: existingRun.completedAt || undefined,
+        result: existingRun.result ? JSON.parse(existingRun.result) : undefined,
       };
     } catch (error) {
       logger.warn("Failed to check existing merge", {
         error: error instanceof Error ? error.message : String(error),
       });
       return null;
-    }
-  }
-
-  /**
-   * Record merge run start
-   */
-  private async recordMergeRunStart(
-    mergeRunId: string,
-    loadRunId: string
-  ): Promise<void> {
-    const query = `
-      INSERT INTO etl.core_merge_runs (
-        merge_run_id,
-        load_run_id,
-        extract_type,
-        started_at,
-        status
-      ) VALUES ($1, $2, $3, $4, $5)
-    `;
-
-    try {
-      await this.pool.query(query, [
-        mergeRunId,
-        loadRunId,
-        "Multiple", // Can track multiple extract types
-        new Date(),
-        "running",
-      ]);
-    } catch (error) {
-      logger.error("Failed to record merge run start", {
-        error: error instanceof Error ? error.message : String(error),
-      });
-    }
-  }
-
-  /**
-   * Record merge run completion
-   */
-  private async recordMergeRunComplete(
-    mergeRunId: string,
-    loadRunId: string,
-    result: CoreMergeResult
-  ): Promise<void> {
-    const query = `
-      UPDATE etl.core_merge_runs
-      SET completed_at = $1,
-          status = $2,
-          dimensions_created = $3,
-          dimensions_updated = $4,
-          facts_inserted = $5,
-          facts_updated = $6,
-          result = $7
-      WHERE merge_run_id = $8
-    `;
-
-    try {
-      await this.pool.query(query, [
-        new Date(),
-        result.status,
-        result.dimensionsCreated,
-        result.dimensionsUpdated,
-        result.factsInserted,
-        result.factsUpdated,
-        JSON.stringify(result),
-        mergeRunId,
-      ]);
-    } catch (error) {
-      logger.error("Failed to record merge run completion", {
-        error: error instanceof Error ? error.message : String(error),
-      });
-    }
-  }
-
-  /**
-   * Record merge run failure
-   */
-  private async recordMergeRunFailure(
-    mergeRunId: string,
-    loadRunId: string,
-    errorMessage: string
-  ): Promise<void> {
-    const query = `
-      UPDATE etl.core_merge_runs
-      SET completed_at = $1,
-          status = $2,
-          error = $3
-      WHERE merge_run_id = $4
-    `;
-
-    try {
-      await this.pool.query(query, [
-        new Date(),
-        "failed",
-        errorMessage,
-        mergeRunId,
-      ]);
-    } catch (error) {
-      logger.error("Failed to record merge run failure", {
-        error: error instanceof Error ? error.message : String(error),
-      });
     }
   }
 

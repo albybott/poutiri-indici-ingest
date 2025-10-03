@@ -1,21 +1,34 @@
 import { db } from "../../db/client";
 import { loadRuns } from "../../db/schema/etl/audit";
 import { eq } from "drizzle-orm";
+import { BaseRunService } from "../shared/base-run-service";
 import type {
   CreateLoadRunParams,
   UpdateLoadRunParams,
   LoadRunRecord,
+  LoadRunStatus,
 } from "./types/raw-loader";
+
 /**
  * Load Run Service - manages load_runs table operations
  * A load run represents one execution of the ETL pipeline
  */
-export class LoadRunService {
+export class LoadRunService extends BaseRunService<
+  typeof loadRuns,
+  CreateLoadRunParams,
+  UpdateLoadRunParams,
+  LoadRunRecord,
+  LoadRunStatus
+> {
+  constructor() {
+    super(db, loadRuns);
+  }
+
   /**
-   * Create a new load run record
+   * Create a new run record
    */
-  async createLoadRun(params: CreateLoadRunParams): Promise<string> {
-    const result = await db
+  async createRun(params: CreateLoadRunParams): Promise<string> {
+    const result = await this.db
       .insert(loadRuns)
       .values({
         status: "running",
@@ -31,15 +44,10 @@ export class LoadRunService {
   }
 
   /**
-   * Update an existing load run record
+   * Update an existing run record
    */
-  async updateLoadRun(
-    loadRunId: string,
-    params: UpdateLoadRunParams
-  ): Promise<void> {
-    const updateValues: Record<string, any> = {
-      updatedAt: new Date(),
-    };
+  async updateRun(runId: string, params: UpdateLoadRunParams): Promise<void> {
+    const updateValues: Record<string, any> = this.buildUpdateValues({});
 
     if (params.status !== undefined) {
       updateValues.status = params.status;
@@ -60,69 +68,20 @@ export class LoadRunService {
       updateValues.notes = params.notes;
     }
 
-    await db
-      .update(loadRuns)
+    await this.db
+      .update(this.table)
       .set(updateValues)
-      .where(eq(loadRuns.loadRunId, loadRunId));
+      .where(eq(this.table.loadRunId, runId));
   }
 
   /**
-   * Mark load run as completed successfully
+   * Get run record details
    */
-  async completeLoadRun(
-    loadRunId: string,
-    stats: {
-      totalFilesProcessed: number;
-      totalRowsIngested: number;
-      totalRowsRejected: number;
-    }
-  ): Promise<void> {
-    await this.updateLoadRun(loadRunId, {
-      status: "completed",
-      finishedAt: new Date(),
-      ...stats,
-    });
-  }
-
-  /**
-   * Mark load run as failed
-   */
-  async failLoadRun(
-    loadRunId: string,
-    errorMessage: string,
-    stats?: {
-      totalFilesProcessed?: number;
-      totalRowsIngested?: number;
-      totalRowsRejected?: number;
-    }
-  ): Promise<void> {
-    await this.updateLoadRun(loadRunId, {
-      status: "failed",
-      finishedAt: new Date(),
-      notes: errorMessage,
-      ...stats,
-    });
-  }
-
-  /**
-   * Mark load run as cancelled
-   */
-  async cancelLoadRun(loadRunId: string, reason?: string): Promise<void> {
-    await this.updateLoadRun(loadRunId, {
-      status: "cancelled",
-      finishedAt: new Date(),
-      notes: reason,
-    });
-  }
-
-  /**
-   * Get load run details
-   */
-  async getLoadRun(loadRunId: string): Promise<LoadRunRecord | null> {
-    const results = await db
+  async getRun(runId: string): Promise<LoadRunRecord | null> {
+    const results = await this.db
       .select()
-      .from(loadRuns)
-      .where(eq(loadRuns.loadRunId, loadRunId))
+      .from(this.table)
+      .where(eq(this.table.loadRunId, runId))
       .limit(1);
 
     return results.length > 0 ? (results[0] as LoadRunRecord) : null;
@@ -131,29 +90,64 @@ export class LoadRunService {
   /**
    * Increment file count for a load run
    */
-  async incrementFileCount(loadRunId: string): Promise<void> {
-    const current = await this.getLoadRun(loadRunId);
-    if (current) {
-      await this.updateLoadRun(loadRunId, {
-        totalFilesProcessed: current.totalFilesProcessed + 1,
-      });
-    }
+  async incrementFileCount(runId: string): Promise<void> {
+    await this.incrementCounter(runId, "totalFilesProcessed");
   }
 
   /**
    * Add rows to load run statistics
    */
   async addRowStats(
-    loadRunId: string,
+    runId: string,
     rowsIngested: number,
     rowsRejected: number
   ): Promise<void> {
-    const current = await this.getLoadRun(loadRunId);
-    if (current) {
-      await this.updateLoadRun(loadRunId, {
-        totalRowsIngested: current.totalRowsIngested + rowsIngested,
-        totalRowsRejected: current.totalRowsRejected + rowsRejected,
-      });
+    await this.addStats(runId, {
+      totalRowsIngested: rowsIngested,
+      totalRowsRejected: rowsRejected,
+    });
+  }
+
+  // Legacy method aliases for backward compatibility
+  async createLoadRun(params: CreateLoadRunParams): Promise<string> {
+    return this.createRun(params);
+  }
+
+  async updateLoadRun(
+    runId: string,
+    params: UpdateLoadRunParams
+  ): Promise<void> {
+    return this.updateRun(runId, params);
+  }
+
+  async completeLoadRun(
+    runId: string,
+    stats: {
+      totalFilesProcessed: number;
+      totalRowsIngested: number;
+      totalRowsRejected: number;
     }
+  ): Promise<void> {
+    return this.completeRun(runId, stats);
+  }
+
+  async failLoadRun(
+    runId: string,
+    errorMessage: string,
+    stats?: {
+      totalFilesProcessed?: number;
+      totalRowsIngested?: number;
+      totalRowsRejected?: number;
+    }
+  ): Promise<void> {
+    return this.failRun(runId, errorMessage, stats);
+  }
+
+  async cancelLoadRun(runId: string, reason?: string): Promise<void> {
+    return this.cancelRun(runId, reason);
+  }
+
+  async getLoadRun(runId: string): Promise<LoadRunRecord | null> {
+    return this.getRun(runId);
   }
 }

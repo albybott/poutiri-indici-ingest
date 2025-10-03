@@ -99,17 +99,85 @@ export interface CoreMergeRunStatus {
   /** Status */
   status: "running" | "completed" | "failed";
 
-  /** Started at */
-  startedAt: Date;
+  /** When the merge run started */
+  startedAt?: Date;
 
-  /** Completed at */
+  /** When the merge run completed */
   completedAt?: Date;
 
-  /** Result summary */
+  /** Cached result from previous successful run */
   result?: CoreMergeResult;
+}
 
-  /** Error details (if failed) */
+/**
+ * Status values for core merge run operations
+ */
+export type CoreMergeRunStatusType = "running" | "completed" | "failed";
+
+/**
+ * Parameters for creating a new core merge run
+ */
+export interface CreateCoreMergeRunParams {
+  /** Load run ID that this merge is processing */
+  loadRunId: string;
+  /** Extract type being processed */
+  extractType: string;
+}
+
+/**
+ * Parameters for updating an existing core merge run
+ */
+export interface UpdateCoreMergeRunParams {
+  /** Current status of the merge run */
+  status?: CoreMergeRunStatusType;
+  /** Timestamp when the merge run completed */
+  completedAt?: Date;
+  /** Total number of dimensions created */
+  dimensionsCreated?: number;
+  /** Total number of dimensions updated */
+  dimensionsUpdated?: number;
+  /** Total number of facts inserted */
+  factsInserted?: number;
+  /** Total number of facts updated */
+  factsUpdated?: number;
+  /** Error message if the merge failed */
   error?: string;
+  /** JSON string of full result */
+  result?: string;
+}
+
+/**
+ * Complete core merge run record from the database
+ */
+export interface CoreMergeRunRecord {
+  /** Unique identifier for this merge run */
+  mergeRunId: string;
+  /** Load run ID that this merge is processing */
+  loadRunId: string;
+  /** Extract type being processed */
+  extractType: string;
+  /** Timestamp when the merge run started */
+  startedAt: Date;
+  /** Timestamp when the merge run completed (null if still running) */
+  completedAt: Date | null;
+  /** Current status of the merge run */
+  status: string;
+  /** Total number of dimensions created */
+  dimensionsCreated: number;
+  /** Total number of dimensions updated */
+  dimensionsUpdated: number;
+  /** Total number of facts inserted */
+  factsInserted: number;
+  /** Total number of facts updated */
+  factsUpdated: number;
+  /** Error message if the merge failed */
+  error: string | null;
+  /** JSON string of full result */
+  result: string | null;
+  /** Timestamp when this record was created */
+  createdAt: Date;
+  /** Timestamp when this record was last updated */
+  updatedAt: Date;
 }
 
 /**
