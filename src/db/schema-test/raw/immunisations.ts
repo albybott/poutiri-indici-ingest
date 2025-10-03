@@ -1,6 +1,6 @@
 import { text, integer, foreignKey } from "drizzle-orm/pg-core";
 import { createTable } from "../../utils/create-table";
-import { loadRunFiles } from "../etl/audit";
+import { loadRunFiles } from "../../schema/etl/audit";
 
 export const immunisationsRaw = createTable("raw.immunisations", {
   // Source columns as text (all fields from Immunisation extract)

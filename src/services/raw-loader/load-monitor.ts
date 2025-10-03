@@ -13,7 +13,8 @@ export class LoadMonitor {
 
   constructor(config: MonitoringConfig) {
     this.config = config;
-    this.startMetricsCollection();
+    //TODO: Uncomment this when we have metrics collection working correctly, this runs on an interval and should show the metrics in the console
+    // this.startMetricsCollection();
   }
 
   /**

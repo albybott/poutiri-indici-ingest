@@ -1,5 +1,6 @@
 import { pgEnum } from "drizzle-orm/pg-core";
 
+//TODO: Update these types so that they match the actual extract types in code i.e. lowercase and snake_case
 // Define enum for extract types - matches filename format from S3
 export const extractTypeEnum = pgEnum("extract_type", [
   "Patient",

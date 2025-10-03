@@ -15,7 +15,8 @@
  * - RawLoaderService: Primary service orchestrating the entire loading process
  * - RawLoaderFactory: Dependency injection factory for service configuration
  */
-export { RawLoaderService, RawLoaderFactory } from "./raw-loader-service";
+export { RawLoaderService } from "./raw-loader-service";
+export { RawLoaderFactory } from "./raw-loader-factory";
 
 // ============================================================================
 // COMPONENT EXPORTS
