@@ -134,11 +134,12 @@ export class StagingTransformerService {
       const finalResult = {
         ...result,
         durationMs: Date.now() - startTime,
-        rowsPerSecond:
+        rowsPerSecond: Math.round(
           result.totalRowsRead > 0
             ? result.totalRowsRead / ((Date.now() - startTime) / 1000)
-            : 0,
-        memoryUsageMB: process.memoryUsage().heapUsed / 1024 / 1024,
+            : 0
+        ),
+        memoryUsageMB: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
       };
 
       console.log(

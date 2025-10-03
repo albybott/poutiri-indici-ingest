@@ -158,11 +158,14 @@ export class DimensionLoader {
     // Calculate metrics
     const endTime = Date.now();
     result.durationMs = endTime - startTime;
-    result.rowsPerSecond =
+    result.rowsPerSecond = Math.round(
       result.durationMs > 0
         ? (result.totalRowsRead / result.durationMs) * 1000
-        : 0;
-    result.memoryUsageMB = process.memoryUsage().heapUsed / 1024 / 1024;
+        : 0
+    );
+    result.memoryUsageMB = Math.round(
+      process.memoryUsage().heapUsed / 1024 / 1024
+    );
 
     logger.info(`Completed ${dimensionType} dimension load`, {
       totalRows: result.totalRowsRead,

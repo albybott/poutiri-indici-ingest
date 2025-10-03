@@ -144,12 +144,15 @@ export class FactLoader {
     const endTime = Date.now();
     result.durationMs = endTime - startTime;
     // Calculate throughput: (rows / milliseconds) * 1000 = rows per second
-    result.rowsPerSecond =
+    result.rowsPerSecond = Math.round(
       result.durationMs > 0
         ? (result.totalRowsRead / result.durationMs) * 1000
-        : 0;
+        : 0
+    );
     // Convert bytes to MB: heapUsed / 1024 / 1024
-    result.memoryUsageMB = process.memoryUsage().heapUsed / 1024 / 1024;
+    result.memoryUsageMB = Math.round(
+      process.memoryUsage().heapUsed / 1024 / 1024
+    );
 
     logger.info(`Completed ${factType} fact load`, {
       totalRows: result.totalRowsRead,

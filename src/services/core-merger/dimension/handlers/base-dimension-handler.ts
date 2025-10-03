@@ -141,45 +141,6 @@ export abstract class BaseDimensionHandler {
    * Joins with load_run_files to get load_run_id
    */
   buildSelectQuery(loadRunId: string): string {
-    console.log(
-      "Building select query for dimension:",
-      this.getDimensionType()
-    );
-
-    // const stagingColumns = this.config.fieldMappings
-    //   .map((m) => {
-    //     // Use AS alias to convert snake_case column to camelCase property
-    //     return `stg.${this.toSnakeCase(m.sourceField)} AS "${m.sourceField}"`;
-    //   })
-    //   .concat(
-    //     this.config.businessKeyFields.map((f) => {
-    //       // Use AS alias for business keys too
-    //       // TODO: Remove this toSnakeCase
-    //       return `stg.${this.toSnakeCase(f)} AS "${f}"`;
-    //     })
-    //   );
-
-    // Deduplicate staging columns - need to dedupe before adding aliases
-    // const uniqueSourceFields = new Set<string>();
-    // const uniqueStagingColumns = stagingColumns.filter((col) => {
-    //   // Extract the source field name from "stg.column_name AS field"
-    //   const match = col.match(/AS "([^"]+)"/);
-    //   if (match) {
-    //     const field = match[1];
-    //     if (uniqueSourceFields.has(field)) {
-    //       return false;
-    //     }
-    //     uniqueSourceFields.add(field);
-    //   }
-    //   return true;
-    // });
-
-    // Add load_run_id from load_run_files (using camelCase alias)
-    // const allColumns = [
-    //   ...uniqueStagingColumns,
-    //   'lrf.load_run_id AS "loadRunId"',
-    // ];
-
     const businessKeyFields = this.config.businessKeyFields.map(
       (f) => `stg.${f}`
     );
