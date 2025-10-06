@@ -4,7 +4,7 @@ export * from "./schemas";
 // Raw schemas - all source columns as text with lineage
 export * from "./raw/patients";
 export * from "./raw/providers";
-export * from "./raw/practice_info";
+export * from "./raw/practice-info";
 export * from "./raw/appointments";
 export * from "./raw/medicine";
 export * from "./raw/vaccine";
@@ -36,7 +36,7 @@ export * from "./etl/audit";
 export const rawSchemas = {
   patients: () => import("./raw/patients"),
   providers: () => import("./raw/providers"),
-  practice_info: () => import("./raw/practice_info"),
+  practice_info: () => import("./raw/practice-info"),
   appointments: () => import("./raw/appointments"),
   medicine: () => import("./raw/medicine"),
   vaccine: () => import("./raw/vaccine"),
