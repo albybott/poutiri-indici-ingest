@@ -3,7 +3,7 @@ import type { ValidationRule } from "../types/raw-loader";
 
 /**
  * Patients handler generated from schema
- * This is automatically generated from the patients schema definition
+ * Generated on 2025-10-06T01:11:46.105Z
  */
 export class PatientsSchemaHandler extends BaseSchemaDrivenHandler {
   extractType = "Patient";
@@ -11,7 +11,6 @@ export class PatientsSchemaHandler extends BaseSchemaDrivenHandler {
 
   // Generated from src/db/schema/raw/patients.ts
   columnMapping = [
-    // Source columns from Patient extract
     "patient_id",
     "nhi_number",
     "is_nhi_validate",
@@ -58,8 +57,8 @@ export class PatientsSchemaHandler extends BaseSchemaDrivenHandler {
     "is_worked_visa_required",
     "balance",
     "med_tech_balance",
-    "med_tech_date_last_pay",
-    "med_tech_date_last_stmt",
+    "medtech_date_lastpay",
+    "medtech_date_laststmt",
     "register_status_id",
     "register_status",
     "med_tech_nok",
@@ -87,7 +86,7 @@ export class PatientsSchemaHandler extends BaseSchemaDrivenHandler {
     "health_card_sighted",
     "winz",
     "is_transfer_of_records",
-    "transfer_of_records_remarks",
+    "transferof_records_remarks",
     "enrolment_type",
     "enrolment_status_id",
     "enrolment_status",
@@ -122,7 +121,7 @@ export class PatientsSchemaHandler extends BaseSchemaDrivenHandler {
     "is_heart_rate",
     "is_premature",
     "premature_week",
-    "patient_pho_id",
+    "patient_phoid",
     "consult_updated_at",
     "occupation",
     "emergency_contact",
@@ -149,8 +148,6 @@ export class PatientsSchemaHandler extends BaseSchemaDrivenHandler {
     "permanent_address",
     "permanent_address_dhb_code",
     "permanent_address_domicile_code",
-    "permanent_address_deprivation_quintile",
-    "permanent_address_deprivation_decile",
     "permanent_address_meshblock",
     "permanent_address_match_score",
     "permanent_address_uncertainty_code",
@@ -217,14 +214,11 @@ export class PatientsSchemaHandler extends BaseSchemaDrivenHandler {
     "default_practice_name",
     "enrolment_end_date",
     "is_capitated",
-    "is_consent_auto_reminder_text_messaging",
     "is_consent_for_experience_survey",
-    "is_consent_to_import_clinical_records",
     "is_consent_to_private_email_address",
     "is_consent_to_share_clinical_records",
     "is_consent_to_share_health1",
     "is_consent_to_share_my_record_on_sehr",
-    "is_consent_to_share_pho_data_collection",
     "is_include_account_fee",
     "is_include_statement_fee",
     "is_linked_csc_exists",
@@ -232,6 +226,15 @@ export class PatientsSchemaHandler extends BaseSchemaDrivenHandler {
     "pharmacy_id",
     "residential_status_id",
     "visa_expiry",
+    "load_run_file_id",
+    "s3_bucket",
+    "s3_key",
+    "s3_version_id",
+    "file_hash",
+    "date_extracted",
+    "extract_type",
+    "load_run_id",
+    "load_ts",
   ];
 
   validationRules: ValidationRule[] = [
