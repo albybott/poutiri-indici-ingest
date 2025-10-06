@@ -13,11 +13,11 @@ import { createTable } from "../../utils/create-table";
 import { loadRunFiles } from "../etl/audit";
 
 export const providersRaw = createTable("raw.providers", {
-  // CSV columns from data extract
+  // Source columns as text (all fields from providers extract)
   providerId: text("provider_id"),
   practiceId: text("practice_id"),
   nhiNumber: text("nhi_number"),
-  isNhiValidate: boolean("is_nhi_validate"),
+  isNhiValidate: text("is_nhi_validate"),
   title: text("title"),
   firstName: text("first_name"),
   middleName: text("middle_name"),
@@ -104,17 +104,17 @@ export const providersRaw = createTable("raw.providers", {
   labTestsDrId: text("lab_tests_dr_id"),
   colorCode: text("color_code"),
   isDoctor: text("is_doctor"),
-  acc45Prefix: text("acc45_prefix"),
-  nextAcc45No: text("next_acc45_no"),
-  maximumAcc45No: text("maximum_acc45_no"),
+  acc45Prefix: text("acc_45_prefix"),
+  nextAcc45No: text("next_acc_45_no"),
+  maximumAcc45No: text("maximum_acc_45_no"),
   aitcPrefix: text("aitc_prefix"),
   nextAitcNo: text("next_aitc_no"),
   maximumAitcNo: text("maximum_aitc_no"),
-  arc18NextAccFormNo: text("arc18_next_acc_form_no"),
-  m45Prefix: text("m45_prefix"),
-  nextM45No: text("next_m45_no"),
-  maximumM45No: text("maximum_m45_no"),
-  isNzFAvoid: text("is_nzf_avoid"),
+  arc18NextAccFormNo: text("arc_18_next_acc_form_no"),
+  m45Prefix: text("m_45_prefix"),
+  nextM45No: text("next_m_45_no"),
+  maximumM45No: text("maximum_m_45_no"),
+  isNzfAvoid: text("is_nzf_avoid"),
   isNzfAdjust: text("is_nzf_adjust"),
   isNzfInformation: text("is_nzf_information"),
   isNzfNoAction: text("is_nzf_no_action"),
@@ -138,20 +138,13 @@ export const providersRaw = createTable("raw.providers", {
   perOrgId: text("per_org_id"),
   loadedDateTime: text("loaded_date_time"),
 
-  // Lineage columns (added by ETL)
-  s3Bucket: text("s3_bucket").notNull(),
-  s3Key: text("s3_key").notNull(),
-  s3VersionId: text("s3_version_id").notNull(),
-  fileHash: text("file_hash").notNull(),
-  dateExtracted: text("date_extracted").notNull(),
-  extractType: text("extract_type").notNull(),
-  loadRunId: uuid("load_run_id").notNull(),
-  loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
+  // Foreign key to load_run_files for lineage data
+  loadRunFileId: integer("load_run_file_id").notNull(),
 });
 
 // Foreign key constraint to etl.load_run_files
-export const fkProvidersRawLoadRunFile = foreignKey({
-  columns: [providersRaw.loadRunId],
+export const fkprovidersRawLoadRunFile = foreignKey({
+  columns: [providersRaw.loadRunFileId],
   foreignColumns: [loadRunFiles.loadRunFileId],
-  name: "fk_providers_raw_load_run_file",
+  name: "fk_providers_load_run_file",
 });

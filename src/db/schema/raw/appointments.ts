@@ -13,7 +13,7 @@ import { createTable } from "../../utils/create-table";
 import { loadRunFiles } from "../etl/audit";
 
 export const appointmentsRaw = createTable("raw.appointments", {
-  // CSV columns from data extract
+  // Source columns as text (all fields from appointments extract)
   appointmentId: text("appointment_id"),
   patientId: text("patient_id"),
   appointmentType: text("appointment_type"),
@@ -79,20 +79,13 @@ export const appointmentsRaw = createTable("raw.appointments", {
   perOrgId: text("per_org_id"),
   loadedDateTime: text("loaded_date_time"),
 
-  // Lineage columns (added by ETL)
-  s3Bucket: text("s3_bucket").notNull(),
-  s3Key: text("s3_key").notNull(),
-  s3VersionId: text("s3_version_id").notNull(),
-  fileHash: text("file_hash").notNull(),
-  dateExtracted: text("date_extracted").notNull(),
-  extractType: text("extract_type").notNull(),
-  loadRunId: uuid("load_run_id").notNull(),
-  loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
+  // Foreign key to load_run_files for lineage data
+  loadRunFileId: integer("load_run_file_id").notNull(),
 });
 
 // Foreign key constraint to etl.load_run_files
-export const fkAppointmentsRawLoadRunFile = foreignKey({
-  columns: [appointmentsRaw.loadRunId],
+export const fkappointmentsRawLoadRunFile = foreignKey({
+  columns: [appointmentsRaw.loadRunFileId],
   foreignColumns: [loadRunFiles.loadRunFileId],
-  name: "fk_appointments_raw_load_run_file",
+  name: "fk_appointments_load_run_file",
 });

@@ -12,8 +12,8 @@ import {
 import { createTable } from "../../utils/create-table";
 import { loadRunFiles } from "../etl/audit";
 
-export const practiceInfoRaw = createTable("raw.practice_info", {
-  // CSV columns from data extract
+export const practiceinfoRaw = createTable("raw.practice_info", {
+  // Source columns as text (all fields from practice-info extract)
   practiceId: text("practice_id"),
   practiceName: text("practice_name"),
   practiceCategory: text("practice_category"),
@@ -38,8 +38,8 @@ export const practiceInfoRaw = createTable("raw.practice_info", {
   secondaryEmail: text("secondary_email"),
   otherEmail: text("other_email"),
   pager: text("pager"),
-  fax1: text("fax1"),
-  fax2: text("fax2"),
+  fax1: text("fax_1"),
+  fax2: text("fax_2"),
   healthFacilityNo: text("health_facility_no"),
   hpiFacilityNo: text("hpi_facility_no"),
   hpiFacilityExt: text("hpi_facility_ext"),
@@ -56,20 +56,13 @@ export const practiceInfoRaw = createTable("raw.practice_info", {
   perOrgId: text("per_org_id"),
   loadedDateTime: text("loaded_date_time"),
 
-  // Lineage columns (added by ETL)
-  s3Bucket: text("s3_bucket").notNull(),
-  s3Key: text("s3_key").notNull(),
-  s3VersionId: text("s3_version_id").notNull(),
-  fileHash: text("file_hash").notNull(),
-  dateExtracted: text("date_extracted").notNull(),
-  extractType: text("extract_type").notNull(),
-  loadRunId: uuid("load_run_id").notNull(),
-  loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
+  // Foreign key to load_run_files for lineage data
+  loadRunFileId: integer("load_run_file_id").notNull(),
 });
 
 // Foreign key constraint to etl.load_run_files
-export const fkPracticeInfoRawLoadRunFile = foreignKey({
-  columns: [practiceInfoRaw.loadRunId],
+export const fkpracticeinfoRawLoadRunFile = foreignKey({
+  columns: [practiceinfoRaw.loadRunFileId],
   foreignColumns: [loadRunFiles.loadRunFileId],
-  name: "fk_practice_info_raw_load_run_file",
+  name: "fk_practice-info_load_run_file",
 });

@@ -1,9 +1,19 @@
-import { text, integer, foreignKey } from "drizzle-orm/pg-core";
+import {
+  text,
+  timestamp,
+  uuid,
+  boolean,
+  integer,
+  date,
+  check,
+  uniqueIndex,
+  foreignKey,
+} from "drizzle-orm/pg-core";
 import { createTable } from "../../utils/create-table";
 import { loadRunFiles } from "../etl/audit";
 
 export const patientsRaw = createTable("raw.patients", {
-  // Source columns as text (all fields from Patient extract)
+  // Source columns as text (all fields from patients extract)
   patientId: text("patient_id"),
   nhiNumber: text("nhi_number"),
   isNhiValidate: text("is_nhi_validate"),
@@ -50,8 +60,8 @@ export const patientsRaw = createTable("raw.patients", {
   isWorkedVisaRequired: text("is_worked_visa_required"),
   balance: text("balance"),
   medTechBalance: text("med_tech_balance"),
-  medTechDateLastPay: text("med_tech_date_last_pay"),
-  medTechDateLastStmt: text("med_tech_date_last_stmt"),
+  medtechDateLastPay: text("medtech_date_lastpay"),
+  medtechDateLastStmt: text("medtech_date_laststmt"),
   registerStatusId: text("register_status_id"),
   registerStatus: text("register_status"),
   medTechNok: text("med_tech_nok"),
@@ -79,7 +89,7 @@ export const patientsRaw = createTable("raw.patients", {
   healthCardSighted: text("health_card_sighted"),
   winz: text("winz"),
   isTransferOfRecords: text("is_transfer_of_records"),
-  transferOfRecordsRemarks: text("transfer_of_records_remarks"),
+  transferofRecordsRemarks: text("transferof_records_remarks"),
   enrolmentType: text("enrolment_type"),
   enrolmentStatusId: text("enrolment_status_id"),
   enrolmentStatus: text("enrolment_status"),
@@ -114,7 +124,7 @@ export const patientsRaw = createTable("raw.patients", {
   isHeartRate: text("is_heart_rate"),
   isPremature: text("is_premature"),
   prematureWeek: text("premature_week"),
-  patientPhoId: text("patient_pho_id"),
+  patientPhoid: text("patient_phoid"),
   consultUpdatedAt: text("consult_updated_at"),
   occupation: text("occupation"),
   emergencyContact: text("emergency_contact"),
@@ -240,7 +250,7 @@ export const patientsRaw = createTable("raw.patients", {
 });
 
 // Foreign key constraint to etl.load_run_files
-export const fkPatientsLoadRunFile = foreignKey({
+export const fkpatientsRawLoadRunFile = foreignKey({
   columns: [patientsRaw.loadRunFileId],
   foreignColumns: [loadRunFiles.loadRunFileId],
   name: "fk_patients_load_run_file",

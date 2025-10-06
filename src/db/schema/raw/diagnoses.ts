@@ -1,0 +1,77 @@
+import {
+  text,
+  timestamp,
+  uuid,
+  boolean,
+  integer,
+  date,
+  check,
+  uniqueIndex,
+  foreignKey,
+} from "drizzle-orm/pg-core";
+import { createTable } from "../../utils/create-table";
+import { loadRunFiles } from "../etl/audit";
+
+export const diagnosesRaw = createTable("raw.diagnoses", {
+  // Source columns as text (all fields from diagnoses extract)
+  diagnosisId: text("diagnosis_id"),
+  appointmentId: text("appointment_id"),
+  patientId: text("patient_id"),
+  diseaseId: text("disease_id"),
+  disease: text("disease"),
+  diagnosisDate: text("diagnosis_date"),
+  diagnosisById: text("diagnosis_by_id"),
+  diagnosisBy: text("diagnosis_by"),
+  summary: text("summary"),
+  isLongTerm: text("is_long_term"),
+  addtoProblem: text("addto_problem"),
+  isHighlighted: text("is_highlighted"),
+  sequenceNo: text("sequence_no"),
+  isActive: text("is_active"),
+  isDeleted: text("is_deleted"),
+  insertedById: text("inserted_by_id"),
+  insertedBy: text("inserted_by"),
+  updatedById: text("updated_by_id"),
+  updatedBy: text("updated_by"),
+  insertedAt: text("inserted_at"),
+  updatedAt: text("updated_at"),
+  isConfidential: text("is_confidential"),
+  diagnosisTypeId: text("diagnosis_type_id"),
+  diagnosisType: text("diagnosis_type"),
+  classificationRecord: text("classification_record"),
+  medTechId: text("med_tech_id"),
+  medTechReadCode: text("med_tech_read_code"),
+  medTechReadTerm: text("med_tech_read_term"),
+  isMapped: text("is_mapped"),
+  practiceId: text("practice_id"),
+  practice: text("practice"),
+  onSetDate: text("on_set_date"),
+  userLoggingId: text("user_logging_id"),
+  loggingUserName: text("logging_user_name"),
+  recallId: text("recall_id"),
+  recall: text("recall"),
+  exclusionStartDate: text("exclusion_start_date"),
+  exclusionEndDate: text("exclusion_end_date"),
+  showOnPortal: text("show_on_portal"),
+  extAppointmentId: text("ext_appointment_id"),
+  patientMedTechId: text("patient_med_tech_id"),
+  permanentAddressLatitude: text("permanent_address_latitude"),
+  permanentAddressLongitude: text("permanent_address_longitude"),
+  practiceLocationId: text("practice_location_id"),
+  locationName: text("location_name"),
+  snomedid: text("snomedid"),
+  snomedTerm: text("snomed_term"),
+  conceptid: text("conceptid"),
+  perOrgId: text("per_org_id"),
+  loadedDateTime: text("loaded_date_time"),
+
+  // Foreign key to load_run_files for lineage data
+  loadRunFileId: integer("load_run_file_id").notNull(),
+});
+
+// Foreign key constraint to etl.load_run_files
+export const fkdiagnosesRawLoadRunFile = foreignKey({
+  columns: [diagnosesRaw.loadRunFileId],
+  foreignColumns: [loadRunFiles.loadRunFileId],
+  name: "fk_diagnoses_load_run_file",
+});
