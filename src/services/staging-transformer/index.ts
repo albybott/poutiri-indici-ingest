@@ -63,6 +63,12 @@ export { RejectionHandler } from "./rejection-handler";
  */
 export { StagingTableLoader } from "./staging-table-loader";
 
+/**
+ * Creates StagingExtractHandler instances for different extract types
+ * Provides factory pattern for handler management
+ */
+export { StagingHandlerFactory } from "./staging-handler-factory";
+
 // ============================================================================
 // TYPE EXPORTS
 // ============================================================================

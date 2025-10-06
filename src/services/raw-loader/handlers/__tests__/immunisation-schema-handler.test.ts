@@ -123,7 +123,7 @@ describe("ImmunisationSchemaHandler", () => {
         perOrgId: "685146",
       };
 
-      const result = await handler.transformRow(row);
+      const result = await handler.transformRow(row as any);
       expect(result).toEqual(row);
     });
 
@@ -142,7 +142,7 @@ describe("ImmunisationSchemaHandler", () => {
         perOrgId: "685146",
       };
 
-      const result = await handler.transformRow(row);
+      const result = await handler.transformRow(row as any);
       expect(result).toEqual(row);
     });
   });

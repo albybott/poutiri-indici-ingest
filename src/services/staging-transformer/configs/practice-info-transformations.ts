@@ -1,0 +1,190 @@
+import type { ColumnTransformation } from "../types/transformer";
+import { ColumnType } from "../types/transformer";
+
+/**
+ * Practice Info staging transformations
+ * Converts raw text columns to typed staging columns
+ */
+export const practiceInfoTransformations: ColumnTransformation[] = [
+  {
+    sourceColumn: "practice_id",
+    targetColumn: "practiceId",
+    targetType: ColumnType.TEXT,
+    required: true,
+  },
+  {
+    sourceColumn: "per_org_id",
+    targetColumn: "perOrgId",
+    targetType: ColumnType.TEXT,
+    required: true,
+  },
+  {
+    sourceColumn: "practice_name",
+    targetColumn: "practiceName",
+    targetType: ColumnType.TEXT,
+    required: true,
+    transformFunction: (value) => value?.trim() ?? null,
+  },
+  {
+    sourceColumn: "practice_category",
+    targetColumn: "practiceCategory",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "practice_speciality",
+    targetColumn: "practiceSpeciality",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "pho",
+    targetColumn: "pho",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "organization_type",
+    targetColumn: "organizationType",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "org_short_name",
+    targetColumn: "orgShortName",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "org_code",
+    targetColumn: "orgCode",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "edi_account",
+    targetColumn: "ediAccount",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "legal_entity_title",
+    targetColumn: "legalEntityTitle",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "legal_status",
+    targetColumn: "legalStatus",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "incorporation_number",
+    targetColumn: "incorporationNumber",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "ownership_model",
+    targetColumn: "ownershipModel",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "rural",
+    targetColumn: "rural",
+    targetType: ColumnType.BOOLEAN,
+    required: false,
+  },
+  {
+    sourceColumn: "primary_phone",
+    targetColumn: "primaryPhone",
+    targetType: ColumnType.TEXT,
+    required: false,
+    transformFunction: (value) => value?.trim() ?? null,
+  },
+  {
+    sourceColumn: "secondary_phone",
+    targetColumn: "secondaryPhone",
+    targetType: ColumnType.TEXT,
+    required: false,
+    transformFunction: (value) => value?.trim() ?? null,
+  },
+  {
+    sourceColumn: "primary_email",
+    targetColumn: "primaryEmail",
+    targetType: ColumnType.TEXT,
+    required: false,
+    transformFunction: (value) => value?.toLowerCase().trim() ?? null,
+  },
+  {
+    sourceColumn: "secondary_email",
+    targetColumn: "secondaryEmail",
+    targetType: ColumnType.TEXT,
+    required: false,
+    transformFunction: (value) => value?.toLowerCase().trim() ?? null,
+  },
+  {
+    sourceColumn: "health_facility_no",
+    targetColumn: "healthFacilityNo",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "hpi_facility_no",
+    targetColumn: "hpiFacilityNo",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "gst_no",
+    targetColumn: "gstNo",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "acc_no",
+    targetColumn: "accNo",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "bank_account_no",
+    targetColumn: "bankAccountNo",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "moh_sending_practice_id",
+    targetColumn: "mohSendingPracticeId",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "after_hours_number",
+    targetColumn: "afterHoursNumber",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "emergency_number",
+    targetColumn: "emergencyNumber",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "is_active",
+    targetColumn: "isActive",
+    targetType: ColumnType.BOOLEAN,
+    required: false,
+    defaultValue: true,
+  },
+  {
+    sourceColumn: "is_deleted",
+    targetColumn: "isDeleted",
+    targetType: ColumnType.BOOLEAN,
+    required: false,
+    defaultValue: false,
+  },
+];

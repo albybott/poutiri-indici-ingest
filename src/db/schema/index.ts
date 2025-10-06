@@ -9,6 +9,18 @@ export * from "./raw/appointments";
 export * from "./raw/medicine";
 export * from "./raw/vaccine";
 export * from "./raw/immunisation";
+export * from "./raw/next-of-kin";
+export * from "./raw/diagnoses";
+export * from "./raw/allergies";
+export * from "./raw/appointment-medications";
+export * from "./raw/invoices";
+export * from "./raw/invoice-detail";
+export * from "./raw/measurements";
+export * from "./raw/patient-alerts";
+export * from "./raw/practice-info";
+export * from "./raw/providers";
+export * from "./raw/recalls";
+export * from "./raw/vaccine";
 
 // Staging schemas - typed columns with constraints and mapping tables
 export * from "./stg/patients";

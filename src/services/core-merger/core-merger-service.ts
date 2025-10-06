@@ -14,6 +14,7 @@ import { VaccineDimensionHandler } from "./dimension/handlers/vaccine-dimension-
 import { ForeignKeyResolver } from "./fact/foreign-key-resolver";
 import { FactLoader } from "./fact/fact-loader";
 import { appointmentFactConfig } from "./fact/handlers/appointment-fact-handler";
+import { immunisationFactConfig } from "./fact/handlers/immunisation-fact-handler";
 import { CoreAuditService } from "./core-audit-service";
 import { CoreMergeRunService } from "./core-merge-run-service";
 import { LoadMonitor } from "./load-monitor";
@@ -26,7 +27,7 @@ import type {
 import type { CoreMergerConfig } from "./types/config";
 import { DimensionType } from "./types/scd2";
 import { FactType } from "./types/fact";
-import { logger } from "../../shared/utils/logger";
+import { logger } from "@/services/shared/utils/logger";
 
 export class CoreMergerService {
   private pool: Pool;
@@ -348,6 +349,8 @@ export class CoreMergerService {
     switch (factType) {
       case FactType.APPOINTMENT:
         return appointmentFactConfig;
+      case FactType.IMMUNISATION:
+        return immunisationFactConfig;
       default:
         throw new Error(`Unknown fact type: ${factType}`);
     }

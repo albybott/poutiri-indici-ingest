@@ -1,6 +1,7 @@
 import "dotenv/config";
 import {
   S3DiscoveryService,
+  type ExtractType,
   type ProcessingPlan,
 } from "./services/discovery/index.js";
 import {
@@ -15,6 +16,7 @@ import {
   ColumnType,
   ValidationRuleBuilders,
   type StagingExtractHandler,
+  StagingHandlerFactory,
 } from "@/services/staging-transformer/index.js";
 import { LoadRunService } from "@/services/raw-loader/load-run-service.js";
 
@@ -40,6 +42,8 @@ function init(): void {
   console.log(`🧪 Test Mode: ${config.testMode ? "Enabled" : "Disabled"}`);
 }
 
+const testExtractTypes: ExtractType[] = ["Appointments"];
+
 async function testDiscoveryService(): Promise<ProcessingPlan | null> {
   try {
     if (!config.s3Bucket || !config.awsRegion) {
@@ -63,7 +67,7 @@ async function testDiscoveryService(): Promise<ProcessingPlan | null> {
         cacheTtlMinutes: 5,
       },
       processing: {
-        priorityExtracts: ["Patient"],
+        priorityExtracts: testExtractTypes,
         maxConcurrentFiles: 1,
         processingTimeoutMs: 60000,
       },
@@ -86,7 +90,7 @@ async function testDiscoveryService(): Promise<ProcessingPlan | null> {
      * - warnings: Non-critical issues found during discovery
      */
     const processingPlan = await discoveryService.discoverLatestFiles({
-      extractTypes: ["Patient"],
+      extractTypes: testExtractTypes,
       // Remove maxBatches limit to process all available batches
     });
 
@@ -96,7 +100,10 @@ async function testDiscoveryService(): Promise<ProcessingPlan | null> {
     }
 
     console.log(
-      `📁 Found ${processingPlan.batches.length} batches with ${processingPlan.totalFiles} total files for extraction types: ${processingPlan.dependencies.map((d) => d.extractType).join(", ")}
+      `📁 Found ${processingPlan.batches.length} batches with ${processingPlan.totalFiles} total files for extraction:\n${processingPlan.batches
+        .flatMap((b) => b.files)
+        .map((f) => f.s3Key)
+        .join("\n")}
       `
     );
     return processingPlan;
@@ -324,134 +331,20 @@ async function testStagingTransformerService(
       throw new Error("Staging transformer service is unhealthy");
     }
 
-    // Define Patient extract handler
-    const patientHandler: StagingExtractHandler = {
-      extractType: "Patient",
-      sourceTable: "raw.patients",
-      targetTable: "stg.patients",
-      naturalKeys: ["patient_id", "practice_id", "per_org_id"],
-      transformations: [
-        // Core identifiers
-        {
-          sourceColumn: "patient_id",
-          targetColumn: "patient_id",
-          targetType: ColumnType.TEXT,
-          required: true,
-        },
-        {
-          sourceColumn: "practice_id",
-          targetColumn: "practice_id",
-          targetType: ColumnType.TEXT,
-          required: true,
-        },
-        {
-          sourceColumn: "per_org_id",
-          targetColumn: "per_org_id",
-          targetType: ColumnType.TEXT,
-          required: true,
-        },
-        // Personal details
-        {
-          sourceColumn: "nhi_number",
-          targetColumn: "nhi_number",
-          targetType: ColumnType.TEXT,
-          required: false,
-          validationRules: [ValidationRuleBuilders.nhiFormat("nhi_number")],
-        },
-        {
-          sourceColumn: "first_name",
-          targetColumn: "first_name",
-          targetType: ColumnType.TEXT,
-          required: false,
-        },
-        {
-          sourceColumn: "middle_name",
-          targetColumn: "middle_name",
-          targetType: ColumnType.TEXT,
-          required: false,
-        },
-        {
-          sourceColumn: "family_name",
-          targetColumn: "family_name",
-          targetType: ColumnType.TEXT,
-          required: false,
-        },
-        {
-          sourceColumn: "full_name",
-          targetColumn: "full_name",
-          targetType: ColumnType.TEXT,
-          required: false,
-        },
-        // Dates
-        {
-          sourceColumn: "dob",
-          targetColumn: "dob",
-          targetType: ColumnType.DATE,
-          required: false,
-        },
-        {
-          sourceColumn: "death_date",
-          targetColumn: "death_date",
-          targetType: ColumnType.DATE,
-          required: false,
-        },
-        // Booleans
-        {
-          sourceColumn: "is_alive",
-          targetColumn: "is_alive",
-          targetType: ColumnType.BOOLEAN,
-          required: false,
-        },
-        {
-          sourceColumn: "is_active",
-          targetColumn: "is_active",
-          targetType: ColumnType.BOOLEAN,
-          required: false,
-        },
-        {
-          sourceColumn: "is_deleted",
-          targetColumn: "is_deleted",
-          targetType: ColumnType.BOOLEAN,
-          required: false,
-        },
-        // Numeric fields
-        {
-          sourceColumn: "age",
-          targetColumn: "age",
-          targetType: ColumnType.INTEGER,
-          required: false,
-          validationRules: [ValidationRuleBuilders.range("age", 0, 150)],
-        },
-        {
-          sourceColumn: "balance",
-          targetColumn: "balance",
-          targetType: ColumnType.DECIMAL,
-          required: false,
-        },
-        // Contact info
-        {
-          sourceColumn: "email",
-          targetColumn: "email",
-          targetType: ColumnType.TEXT,
-          required: false,
-          validationRules: [ValidationRuleBuilders.email("email")],
-        },
-        {
-          sourceColumn: "cell_number",
-          targetColumn: "cell_number",
-          targetType: ColumnType.TEXT,
-          required: false,
-        },
-      ],
-    };
+    // Get the handler for the extract type we're testing
+    const handlerFactory = new StagingHandlerFactory();
+    const extractType = testExtractTypes[0]; // Use the first extract type being tested
+    const handler = await handlerFactory.getHandler(extractType);
 
-    console.log(`🔄 Transforming Patient data from load run: ${loadRunId}`);
+    console.log(
+      `🔄 Transforming ${extractType} data from load run: ${loadRunId}`
+    );
 
     // Transform the data
-    const result = await transformer.transformExtract(patientHandler, {
+    const result = await transformer.transformExtract(handler, {
       loadRunId,
       upsertMode: true,
-      conflictColumns: ["patient_id", "practice_id", "per_org_id"],
+      conflictColumns: handler.naturalKeys,
     });
 
     // Display results
@@ -510,7 +403,7 @@ async function testStagingTransformerService(
         "\n✅ Staging Transformer Service tests completed successfully!"
       );
       console.log(
-        `   ${result.totalRowsTransformed} rows now in stg.patients table`
+        `   ${result.totalRowsTransformed} rows now in ${handler.targetTable} table`
       );
     } else {
       console.log(
@@ -566,7 +459,7 @@ async function testCoreMergerService(stagingRunId: string): Promise<void> {
     const result = await coreMerger.mergeToCore({
       stagingRunId,
       forceReprocess: true, // Ensure we process all data for testing
-      extractTypes: ["Patient"],
+      extractTypes: testExtractTypes,
     });
 
     // Display results
@@ -650,6 +543,8 @@ async function testCoreMergerService(stagingRunId: string): Promise<void> {
 // eslint-disable-next-line @typescript-eslint/require-await
 async function main(): Promise<void> {
   try {
+    init();
+
     const processingPlan = await testDiscoveryService();
     if (!processingPlan) {
       throw new Error("There was an error with the discovery service");

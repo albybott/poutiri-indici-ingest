@@ -56,6 +56,7 @@ export class RawTableLoader {
     }
 
     const processedValues: any[][] = [];
+    const expectedColumnCount = options.columns.length + 1; // +1 for load_run_file_id
 
     for (const row of values) {
       // Map values for all columns (load_run_file_id first, then business columns)
@@ -63,6 +64,16 @@ export class RawTableLoader {
         loadRunFileId,
         ...row.map((col: CSVRowValue) => col ?? ""),
       ];
+
+      // Validate parameter count to catch data inconsistencies early
+      if (rowValues.length !== expectedColumnCount) {
+        throw new Error(
+          `Parameter count mismatch for batch ${batchNumber}: expected ${expectedColumnCount} columns ` +
+            `(1 load_run_file_id + ${options.columns.length} data columns), ` +
+            `but got ${rowValues.length} values. ` +
+            `Row data: ${JSON.stringify(rowValues.slice(0, 10))}...`
+        );
+      }
 
       // Add all rows to preserve raw data integrity
       processedValues.push(rowValues);

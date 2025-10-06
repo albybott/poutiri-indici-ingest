@@ -17,6 +17,7 @@ import { PracticeInfoSchemaHandler } from "./handlers/practice-info-schema-handl
 import { ProvidersSchemaHandler } from "./handlers/providers-schema-handler";
 import { RecallsSchemaHandler } from "./handlers/recalls-schema-handler";
 import { VaccineSchemaHandler } from "./handlers/vaccine-schema-handler";
+import type { ExtractType } from "../discovery/types/config";
 
 /**
  * Extract Handler Factory - creates handlers for different extract types
@@ -82,60 +83,86 @@ export class ExtractHandlerFactory {
    * Register all default handlers
    */
   private registerDefaultHandlers(): void {
-    // Register all schema-driven handlers
-    const allergiesHandler = new AllergiesSchemaHandler();
-    this.handlers.set("Allergy", allergiesHandler);
+    const handlersToRegister: {
+      extractType: ExtractType;
+      handler: ExtractHandler;
+    }[] = [
+      {
+        extractType: "Allergies",
+        handler: new AllergiesSchemaHandler(),
+      },
+      {
+        extractType: "AppointmentMedications",
+        handler: new AppointmentMedicationsSchemaHandler(),
+      },
+      {
+        extractType: "Appointments",
+        handler: new AppointmentsSchemaHandler(),
+      },
+      {
+        extractType: "Diagnosis",
+        handler: new DiagnosesSchemaHandler(),
+      },
+      {
+        extractType: "Immunisation",
+        handler: new ImmunisationSchemaHandler(),
+      },
+      {
+        extractType: "Inbox",
+        handler: new InboxSchemaHandler(),
+      },
+      {
+        extractType: "InboxDetail",
+        handler: new InboxDetailSchemaHandler(),
+      },
+      {
+        extractType: "InvoiceDetail",
+        handler: new InvoiceDetailSchemaHandler(),
+      },
+      {
+        extractType: "Invoices",
+        handler: new InvoicesSchemaHandler(),
+      },
+      {
+        extractType: "Measurements",
+        handler: new MeasurementsSchemaHandler(),
+      },
+      {
+        extractType: "Medicine",
+        handler: new MedicineSchemaHandler(),
+      },
+      {
+        extractType: "NextOfKin",
+        handler: new NextOfKinSchemaHandler(),
+      },
+      {
+        extractType: "Patient",
+        handler: new PatientsSchemaHandler(),
+      },
+      {
+        extractType: "PatientAlerts",
+        handler: new PatientAlertsSchemaHandler(),
+      },
+      {
+        extractType: "PracticeInfo",
+        handler: new PracticeInfoSchemaHandler(),
+      },
+      {
+        extractType: "Provider",
+        handler: new ProvidersSchemaHandler(),
+      },
+      {
+        extractType: "Recalls",
+        handler: new RecallsSchemaHandler(),
+      },
+      {
+        extractType: "Vaccine",
+        handler: new VaccineSchemaHandler(),
+      },
+    ];
 
-    const appointmentMedicationsHandler =
-      new AppointmentMedicationsSchemaHandler();
-    this.handlers.set("AppointmentMedication", appointmentMedicationsHandler);
-
-    const appointmentsHandler = new AppointmentsSchemaHandler();
-    this.handlers.set("Appointment", appointmentsHandler);
-
-    const diagnosesHandler = new DiagnosesSchemaHandler();
-    this.handlers.set("Diagnose", diagnosesHandler);
-
-    const immunisationHandler = new ImmunisationSchemaHandler();
-    this.handlers.set("Immunisation", immunisationHandler);
-
-    const inboxHandler = new InboxSchemaHandler();
-    this.handlers.set("Inbox", inboxHandler);
-
-    const inboxDetailHandler = new InboxDetailSchemaHandler();
-    this.handlers.set("InboxDetail", inboxDetailHandler);
-
-    const invoiceDetailHandler = new InvoiceDetailSchemaHandler();
-    this.handlers.set("InvoiceDetail", invoiceDetailHandler);
-
-    const invoicesHandler = new InvoicesSchemaHandler();
-    this.handlers.set("Invoice", invoicesHandler);
-
-    const measurementsHandler = new MeasurementsSchemaHandler();
-    this.handlers.set("Measurement", measurementsHandler);
-
-    const medicineHandler = new MedicineSchemaHandler();
-    this.handlers.set("Medicine", medicineHandler);
-
-    const nextOfKinHandler = new NextOfKinSchemaHandler();
-    this.handlers.set("NextOfKin", nextOfKinHandler);
-
-    const patientsHandler = new PatientsSchemaHandler();
-    this.handlers.set("Patient", patientsHandler);
-
-    const patientAlertsHandler = new PatientAlertsSchemaHandler();
-    this.handlers.set("PatientAlert", patientAlertsHandler);
-
-    const practiceInfoHandler = new PracticeInfoSchemaHandler();
-    this.handlers.set("PracticeInfo", practiceInfoHandler);
-
-    const providersHandler = new ProvidersSchemaHandler();
-    this.handlers.set("Provider", providersHandler);
-
-    const recallsHandler = new RecallsSchemaHandler();
-    this.handlers.set("Recall", recallsHandler);
-
-    const vaccineHandler = new VaccineSchemaHandler();
-    this.handlers.set("Vaccine", vaccineHandler);
+    handlersToRegister.forEach(({ extractType, handler }) => {
+      this.handlers.set(extractType, handler);
+    });
   }
 }
