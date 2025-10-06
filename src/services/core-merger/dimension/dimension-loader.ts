@@ -17,7 +17,7 @@ import type {
   DimensionRecord,
 } from "../types/scd2";
 import { ChangeType as CT } from "../types/scd2";
-import { logger } from "../../../shared/utils/logger";
+import { logger } from "@/services/shared/utils/logger";
 
 export class DimensionLoader {
   private pool: Pool;

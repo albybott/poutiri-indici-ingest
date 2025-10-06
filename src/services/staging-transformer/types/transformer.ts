@@ -2,7 +2,7 @@
  * Staging Transformer Core Types
  */
 
-import type { LoadError, LoadWarning } from "@/shared/types";
+import type { LoadError, LoadWarning } from "@/services/shared/types";
 
 /**
  * Options for staging transformation operations

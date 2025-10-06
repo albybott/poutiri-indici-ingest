@@ -10,7 +10,7 @@ import type {
   LineageMetadata,
   DimensionRecord,
 } from "../../types/scd2";
-import { logger } from "../../../../shared/utils/logger";
+import { logger } from "@/services/shared/utils/logger";
 
 export abstract class BaseDimensionHandler {
   protected config: DimensionHandlerConfig;

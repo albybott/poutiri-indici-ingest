@@ -7,7 +7,7 @@ import { Pool } from "pg";
 import { CoreMergerService } from "./core-merger-service";
 import type { CoreMergerConfig } from "./types/config";
 import { defaultCoreMergerConfig } from "./types/config";
-import { logger } from "../../shared/utils/logger";
+import { logger } from "@/services/shared/utils/logger";
 
 /**
  * Partial configuration type with nested partials

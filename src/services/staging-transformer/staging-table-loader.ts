@@ -4,10 +4,10 @@
  * Uses shared BatchLoader with staging-specific logic (upsert, lineage embedding)
  */
 
-import type { DatabasePool } from "../../shared/database-pool";
-import { BatchLoader } from "../../shared/batch-loader";
-import type { InsertBatch, BatchResult } from "../../shared/types";
-import type { ErrorHandler } from "../raw-loader/error-handler";
+import type { DatabasePool } from "@/services/shared/database-pool";
+import { BatchLoader } from "@/services/shared/batch-loader";
+import type { InsertBatch, BatchResult } from "@/services/shared/types";
+import type { ErrorHandler } from "@/services/raw-loader/error-handler";
 import type { StagingTransformOptions } from "./types/transformer";
 
 /**

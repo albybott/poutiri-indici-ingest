@@ -15,7 +15,7 @@ import type {
   FactType,
 } from "@/services/core-merger/types/fact";
 import type { DimensionType } from "@/services/core-merger/types/scd2";
-import { logger } from "@/shared/utils/logger";
+import { logger } from "@/services/shared/utils/logger";
 
 export class FactLoader {
   private pool: Pool;

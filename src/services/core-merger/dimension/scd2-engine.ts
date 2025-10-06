@@ -19,7 +19,7 @@ import {
   meetsVersionThreshold,
 } from "../utils/scd2-utils";
 import { generateAttributeHash } from "../utils/hash-utils";
-import { logger } from "../../../shared/utils/logger";
+import { logger } from "@/services/shared/utils/logger";
 
 export class SCD2Engine {
   private config: SCD2Config;

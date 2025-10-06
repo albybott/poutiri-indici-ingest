@@ -6,7 +6,7 @@
 import type { LoadProgress } from "./types/core-merger";
 import type { DimensionType } from "./types/scd2";
 import type { FactType } from "./types/fact";
-import { logger } from "../../shared/utils/logger";
+import { logger } from "@/services/shared/utils/logger";
 
 export class LoadMonitor {
   private progressMap: Map<string, LoadProgress>;

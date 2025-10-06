@@ -8,8 +8,8 @@
  * - Loads to stg.* tables
  */
 
-import type { DatabasePool } from "../../shared/database-pool";
-import type { ErrorHandler } from "../raw-loader/error-handler";
+import type { DatabasePool } from "@/services/shared/database-pool";
+import type { ErrorHandler } from "@/services/raw-loader/error-handler";
 import { RawQueryBuilder, type RawQueryOptions } from "./raw-query-builder";
 import { TransformationEngine } from "./transformation-engine";
 import { ValidationEngine } from "./validation-engine";
@@ -23,7 +23,7 @@ import type {
   RejectedRow,
 } from "./types/transformer";
 import type { StagingTransformerConfig } from "./types/config";
-import type { LoadError, LoadWarning } from "../../shared/types";
+import type { LoadError, LoadWarning } from "@/services/shared/types";
 
 /**
  * Main staging transformer service

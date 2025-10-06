@@ -1,5 +1,5 @@
 import type { LoadMetrics, LoadProgress } from "./types/raw-loader";
-import type { LoadError, LoadWarning } from "../../shared/types";
+import type { LoadError, LoadWarning } from "@/services/shared/types";
 import type { MonitoringConfig } from "./types/config";
 
 /**

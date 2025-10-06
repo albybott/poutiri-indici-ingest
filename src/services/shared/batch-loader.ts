@@ -1,6 +1,6 @@
-import type { DatabasePool } from "@/shared/database-pool";
+import type { DatabasePool } from "@/services/shared/database-pool";
 import type { ErrorHandler } from "@/services/raw-loader/error-handler";
-import type { InsertBatch, BatchResult } from "@/shared/types";
+import type { InsertBatch, BatchResult } from "@/services/shared/types";
 
 /**
  * Generic batch loader for database operations

@@ -8,7 +8,7 @@ import type { Pool } from "pg";
 import { DimensionType } from "../types/scd2";
 import type { DimensionCacheEntry } from "../types/dimension";
 import type { ResolvedForeignKey } from "../types/fact";
-import { logger } from "../../../shared/utils/logger";
+import { logger } from "@/services/shared/utils/logger";
 import { businessKeyToString } from "../utils/business-key-utils";
 
 export class ForeignKeyResolver {

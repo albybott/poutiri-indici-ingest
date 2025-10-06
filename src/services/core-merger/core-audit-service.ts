@@ -6,7 +6,7 @@
 import type { Pool } from "pg";
 import type { CoreLineageRecord, SCD2AuditRecord } from "./types/audit";
 import type { CoreMergeResult } from "./types/core-merger";
-import { logger } from "../../shared/utils/logger";
+import { logger } from "@/services/shared/utils/logger";
 
 export class CoreAuditService {
   private pool: Pool;

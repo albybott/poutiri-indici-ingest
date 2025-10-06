@@ -1,5 +1,5 @@
 import type { ErrorSummary } from "./types/errors";
-import { LoadErrorType, type LoadError } from "../../shared/types";
+import { LoadErrorType, type LoadError } from "@/services/shared/types";
 import type { ErrorHandlingConfig } from "./types/config";
 
 /**

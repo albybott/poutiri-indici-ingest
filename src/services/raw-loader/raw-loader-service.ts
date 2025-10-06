@@ -12,7 +12,7 @@ import {
   LoadErrorType,
   type LoadError,
   type LoadWarning,
-} from "../../shared/types";
+} from "@/services/shared/types";
 import type {
   DiscoveredFile,
   FileBatch,

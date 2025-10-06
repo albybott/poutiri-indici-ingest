@@ -10,13 +10,13 @@ import { INDICI_CSV_SEPARATORS } from "./types/config";
 import type { CSVRow } from "./csv-parser";
 import { CSVParser } from "./csv-parser";
 import type { ErrorHandler } from "./error-handler";
-import { DatabasePool } from "../../shared/database-pool";
-import { BatchLoader } from "../../shared/batch-loader";
+import { DatabasePool } from "../shared/database-pool";
+import { BatchLoader } from "../shared/batch-loader";
 import {
   StreamBatchProcessor,
   type StreamLoadResult,
-} from "../../shared/stream-batch-processor";
-import type { InsertBatch } from "../../shared/types";
+} from "@/services/shared/stream-batch-processor";
+import type { InsertBatch } from "../shared/types";
 
 type CSVRowValue = string | number | boolean | Date;
 
