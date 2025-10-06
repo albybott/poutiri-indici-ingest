@@ -67,15 +67,6 @@ export class AllergiesSchemaHandler extends BaseSchemaDrivenHandler {
     'location_name',
     'per_org_id',
     'loaded_date_time',
-    'load_run_file_id',
-    's3_bucket',
-    's3_key',
-    's3_version_id',
-    'file_hash',
-    'date_extracted',
-    'extract_type',
-    'load_run_id',
-    'load_ts'
 ];
 
   validationRules: ValidationRule[] = [

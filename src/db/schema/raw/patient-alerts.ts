@@ -38,7 +38,7 @@ export const patientalertsRaw = createTable("raw.patient_alerts", {
   medTechId: text("med_tech_id"),
   userLoggingId: text("user_logging_id"),
   loggingUserName: text("logging_user_name"),
-  isGp2Gp: text("is_gp_2_gp"),
+  isGp2Gp: text("is_gp2gp"),
   permanentAddressLatitude: text("permanent_address_latitude"),
   permanentAddressLongitude: text("permanent_address_longitude"),
   alertState: text("alert_state"),

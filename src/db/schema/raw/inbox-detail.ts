@@ -28,7 +28,7 @@ export const inboxdetailRaw = createTable("raw.inbox_detail", {
   lineNumber: text("line_number"),
   insertedAt: text("inserted_at"),
   isConfidential: text("is_confidential"),
-  showonPortal: text("showon_portal"),
+  showOnPortal: text("show_on_portal"),
   isActive: text("is_active"),
   isDeleted: text("is_deleted"),
   perOrgId: text("per_org_id"),

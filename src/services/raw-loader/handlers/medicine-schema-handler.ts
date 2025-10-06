@@ -11,27 +11,18 @@ export class MedicineSchemaHandler extends BaseSchemaDrivenHandler {
 
   // Generated from src/db/schema/raw/medicine.ts
   columnMapping = [
-    'medicine_id',
-    'medicine_name',
-    'medicine_short_name',
-    'sctid',
-    'type',
-    'pharma_code',
-    'is_active',
-    'is_deleted',
-    'per_org_id',
-    'practice_id',
-    'loaded_date_time',
-    'load_run_file_id',
-    's3_bucket',
-    's3_key',
-    's3_version_id',
-    'file_hash',
-    'date_extracted',
-    'extract_type',
-    'load_run_id',
-    'load_ts'
-];
+    "medicine_id",
+    "medicine_name",
+    "medicine_short_name",
+    "sct_id",
+    "type",
+    "pharma_code",
+    "is_active",
+    "is_deleted",
+    "per_org_id",
+    "practice_id",
+    "loaded_date_time",
+  ];
 
   validationRules: ValidationRule[] = [
     // TODO: Add entity-specific validation rules

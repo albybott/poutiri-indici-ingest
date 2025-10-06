@@ -33,7 +33,7 @@ export const immunisationRaw = createTable("raw.immunisation", {
   immunisationStatus: text("immunisation_status"),
   vaccineOutComeId: text("vaccine_out_come_id"),
   vaccineOutCome: text("vaccine_out_come"),
-  isNiraCk: text("is_nira_ck"),
+  isNirAck: text("is_nir_ack"),
   reason: text("reason"),
   providerId: text("provider_id"),
   provider: text("provider"),

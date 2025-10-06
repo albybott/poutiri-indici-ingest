@@ -17,7 +17,7 @@ export const medicineRaw = createTable("raw.medicine", {
   medicineId: text("medicine_id"),
   medicineName: text("medicine_name"),
   medicineShortName: text("medicine_short_name"),
-  sctid: text("sctid"),
+  sctId: text("sct_id"),
   type: text("type"),
   pharmaCode: text("pharma_code"),
   isActive: text("is_active"),

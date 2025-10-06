@@ -16,7 +16,7 @@ export const invoicesRaw = createTable("raw.invoices", {
   // Source columns as text (all fields from invoices extract)
   invoiceTransactionId: text("invoice_transaction_id"),
   patientId: text("patient_id"),
-  acdate: text("acdate"),
+  acDate: text("ac_date"),
   medtechId: text("medtech_id"),
   paymentMode: text("payment_mode"),
   totalAmount: text("total_amount"),

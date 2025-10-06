@@ -74,7 +74,7 @@ export const providersRaw = createTable("raw.providers", {
   affiliationId: text("affiliation_id"),
   affiliation: text("affiliation"),
   affiliationCode: text("affiliation_code"),
-  nzmcno: text("nzmcno"),
+  nzmcNo: text("nzmc_no"),
   npiNo: text("npi_no"),
   hblMatPayeeNo: text("hbl_mat_payee_no"),
   hblMatAgreeNo: text("hbl_mat_agree_no"),

@@ -36,7 +36,7 @@ export const nextofkinRaw = createTable("raw.next_of_kin", {
   updatedAt: text("updated_at"),
   userLoggingId: text("user_logging_id"),
   loggingUserName: text("logging_user_name"),
-  isGp2Gp: text("is_gp_2_gp"),
+  isGp2Gp: text("is_gp2gp"),
   permanentAddressLatitude: text("permanent_address_latitude"),
   permanentAddressLongitude: text("permanent_address_longitude"),
   practiceId: text("practice_id"),

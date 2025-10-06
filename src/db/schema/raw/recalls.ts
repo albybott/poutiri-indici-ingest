@@ -19,7 +19,7 @@ export const recallsRaw = createTable("raw.recalls", {
   reCallDate: text("re_call_date"),
   isContacted: text("is_contacted"),
   notes: text("notes"),
-  patientMedTechId: text("patient_medtech_id"),
+  patientMedTechId: text("patient_med_tech_id"),
   recallReason: text("recall_reason"),
   screeningType: text("screening_type"),
   code: text("code"),
