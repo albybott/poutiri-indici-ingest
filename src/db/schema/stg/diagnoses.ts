@@ -71,9 +71,7 @@ export const diagnosesStg = createTable(
 
     // Audit fields
     loadRunFileId: integer("load_run_file_id").notNull(),
-    loadedDateTime: timestamp("loaded_date_time", {
-      withTimezone: true,
-    }).notNull(),
+    loadTs: timestamp("load_ts", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
     // Natural key for deduplication
