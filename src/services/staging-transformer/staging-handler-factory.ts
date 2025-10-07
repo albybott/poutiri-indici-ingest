@@ -14,10 +14,17 @@ import { practiceInfoTransformations } from "./configs/practice-info-transformat
 import { medicineTransformations } from "./configs/medicine-transformations";
 import { vaccineTransformations } from "./configs/vaccine-transformations";
 import { immunisationTransformations } from "./configs/immunisation-transformations";
-import { diagnosisTransformations } from "./configs/diagnosis-transformations";
+import { diagnosisTransformations } from "./configs/diagnoses-transformations";
 import { allergiesTransformations } from "./configs/allergies-transformations";
+import { appointmentMedicationsTransformations } from "./configs/appointment-medications-transformations";
+import { inboxTransformations } from "./configs/inbox-transformations";
+import { inboxDetailTransformations } from "./configs/inbox-detail-transformations";
 import { ExtractHandlerFactory } from "../raw-loader/extract-handler-factory";
-
+import { invoiceDetailTransformations } from "./configs/invoice-detail-transformations";
+import { invoicesTransformations } from "./configs/invoices-transformations";
+import { measurementsTransformations } from "./configs/measurements-transformations";
+import { nextOfKinTransformations } from "./configs/next-of-kin-transformations";
+import { patientAlertsTransformations } from "./configs/patient-alerts-transformations";
 /**
  * Staging Handler Factory
  * Creates handlers for different extract types
@@ -180,5 +187,100 @@ export class StagingHandlerFactory {
         this.rawHandlerFactory.getHandler("Allergies").columnMapping,
     };
     this.handlers.set("allergies", allergiesHandler);
+
+    // AppointmentMedications handler
+    const appointmentMedicationsHandler: StagingExtractHandler = {
+      extractType: "AppointmentMedications",
+      sourceTable: "raw.appointment_medications",
+      targetTable: "stg.appointment_medications",
+      naturalKeys: ["medicationId", "practiceId", "perOrgId"],
+      transformations: appointmentMedicationsTransformations,
+      sourceColumns: this.rawHandlerFactory.getHandler("AppointmentMedications")
+        .columnMapping,
+    };
+    this.handlers.set("appointmentmedications", appointmentMedicationsHandler);
+
+    // Inbox handler
+    const inboxHandler: StagingExtractHandler = {
+      extractType: "Inbox",
+      sourceTable: "raw.inbox",
+      targetTable: "stg.inbox",
+      naturalKeys: ["inboxFolderItemId", "practiceId", "perOrgId"],
+      transformations: inboxTransformations,
+      sourceColumns: this.rawHandlerFactory.getHandler("Inbox").columnMapping,
+    };
+    this.handlers.set("inbox", inboxHandler);
+
+    // InboxDetail handler
+    const inboxDetailHandler: StagingExtractHandler = {
+      extractType: "InboxDetail",
+      sourceTable: "raw.inbox_detail",
+      targetTable: "stg.inbox_detail",
+      naturalKeys: ["inBoxFolderItemInLineId", "practiceId", "perOrgId"],
+      transformations: inboxDetailTransformations,
+      sourceColumns:
+        this.rawHandlerFactory.getHandler("InboxDetail").columnMapping,
+    };
+    this.handlers.set("inboxdetail", inboxDetailHandler);
+
+    // InvoiceDetail handler
+    const invoiceDetailHandler: StagingExtractHandler = {
+      extractType: "InvoiceDetail",
+      sourceTable: "raw.invoice_detail",
+      targetTable: "stg.invoice_detail",
+      naturalKeys: ["invoiceDetailId", "practiceId", "perOrgId"],
+      transformations: invoiceDetailTransformations,
+      sourceColumns:
+        this.rawHandlerFactory.getHandler("InvoiceDetail").columnMapping,
+    };
+    this.handlers.set("invoicedetail", invoiceDetailHandler);
+
+    // Invoices handler
+    const invoicesHandler: StagingExtractHandler = {
+      extractType: "Invoices",
+      sourceTable: "raw.invoices",
+      targetTable: "stg.invoices",
+      naturalKeys: ["invoiceTransactionId", "practiceId", "perOrgId"],
+      transformations: invoicesTransformations,
+      sourceColumns:
+        this.rawHandlerFactory.getHandler("Invoices").columnMapping,
+    };
+    this.handlers.set("invoices", invoicesHandler);
+
+    // Measurements handler
+    const measurementsHandler: StagingExtractHandler = {
+      extractType: "Measurements",
+      sourceTable: "raw.measurements",
+      targetTable: "stg.measurements",
+      naturalKeys: ["screeningId", "practiceId", "perOrgId"],
+      transformations: measurementsTransformations,
+      sourceColumns:
+        this.rawHandlerFactory.getHandler("Measurements").columnMapping,
+    };
+    this.handlers.set("measurements", measurementsHandler);
+
+    // NextOfKin handler
+    const nextOfKinHandler: StagingExtractHandler = {
+      extractType: "NextOfKin",
+      sourceTable: "raw.next_of_kin",
+      targetTable: "stg.next_of_kin",
+      naturalKeys: ["nextToKinId", "practiceId", "perOrgId"],
+      transformations: nextOfKinTransformations,
+      sourceColumns:
+        this.rawHandlerFactory.getHandler("NextOfKin").columnMapping,
+    };
+    this.handlers.set("nextofkin", nextOfKinHandler);
+
+    // PatientAlerts handler
+    const patientAlertsHandler: StagingExtractHandler = {
+      extractType: "PatientAlerts",
+      sourceTable: "raw.patient_alerts",
+      targetTable: "stg.patient_alerts",
+      naturalKeys: ["patientAlertId", "practiceId", "perOrgId"],
+      transformations: patientAlertsTransformations,
+      sourceColumns:
+        this.rawHandlerFactory.getHandler("PatientAlerts").columnMapping,
+    };
+    this.handlers.set("patientalerts", patientAlertsHandler);
   }
 }
