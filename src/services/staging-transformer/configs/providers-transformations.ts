@@ -1,5 +1,8 @@
-import type { ColumnTransformation } from "../types/transformer";
-import { ColumnType } from "../types/transformer";
+import type {
+  ColumnTransformation,
+  ValidationRule,
+} from "../types/transformer";
+import { ColumnType, ValidationType } from "../types/transformer";
 
 /**
  * Providers staging transformations
@@ -12,18 +15,45 @@ export const providersTransformations: ColumnTransformation[] = [
     targetColumn: "providerId",
     targetType: ColumnType.TEXT,
     required: true,
+    validationRules: [
+      {
+        name: "provider_id_required",
+        type: ValidationType.REQUIRED,
+        validator: (value) => value != null && String(value).trim().length > 0,
+        errorMessage: "provider_id is required and cannot be empty",
+        severity: "error",
+      },
+    ],
   },
   {
     sourceColumn: "practice_id",
     targetColumn: "practiceId",
     targetType: ColumnType.TEXT,
     required: true,
+    validationRules: [
+      {
+        name: "practice_id_required",
+        type: ValidationType.REQUIRED,
+        validator: (value) => value != null && String(value).trim().length > 0,
+        errorMessage: "practice_id is required and cannot be empty",
+        severity: "error",
+      },
+    ],
   },
   {
     sourceColumn: "per_org_id",
     targetColumn: "perOrgId",
     targetType: ColumnType.TEXT,
     required: true,
+    validationRules: [
+      {
+        name: "per_org_id_required",
+        type: ValidationType.REQUIRED,
+        validator: (value) => value != null && String(value).trim().length > 0,
+        errorMessage: "per_org_id is required and cannot be empty",
+        severity: "error",
+      },
+    ],
   },
 
   // Professional identifiers
@@ -91,14 +121,21 @@ export const providersTransformations: ColumnTransformation[] = [
     targetColumn: "familyName",
     targetType: ColumnType.TEXT,
     required: true,
-    transformFunction: (value) => value?.trim() ?? null,
+    defaultValue: "Unknown",
+    transformFunction: (value) => {
+      const trimmed = value?.trim();
+      return trimmed && trimmed.length > 0 ? trimmed : "Unknown";
+    },
   },
   {
     sourceColumn: "full_name",
     targetColumn: "fullName",
     targetType: ColumnType.TEXT,
     required: true,
-    transformFunction: (value) => value?.trim() ?? null,
+    transformFunction: (value) => {
+      const trimmed = value?.trim();
+      return trimmed && trimmed.length > 0 ? trimmed : null;
+    },
   },
   {
     sourceColumn: "preferred_name",
@@ -521,25 +558,25 @@ export const providersTransformations: ColumnTransformation[] = [
     required: false,
   },
   {
-    sourceColumn: "arc18_next_acc_form_no",
+    sourceColumn: "arc_18_next_acc_form_no",
     targetColumn: "arc18NextAccFormNo",
     targetType: ColumnType.TEXT,
     required: false,
   },
   {
-    sourceColumn: "m45_prefix",
+    sourceColumn: "m_45_prefix",
     targetColumn: "m45Prefix",
     targetType: ColumnType.TEXT,
     required: false,
   },
   {
-    sourceColumn: "next_m45_no",
+    sourceColumn: "next_m_45_no",
     targetColumn: "nextM45No",
     targetType: ColumnType.TEXT,
     required: false,
   },
   {
-    sourceColumn: "maximum_m45_no",
+    sourceColumn: "maximum_m_45_no",
     targetColumn: "maximumM45No",
     targetType: ColumnType.TEXT,
     required: false,
@@ -631,6 +668,106 @@ export const providersTransformations: ColumnTransformation[] = [
   {
     sourceColumn: "provider_permanent_address_longitude",
     targetColumn: "providerPermanentAddressLongitude",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+
+  // Additional missing transformations
+  {
+    sourceColumn: "is_nhi_validate",
+    targetColumn: "isNhiValidate",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "other_maiden_name",
+    targetColumn: "otherMaidenName",
+    targetType: ColumnType.TEXT,
+    required: false,
+    transformFunction: (value) => value?.trim() ?? null,
+  },
+  {
+    sourceColumn: "marital_status",
+    targetColumn: "maritalStatus",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "age",
+    targetColumn: "age",
+    targetType: ColumnType.INTEGER,
+    required: false,
+  },
+  {
+    sourceColumn: "age_type",
+    targetColumn: "ageType",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "age_group",
+    targetColumn: "ageGroup",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "dob_source",
+    targetColumn: "dobSource",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "picture_path",
+    targetColumn: "picturePath",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "consentedto_share",
+    targetColumn: "consentedtoShare",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "placeof_birth",
+    targetColumn: "placeofBirth",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "country_of_birth",
+    targetColumn: "countryOfBirth",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "secondary_email",
+    targetColumn: "secondaryEmail",
+    targetType: ColumnType.TEXT,
+    required: false,
+    transformFunction: (value) => value?.toLowerCase().trim() ?? null,
+  },
+  {
+    sourceColumn: "preferred_contact_method",
+    targetColumn: "preferredContactMethod",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "consent_text_messaging",
+    targetColumn: "consentTextMessaging",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "is_same_address",
+    targetColumn: "isSameAddress",
+    targetType: ColumnType.TEXT,
+    required: false,
+  },
+  {
+    sourceColumn: "notes",
+    targetColumn: "notes",
     targetType: ColumnType.TEXT,
     required: false,
   },
