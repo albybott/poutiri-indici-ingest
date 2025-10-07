@@ -15,6 +15,7 @@ import { medicineTransformations } from "./configs/medicine-transformations";
 import { vaccineTransformations } from "./configs/vaccine-transformations";
 import { immunisationTransformations } from "./configs/immunisation-transformations";
 import { diagnosisTransformations } from "./configs/diagnosis-transformations";
+import { allergiesTransformations } from "./configs/allergies-transformations";
 import { ExtractHandlerFactory } from "../raw-loader/extract-handler-factory";
 
 /**
@@ -167,5 +168,17 @@ export class StagingHandlerFactory {
         this.rawHandlerFactory.getHandler("Diagnosis").columnMapping,
     };
     this.handlers.set("diagnosis", diagnosisHandler);
+
+    // Allergies handler
+    const allergiesHandler: StagingExtractHandler = {
+      extractType: "Allergies",
+      sourceTable: "raw.allergies",
+      targetTable: "stg.allergies",
+      naturalKeys: ["allergyId", "practiceId", "perOrgId"],
+      transformations: allergiesTransformations,
+      sourceColumns:
+        this.rawHandlerFactory.getHandler("Allergies").columnMapping,
+    };
+    this.handlers.set("allergies", allergiesHandler);
   }
 }

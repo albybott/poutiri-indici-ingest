@@ -140,11 +140,11 @@ function extractColumnMappingFromHandler(extractType: string): string[] {
     const match = mappingPattern.exec(content);
     if (match && match[1]) {
       let mappingContent = match[1];
-      // Extract quoted strings from the column mapping
-      const columnPattern = /"([^"]+)"/g;
+      // Extract quoted strings from the column mapping (support both single and double quotes)
+      const columnPattern = /(['"])([^'"]+)\1/g;
       let columnMatch;
       while ((columnMatch = columnPattern.exec(mappingContent)) !== null) {
-        columnMapping.push(columnMatch[1]);
+        columnMapping.push(columnMatch[2]);
       }
     }
 
