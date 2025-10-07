@@ -36,7 +36,7 @@ export const immunisationStg = createTable(
     immunisationStatus: text("immunisation_status"),
     vaccineOutComeId: text("vaccine_out_come_id"),
     vaccineOutCome: text("vaccine_out_come"),
-    isNiraCk: boolean("is_nira_ck"),
+    isNirAck: boolean("is_nir_ack"),
     reason: text("reason"),
     providerId: text("provider_id"),
     provider: text("provider"),

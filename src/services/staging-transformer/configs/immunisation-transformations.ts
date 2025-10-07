@@ -6,33 +6,33 @@ import { ColumnType } from "../types/transformer";
  * Converts raw text columns to typed staging columns
  */
 export const immunisationTransformations: ColumnTransformation[] = [
-  // IDs - Convert to integer
+  // IDs - Keep as text
   {
-    sourceColumn: "appointmentImmunisationId",
+    sourceColumn: "appointment_immunisation_id",
     targetColumn: "appointmentImmunisationId",
     targetType: ColumnType.TEXT,
     required: true,
   },
   {
-    sourceColumn: "patientId",
+    sourceColumn: "patient_id",
     targetColumn: "patientId",
     targetType: ColumnType.TEXT,
     required: false,
   },
   {
-    sourceColumn: "appointmentId",
+    sourceColumn: "appointment_id",
     targetColumn: "appointmentId",
     targetType: ColumnType.TEXT,
     required: false,
   },
   {
-    sourceColumn: "patientScheduleId",
+    sourceColumn: "patient_schedule_id",
     targetColumn: "patientScheduleId",
     targetType: ColumnType.TEXT,
     required: false,
   },
   {
-    sourceColumn: "vaccineId",
+    sourceColumn: "vaccine_id",
     targetColumn: "vaccineId",
     targetType: ColumnType.TEXT,
     required: false,
@@ -40,14 +40,14 @@ export const immunisationTransformations: ColumnTransformation[] = [
 
   // Text fields - Trim and clean
   {
-    sourceColumn: "vaccineName",
+    sourceColumn: "vaccine_name",
     targetColumn: "vaccineName",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "vaccineCode",
+    sourceColumn: "vaccine_code",
     targetColumn: "vaccineCode",
     targetType: ColumnType.TEXT,
     required: false,
@@ -61,7 +61,7 @@ export const immunisationTransformations: ColumnTransformation[] = [
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "doseNumber",
+    sourceColumn: "dose_number",
     targetColumn: "doseNumber",
     targetType: ColumnType.INTEGER,
     required: false,
@@ -72,21 +72,21 @@ export const immunisationTransformations: ColumnTransformation[] = [
     },
   },
   {
-    sourceColumn: "administrationSiteId",
+    sourceColumn: "administration_site_id",
     targetColumn: "administrationSiteId",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "administrationSite",
+    sourceColumn: "administration_site",
     targetColumn: "administrationSite",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "routeId",
+    sourceColumn: "route_id",
     targetColumn: "routeId",
     targetType: ColumnType.TEXT,
     required: false,
@@ -100,7 +100,7 @@ export const immunisationTransformations: ColumnTransformation[] = [
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "batchNumber",
+    sourceColumn: "batch_number",
     targetColumn: "batchNumber",
     targetType: ColumnType.TEXT,
     required: false,
@@ -109,7 +109,7 @@ export const immunisationTransformations: ColumnTransformation[] = [
 
   // Dates - Parse to Date type
   {
-    sourceColumn: "expiryDate",
+    sourceColumn: "expiry_date",
     targetColumn: "expiryDate",
     targetType: ColumnType.DATE,
     required: false,
@@ -120,7 +120,7 @@ export const immunisationTransformations: ColumnTransformation[] = [
     },
   },
   {
-    sourceColumn: "diluentExpiryDate",
+    sourceColumn: "diluent_expiry_date",
     targetColumn: "diluentExpiryDate",
     targetType: ColumnType.DATE,
     required: false,
@@ -133,7 +133,7 @@ export const immunisationTransformations: ColumnTransformation[] = [
 
   // Timestamps - Parse to Timestamp type
   {
-    sourceColumn: "administrationTime",
+    sourceColumn: "administration_time",
     targetColumn: "administrationTime",
     targetType: ColumnType.TIMESTAMP,
     required: false,
@@ -144,7 +144,7 @@ export const immunisationTransformations: ColumnTransformation[] = [
     },
   },
   {
-    sourceColumn: "insertedAt",
+    sourceColumn: "inserted_at",
     targetColumn: "insertedAt",
     targetType: ColumnType.TIMESTAMP,
     required: false,
@@ -155,7 +155,7 @@ export const immunisationTransformations: ColumnTransformation[] = [
     },
   },
   {
-    sourceColumn: "updatedAt",
+    sourceColumn: "updated_at",
     targetColumn: "updatedAt",
     targetType: ColumnType.TIMESTAMP,
     required: false,
@@ -166,7 +166,7 @@ export const immunisationTransformations: ColumnTransformation[] = [
     },
   },
   {
-    sourceColumn: "nirSentDate",
+    sourceColumn: "nir_sent_date",
     targetColumn: "nirSentDate",
     targetType: ColumnType.TIMESTAMP,
     required: false,
@@ -177,7 +177,7 @@ export const immunisationTransformations: ColumnTransformation[] = [
     },
   },
   {
-    sourceColumn: "loadedDateTime",
+    sourceColumn: "loaded_date_time",
     targetColumn: "loadedDateTime",
     targetType: ColumnType.TIMESTAMP,
     required: false,
@@ -190,8 +190,8 @@ export const immunisationTransformations: ColumnTransformation[] = [
 
   // Booleans - Convert from text/numeric
   {
-    sourceColumn: "isNiraCk",
-    targetColumn: "isNiraCk",
+    sourceColumn: "is_nir_ack",
+    targetColumn: "isNirAck",
     targetType: ColumnType.BOOLEAN,
     required: false,
     transformFunction: (value) => {
@@ -201,7 +201,7 @@ export const immunisationTransformations: ColumnTransformation[] = [
     },
   },
   {
-    sourceColumn: "hasDiluent",
+    sourceColumn: "has_diluent",
     targetColumn: "hasDiluent",
     targetType: ColumnType.BOOLEAN,
     required: false,
@@ -212,7 +212,7 @@ export const immunisationTransformations: ColumnTransformation[] = [
     },
   },
   {
-    sourceColumn: "isConfidential",
+    sourceColumn: "is_confidential",
     targetColumn: "isConfidential",
     targetType: ColumnType.BOOLEAN,
     required: false,
@@ -223,7 +223,7 @@ export const immunisationTransformations: ColumnTransformation[] = [
     },
   },
   {
-    sourceColumn: "isActive",
+    sourceColumn: "is_active",
     targetColumn: "isActive",
     targetType: ColumnType.BOOLEAN,
     required: false,
@@ -234,7 +234,7 @@ export const immunisationTransformations: ColumnTransformation[] = [
     },
   },
   {
-    sourceColumn: "isDeleted",
+    sourceColumn: "is_deleted",
     targetColumn: "isDeleted",
     targetType: ColumnType.BOOLEAN,
     required: false,
@@ -245,7 +245,7 @@ export const immunisationTransformations: ColumnTransformation[] = [
     },
   },
   {
-    sourceColumn: "isParked",
+    sourceColumn: "is_parked",
     targetColumn: "isParked",
     targetType: ColumnType.BOOLEAN,
     required: false,
@@ -256,7 +256,7 @@ export const immunisationTransformations: ColumnTransformation[] = [
     },
   },
   {
-    sourceColumn: "isAutoBill",
+    sourceColumn: "is_auto_bill",
     targetColumn: "isAutoBill",
     targetType: ColumnType.BOOLEAN,
     required: false,
@@ -267,7 +267,7 @@ export const immunisationTransformations: ColumnTransformation[] = [
     },
   },
   {
-    sourceColumn: "showOnPortal",
+    sourceColumn: "show_on_portal",
     targetColumn: "showOnPortal",
     targetType: ColumnType.BOOLEAN,
     required: false,
@@ -280,28 +280,28 @@ export const immunisationTransformations: ColumnTransformation[] = [
 
   // Text fields with trimming
   {
-    sourceColumn: "immunisationStatusId",
+    sourceColumn: "immunisation_status_id",
     targetColumn: "immunisationStatusId",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "immunisationStatus",
+    sourceColumn: "immunisation_status",
     targetColumn: "immunisationStatus",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "vaccineOutComeId",
+    sourceColumn: "vaccine_out_come_id",
     targetColumn: "vaccineOutComeId",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "vaccineOutCome",
+    sourceColumn: "vaccine_out_come",
     targetColumn: "vaccineOutCome",
     targetType: ColumnType.TEXT,
     required: false,
@@ -315,7 +315,7 @@ export const immunisationTransformations: ColumnTransformation[] = [
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "providerId",
+    sourceColumn: "provider_id",
     targetColumn: "providerId",
     targetType: ColumnType.TEXT,
     required: false,
@@ -336,56 +336,56 @@ export const immunisationTransformations: ColumnTransformation[] = [
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "vaccineIndicationId",
+    sourceColumn: "vaccine_indication_id",
     targetColumn: "vaccineIndicationId",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "vaccineIndication",
+    sourceColumn: "vaccine_indication",
     targetColumn: "vaccineIndication",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "vaccineIndicationCode",
+    sourceColumn: "vaccine_indication_code",
     targetColumn: "vaccineIndicationCode",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "needleLength",
+    sourceColumn: "needle_length",
     targetColumn: "needleLength",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "diluentBatchNo",
+    sourceColumn: "diluent_batch_no",
     targetColumn: "diluentBatchNo",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "costingCodeId",
+    sourceColumn: "costing_code_id",
     targetColumn: "costingCodeId",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "costingCode",
+    sourceColumn: "costing_code",
     targetColumn: "costingCode",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "brandId",
+    sourceColumn: "brand_id",
     targetColumn: "brandId",
     targetType: ColumnType.TEXT,
     required: false,
@@ -399,42 +399,42 @@ export const immunisationTransformations: ColumnTransformation[] = [
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "insertedById",
+    sourceColumn: "inserted_by_id",
     targetColumn: "insertedById",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "insertedBy",
+    sourceColumn: "inserted_by",
     targetColumn: "insertedBy",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "updatedById",
+    sourceColumn: "updated_by_id",
     targetColumn: "updatedById",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "updatedBy",
+    sourceColumn: "updated_by",
     targetColumn: "updatedBy",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "medTechId",
+    sourceColumn: "med_tech_id",
     targetColumn: "medTechId",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "practiceId",
+    sourceColumn: "practice_id",
     targetColumn: "practiceId",
     targetType: ColumnType.TEXT,
     required: true,
@@ -448,7 +448,7 @@ export const immunisationTransformations: ColumnTransformation[] = [
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "vaccinatorId",
+    sourceColumn: "vaccinator_id",
     targetColumn: "vaccinatorId",
     targetType: ColumnType.TEXT,
     required: false,
@@ -462,70 +462,70 @@ export const immunisationTransformations: ColumnTransformation[] = [
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "userLoggingId",
+    sourceColumn: "user_logging_id",
     targetColumn: "userLoggingId",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "loggingUserName",
+    sourceColumn: "logging_user_name",
     targetColumn: "loggingUserName",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "vaccinatorCode",
+    sourceColumn: "vaccinator_code",
     targetColumn: "vaccinatorCode",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "permanentAddressLatitude",
+    sourceColumn: "permanent_address_latitude",
     targetColumn: "permanentAddressLatitude",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "permanentAddressLongitude",
+    sourceColumn: "permanent_address_longitude",
     targetColumn: "permanentAddressLongitude",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "practiceLocationId",
+    sourceColumn: "practice_location_id",
     targetColumn: "practiceLocationId",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "locationName",
+    sourceColumn: "location_name",
     targetColumn: "locationName",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "vaccineGroupId",
+    sourceColumn: "vaccine_group_id",
     targetColumn: "vaccineGroupId",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "vaccineGroup",
+    sourceColumn: "vaccine_group",
     targetColumn: "vaccineGroup",
     targetType: ColumnType.TEXT,
     required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {
-    sourceColumn: "perOrgId",
+    sourceColumn: "per_org_id",
     targetColumn: "perOrgId",
     targetType: ColumnType.TEXT,
     required: true,
