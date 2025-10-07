@@ -25,7 +25,7 @@ export const inboxDetailStg = createTable(
     practiceName: text("practice_name"),
     prompt: text("prompt"),
     result: text("result"),
-    abNorm: boolean("ab_norm"),
+    abNorm: text("ab_norm"),
     unit: text("unit"),
     resultCode: text("result_code"),
     referenceRanges: text("reference_ranges"),
@@ -58,7 +58,3 @@ export const fkInboxDetailStgLoadRunFile = foreignKey({
   foreignColumns: [loadRunFiles.loadRunFileId],
   name: "fk_inbox_detail_stg_load_run_file",
 });
-
-
-
-
