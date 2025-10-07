@@ -51,6 +51,9 @@ importers:
       eslint:
         specifier: ^9.33.0
         version: 9.36.0
+      glob:
+        specifier: ^11.0.3
+        version: 11.0.3
       prettier:
         specifier: ^3.6.2
         version: 3.6.2

@@ -63,12 +63,12 @@ export const patientsStg = createTable(
     sexRelatedGender: text("sex_related_gender"),
     isWorkedVisaRequired: boolean("is_worked_visa_required"),
     balance: decimal("balance", { precision: 10, scale: 2 }),
-    medTechBalance: decimal("med_tech_balance", { precision: 10, scale: 2 }),
-    medTechDateLastPay: date("med_tech_date_last_pay"),
-    medTechDateLastStmt: date("med_tech_date_last_stmt"),
+    medtechBalance: decimal("medtech_balance", { precision: 10, scale: 2 }),
+    medtechDateLastPay: date("medtech_date_lastpay"),
+    medtechDateLastStmt: date("medtech_date_laststmt"),
     registerStatusId: text("register_status_id"),
     registerStatus: text("register_status"),
-    medTechNok: text("med_tech_nok"),
+    medtechNok: text("medtech_nok"),
     practiceName: text("practice_name"),
     calculatedBalance: decimal("calculated_balance", {
       precision: 10,
@@ -95,7 +95,7 @@ export const patientsStg = createTable(
     healthCardExpiryDate: date("health_card_expiry_date"),
     healthCardSighted: boolean("health_card_sighted"),
     winz: text("winz"),
-    isTransferOfRecords: boolean("is_transfer_of_records"),
+    isTransferOfRecords: integer("is_transfer_of_records"),
     transferOfRecordsRemarks: text("transfer_of_records_remarks"),
     enrolmentType: text("enrolment_type"),
     enrolmentStatusId: text("enrolment_status_id"),
@@ -127,11 +127,11 @@ export const patientsStg = createTable(
     isHcGraph: boolean("is_hc_graph"),
     nesStatus: text("nes_status"),
     nesComments: text("nes_comments"),
-    medTechBalanceDate: date("med_tech_balance_date"),
+    medtechBalanceDate: date("medtech_balance_date"),
     isHeartRate: boolean("is_heart_rate"),
     isPremature: boolean("is_premature"),
     prematureWeek: integer("premature_week"),
-    patientPhoId: text("patient_pho_id"),
+    patientPhoId: text("patient_phoid"),
     consultUpdatedAt: timestamp("consult_updated_at", { withTimezone: true }),
     occupation: text("occupation"),
     emergencyContact: text("emergency_contact"),
@@ -142,7 +142,7 @@ export const patientsStg = createTable(
     practiceId: text("practice_id").notNull(),
     portalRegistrationStatus: text("portal_registration_status"),
     registrationDate: date("registration_date"),
-    medTechId: text("med_tech_id"),
+    medtechId: text("medtech_id"),
     permanentAddressHouseNumber: text("permanent_address_house_number"),
     permanentAddressBuildingNumber: text("permanent_address_building_number"),
     permanentAddressStreetNumber: text("permanent_address_street_number"),
@@ -244,6 +244,41 @@ export const patientsStg = createTable(
     nhiStatus: text("nhi_status"),
     perOrgId: text("per_org_id").notNull(),
     loadedDateTime: timestamp("loaded_date_time", { withTimezone: true }),
+    accountHolderProfileId: text("account_holder_profile_id"),
+    comunityServiceEffectiveDate: date("comunity_service_effective_date"),
+    defaultGpmcNo: text("default_gpmc_no"),
+    defaultGpName: text("default_gp_name"),
+    defaultPracticeEdi: text("default_practice_edi"),
+    defaultPracticeName: text("default_practice_name"),
+    enrolmentEndDate: date("enrolment_end_date"),
+    isCapitated: boolean("is_capitated"),
+    isConsentAutoReminderTextMessaging: boolean(
+      "is_consent_auto_reminder_text_messaging"
+    ),
+    isConsentForExperienceSurvey: boolean("is_consent_for_experience_survey"),
+    isConsentToImportClinicalRecords: boolean(
+      "is_consent_to_import_clinical_records"
+    ),
+    isConsentToPrivateEmailAddress: boolean(
+      "is_consent_to_private_email_address"
+    ),
+    isConsentToShareClinicalRecords: boolean(
+      "is_consent_to_share_clinical_records"
+    ),
+    isConsentToShareHealth1: boolean("is_consent_to_share_health1"),
+    isConsentToShareMyRecordOnSehr: boolean(
+      "is_consent_to_share_my_record_on_sehr"
+    ),
+    isConsentToSharePhoDataCollection: boolean(
+      "is_consent_to_share_pho_data_collection"
+    ),
+    isIncludeAccountFee: boolean("is_include_account_fee"),
+    isIncludeStatementFee: boolean("is_include_statement_fee"),
+    isLinkedCscExists: boolean("is_linked_csc_exists"),
+    isTestRecord: boolean("is_test_record"),
+    pharmacyId: text("pharmacy_id"),
+    residentialStatusId: text("residential_status_id"),
+    visaExpiry: text("visa_expiry"),
 
     // Lineage - FK to load_run_files (same as raw tables)
     loadRunFileId: integer("load_run_file_id").notNull(),

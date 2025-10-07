@@ -17,7 +17,6 @@ export * from "./raw/invoices";
 export * from "./raw/invoice-detail";
 export * from "./raw/measurements";
 export * from "./raw/patient-alerts";
-export * from "./raw/practice-info";
 export * from "./raw/providers";
 export * from "./raw/recalls";
 export * from "./raw/vaccine";
@@ -25,11 +24,22 @@ export * from "./raw/vaccine";
 // Staging schemas - typed columns with constraints and mapping tables
 export * from "./stg/patients";
 export * from "./stg/providers";
-export * from "./stg/practice_info";
+export * from "./stg/practice-info";
 export * from "./stg/appointments";
 export * from "./stg/medicine";
 export * from "./stg/vaccine";
 export * from "./stg/immunisation";
+export * from "./stg/next-of-kin";
+export * from "./stg/diagnoses";
+export * from "./stg/allergies";
+export * from "./stg/appointment-medications";
+export * from "./stg/invoices";
+export * from "./stg/invoice-detail";
+export * from "./stg/measurements";
+export * from "./stg/patient-alerts";
+export * from "./stg/providers";
+export * from "./stg/recalls";
+export * from "./stg/vaccine";
 
 // Shared enums and types
 export * from "./shared/enums";
@@ -41,38 +51,6 @@ export * from "./core/facts";
 // ETL schemas - audit, config, and health management
 export * from "./etl/audit";
 // export * from "./etl/health";
-
-// Schema collections for dynamic loading
-// These enable loading schemas on-demand and provide a clean API
-// for dynamic schema management scenarios
-export const rawSchemas = {
-  patients: () => import("./raw/patients"),
-  providers: () => import("./raw/providers"),
-  practice_info: () => import("./raw/practice-info"),
-  appointments: () => import("./raw/appointments"),
-  medicine: () => import("./raw/medicine"),
-  vaccine: () => import("./raw/vaccine"),
-  immunisation: () => import("./raw/immunisation"),
-};
-
-export const stgSchemas = {
-  patients: () => import("./stg/patients"),
-  providers: () => import("./stg/providers"),
-  practice_info: () => import("./stg/practice_info"),
-  appointments: () => import("./stg/appointments"),
-  medicine: () => import("./stg/medicine"),
-  vaccine: () => import("./stg/vaccine"),
-  immunisation: () => import("./stg/immunisation"),
-};
-
-export const coreSchemas = {
-  dimensions: () => import("./core/dimensions"),
-  facts: () => import("./core/facts"),
-};
-
-export const etlSchemas = {
-  audit: () => import("./etl/audit"),
-};
 
 // Extract types enum for type safety - matches filename format from S3
 export const EXTRACT_TYPES = {

@@ -130,6 +130,7 @@ export interface StagingExtractHandler {
   transformations: ColumnTransformation[]; // Column transformations
   naturalKeys: string[]; // Natural key columns for upsert
   uniqueConstraints?: string[][]; // Unique constraint column groups
+  sourceColumns: string[]; // Source columns from the raw table to use for transformation
 }
 
 /**

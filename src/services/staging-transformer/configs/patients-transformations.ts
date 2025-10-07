@@ -240,7 +240,7 @@ export const patientsTransformations: ColumnTransformation[] = [
   {
     sourceColumn: "consent_text_messaging",
     targetColumn: "consentTextMessaging",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.BOOLEAN,
     required: false,
   },
 
@@ -317,13 +317,13 @@ export const patientsTransformations: ColumnTransformation[] = [
   {
     sourceColumn: "permanent_address_latitude",
     targetColumn: "permanentAddressLatitude",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.DECIMAL,
     required: false,
   },
   {
     sourceColumn: "permanent_address_longitude",
     targetColumn: "permanentAddressLongitude",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.DECIMAL,
     required: false,
   },
   {
@@ -359,13 +359,14 @@ export const patientsTransformations: ColumnTransformation[] = [
   {
     sourceColumn: "permanent_address_deprivation_quintile",
     targetColumn: "permanentAddressDeprivationQuintile",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.INTEGER,
     required: false,
   },
   {
     sourceColumn: "permanent_address_deprivation_decile",
     targetColumn: "permanentAddressDeprivationDecile",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.INTEGER,
+    defaultValue: null,
     required: false,
   },
   {
@@ -377,7 +378,7 @@ export const patientsTransformations: ColumnTransformation[] = [
   {
     sourceColumn: "permanent_address_match_score",
     targetColumn: "permanentAddressMatchScore",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.DECIMAL,
     required: false,
   },
   {
@@ -439,13 +440,13 @@ export const patientsTransformations: ColumnTransformation[] = [
   {
     sourceColumn: "postal_address_latitude",
     targetColumn: "postalAddressLatitude",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.DECIMAL,
     required: false,
   },
   {
     sourceColumn: "postal_address_longitude",
     targetColumn: "postalAddressLongitude",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.DECIMAL,
     required: false,
   },
   {
@@ -481,13 +482,13 @@ export const patientsTransformations: ColumnTransformation[] = [
   {
     sourceColumn: "postal_address_deprivation_quintile",
     targetColumn: "postalAddressDeprivationQuintile",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.INTEGER,
     required: false,
   },
   {
     sourceColumn: "postal_address_deprivation_decile",
     targetColumn: "postalAddressDeprivationDecile",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.INTEGER,
     required: false,
   },
   {
@@ -499,7 +500,7 @@ export const patientsTransformations: ColumnTransformation[] = [
   {
     sourceColumn: "postal_address_match_score",
     targetColumn: "postalAddressMatchScore",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.DECIMAL,
     required: false,
   },
   {
@@ -649,7 +650,7 @@ export const patientsTransformations: ColumnTransformation[] = [
   {
     sourceColumn: "is_transfer_of_records",
     targetColumn: "isTransferOfRecords",
-    targetType: ColumnType.BOOLEAN,
+    targetType: ColumnType.INTEGER,
     required: false,
   },
   {
@@ -681,25 +682,25 @@ export const patientsTransformations: ColumnTransformation[] = [
   {
     sourceColumn: "balance",
     targetColumn: "balance",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.DECIMAL,
     required: false,
   },
   {
-    sourceColumn: "med_tech_balance",
-    targetColumn: "medTechBalance",
-    targetType: ColumnType.TEXT,
+    sourceColumn: "medtech_balance",
+    targetColumn: "medtechBalance",
+    targetType: ColumnType.DECIMAL,
     required: false,
   },
   {
     sourceColumn: "medtech_date_lastpay",
     targetColumn: "medtechDateLastPay",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.DATE,
     required: false,
   },
   {
     sourceColumn: "medtech_date_laststmt",
     targetColumn: "medtechDateLastStmt",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.DATE,
     required: false,
   },
   {
@@ -715,8 +716,8 @@ export const patientsTransformations: ColumnTransformation[] = [
     required: false,
   },
   {
-    sourceColumn: "med_tech_nok",
-    targetColumn: "medTechNok",
+    sourceColumn: "medtech_nok",
+    targetColumn: "medtechNok",
     targetType: ColumnType.TEXT,
     required: false,
   },
@@ -729,24 +730,30 @@ export const patientsTransformations: ColumnTransformation[] = [
   {
     sourceColumn: "calculated_balance",
     targetColumn: "calculatedBalance",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.DECIMAL,
     required: false,
   },
   {
     sourceColumn: "last_statement_date",
     targetColumn: "lastStatementDate",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.DATE,
     required: false,
   },
   {
     sourceColumn: "last_invoice_date",
     targetColumn: "lastInvoiceDate",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.DATE,
     required: false,
   },
   {
     sourceColumn: "last_payment_date",
     targetColumn: "lastPaymentDate",
+    targetType: ColumnType.DATE,
+    required: false,
+  },
+  {
+    sourceColumn: "provider_id",
+    targetColumn: "providerId",
     targetType: ColumnType.TEXT,
     required: false,
   },
@@ -799,6 +806,12 @@ export const patientsTransformations: ColumnTransformation[] = [
     required: false,
   },
   {
+    sourceColumn: "is_community_service_card",
+    targetColumn: "isCommunityServiceCard",
+    targetType: ColumnType.BOOLEAN,
+    required: false,
+  },
+  {
     sourceColumn: "community_service_card_no",
     targetColumn: "communityServiceCardNo",
     targetType: ColumnType.TEXT,
@@ -807,13 +820,13 @@ export const patientsTransformations: ColumnTransformation[] = [
   {
     sourceColumn: "community_service_card_exipry_date",
     targetColumn: "communityServiceCardExipryDate",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.DATE,
     required: false,
   },
   {
     sourceColumn: "community_service_card_sighted",
     targetColumn: "communityServiceCardSighted",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.BOOLEAN,
     required: false,
   },
   {
@@ -825,13 +838,13 @@ export const patientsTransformations: ColumnTransformation[] = [
   {
     sourceColumn: "health_card_expiry_date",
     targetColumn: "healthCardExpiryDate",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.DATE,
     required: false,
   },
   {
     sourceColumn: "health_card_sighted",
     targetColumn: "healthCardSighted",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.BOOLEAN,
     required: false,
   },
   {
@@ -841,8 +854,8 @@ export const patientsTransformations: ColumnTransformation[] = [
     required: false,
   },
   {
-    sourceColumn: "transferof_records_remarks",
-    targetColumn: "transferofRecordsRemarks",
+    sourceColumn: "transfer_of_records_remarks",
+    targetColumn: "transferOfRecordsRemarks",
     targetType: ColumnType.TEXT,
     required: false,
   },
@@ -903,13 +916,13 @@ export const patientsTransformations: ColumnTransformation[] = [
   {
     sourceColumn: "funding_from",
     targetColumn: "fundingFrom",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.DATE,
     required: false,
   },
   {
     sourceColumn: "funding_to",
     targetColumn: "fundingTo",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.DATE,
     required: false,
   },
   {
@@ -1027,9 +1040,9 @@ export const patientsTransformations: ColumnTransformation[] = [
     required: false,
   },
   {
-    sourceColumn: "med_tech_balance_date",
-    targetColumn: "medTechBalanceDate",
-    targetType: ColumnType.TEXT,
+    sourceColumn: "medtech_balance_date",
+    targetColumn: "medtechBalanceDate",
+    targetType: ColumnType.DATE,
     required: false,
   },
   {
@@ -1047,19 +1060,19 @@ export const patientsTransformations: ColumnTransformation[] = [
   {
     sourceColumn: "premature_week",
     targetColumn: "prematureWeek",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.INTEGER,
     required: false,
   },
   {
     sourceColumn: "patient_phoid",
-    targetColumn: "patientPhoid",
+    targetColumn: "patientPhoId",
     targetType: ColumnType.TEXT,
     required: false,
   },
   {
     sourceColumn: "consult_updated_at",
     targetColumn: "consultUpdatedAt",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.TIMESTAMP,
     required: false,
   },
   {
@@ -1101,12 +1114,12 @@ export const patientsTransformations: ColumnTransformation[] = [
   {
     sourceColumn: "registration_date",
     targetColumn: "registrationDate",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.DATE,
     required: false,
   },
   {
-    sourceColumn: "med_tech_id",
-    targetColumn: "medTechId",
+    sourceColumn: "medtech_id",
+    targetColumn: "medtechId",
     targetType: ColumnType.TEXT,
     required: false,
   },
@@ -1197,7 +1210,7 @@ export const patientsTransformations: ColumnTransformation[] = [
   {
     sourceColumn: "comunity_service_effective_date",
     targetColumn: "comunityServiceEffectiveDate",
-    targetType: ColumnType.TEXT,
+    targetType: ColumnType.DATE,
     required: false,
   },
   {

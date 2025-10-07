@@ -15,6 +15,7 @@ import { medicineTransformations } from "./configs/medicine-transformations";
 import { vaccineTransformations } from "./configs/vaccine-transformations";
 import { immunisationTransformations } from "./configs/immunisation-transformations";
 import { diagnosisTransformations } from "./configs/diagnosis-transformations";
+import { ExtractHandlerFactory } from "../raw-loader/extract-handler-factory";
 
 /**
  * Staging Handler Factory
@@ -22,8 +23,10 @@ import { diagnosisTransformations } from "./configs/diagnosis-transformations";
  */
 export class StagingHandlerFactory {
   private handlers: Map<string, StagingExtractHandler> = new Map();
+  private rawHandlerFactory: ExtractHandlerFactory;
 
   constructor() {
+    this.rawHandlerFactory = new ExtractHandlerFactory();
     this.registerDefaultHandlers();
   }
 
@@ -76,8 +79,9 @@ export class StagingHandlerFactory {
       extractType: "Patient",
       sourceTable: "raw.patients",
       targetTable: "stg.patients",
-      naturalKeys: ["patient_id", "practice_id", "per_org_id"],
+      naturalKeys: ["patientId", "practiceId", "perOrgId"],
       transformations: patientsTransformations,
+      sourceColumns: this.rawHandlerFactory.getHandler("Patient").columnMapping,
     };
     this.handlers.set("patient", patientHandler);
 
@@ -86,8 +90,10 @@ export class StagingHandlerFactory {
       extractType: "Appointments",
       sourceTable: "raw.appointments",
       targetTable: "stg.appointments",
-      naturalKeys: ["appointment_id", "practice_id", "per_org_id"],
+      naturalKeys: ["appointmentId", "practiceId", "perOrgId"],
       transformations: appointmentsTransformations,
+      sourceColumns:
+        this.rawHandlerFactory.getHandler("Appointments").columnMapping,
     };
     this.handlers.set("appointments", appointmentsHandler);
 
@@ -96,8 +102,10 @@ export class StagingHandlerFactory {
       extractType: "Provider",
       sourceTable: "raw.providers",
       targetTable: "stg.providers",
-      naturalKeys: ["provider_id", "practice_id", "per_org_id"],
+      naturalKeys: ["providerId", "practiceId", "perOrgId"],
       transformations: providersTransformations,
+      sourceColumns:
+        this.rawHandlerFactory.getHandler("Provider").columnMapping,
     };
     this.handlers.set("provider", providerHandler);
 
@@ -106,8 +114,10 @@ export class StagingHandlerFactory {
       extractType: "PracticeInfo",
       sourceTable: "raw.practice_info",
       targetTable: "stg.practice_info",
-      naturalKeys: ["practice_id", "per_org_id"],
+      naturalKeys: ["practiceId", "perOrgId"],
       transformations: practiceInfoTransformations,
+      sourceColumns:
+        this.rawHandlerFactory.getHandler("PracticeInfo").columnMapping,
     };
     this.handlers.set("practiceinfo", practiceInfoHandler);
 
@@ -116,8 +126,10 @@ export class StagingHandlerFactory {
       extractType: "Medicine",
       sourceTable: "raw.medicine",
       targetTable: "stg.medicine",
-      naturalKeys: ["medicine_id", "practice_id", "per_org_id"],
+      naturalKeys: ["medicineId", "practiceId", "perOrgId"],
       transformations: medicineTransformations,
+      sourceColumns:
+        this.rawHandlerFactory.getHandler("Medicine").columnMapping,
     };
     this.handlers.set("medicine", medicineHandler);
 
@@ -126,8 +138,9 @@ export class StagingHandlerFactory {
       extractType: "Vaccine",
       sourceTable: "raw.vaccine",
       targetTable: "stg.vaccine",
-      naturalKeys: ["vaccine_id", "practice_id", "per_org_id"],
+      naturalKeys: ["vaccineId", "practiceId", "perOrgId"],
       transformations: vaccineTransformations,
+      sourceColumns: this.rawHandlerFactory.getHandler("Vaccine").columnMapping,
     };
     this.handlers.set("vaccine", vaccineHandler);
 
@@ -136,8 +149,10 @@ export class StagingHandlerFactory {
       extractType: "Immunisation",
       sourceTable: "raw.immunisation",
       targetTable: "stg.immunisation",
-      naturalKeys: ["appointment_immunisation_id", "practice_id", "per_org_id"],
+      naturalKeys: ["appointmentImmunisationId", "practiceId", "perOrgId"],
       transformations: immunisationTransformations,
+      sourceColumns:
+        this.rawHandlerFactory.getHandler("Immunisation").columnMapping,
     };
     this.handlers.set("immunisation", immunisationHandler);
 
@@ -146,8 +161,10 @@ export class StagingHandlerFactory {
       extractType: "Diagnosis",
       sourceTable: "raw.diagnoses",
       targetTable: "stg.diagnoses",
-      naturalKeys: ["diagnosis_id", "practice_id", "per_org_id"],
+      naturalKeys: ["diagnosisId", "practiceId", "perOrgId"],
       transformations: diagnosisTransformations,
+      sourceColumns:
+        this.rawHandlerFactory.getHandler("Diagnosis").columnMapping,
     };
     this.handlers.set("diagnosis", diagnosisHandler);
   }

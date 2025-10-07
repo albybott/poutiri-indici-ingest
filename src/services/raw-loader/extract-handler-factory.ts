@@ -32,7 +32,7 @@ export class ExtractHandlerFactory {
   /**
    * Get handler for specific extract type
    */
-  async getHandler(extractType: string): Promise<ExtractHandler> {
+  getHandler(extractType: string): ExtractHandler {
     console.log(`🔍 Looking for handler for extract type: "${extractType}"`);
     console.log(
       `📋 Available handlers: [${Array.from(this.handlers.keys()).join(", ")}]`

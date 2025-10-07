@@ -5,6 +5,7 @@
 
 import type {
   ColumnTransformation,
+  StagingExtractHandler,
   ValidationFailure,
 } from "./types/transformer";
 import { ColumnType } from "./types/transformer";
@@ -31,14 +32,26 @@ export class TransformationEngine {
    */
   async transformRow(
     rawRow: Record<string, any>,
-    transformations: ColumnTransformation[]
+    handler: StagingExtractHandler
   ): Promise<RowTransformResult> {
+    const transformations = handler.transformations;
+    const sourceColumns = handler.sourceColumns;
     const transformedRow: Record<string, any> = {};
     const validationFailures: ValidationFailure[] = [];
     const errors: string[] = [];
 
-    for (const transformation of transformations) {
+    for (const rawColumn of sourceColumns) {
+      const transformation = this.getTransformationByColumn(
+        rawColumn,
+        transformations
+      );
+
       try {
+        // Skip if no transformation is found for the source column
+        if (!transformation) {
+          continue;
+        }
+
         const {
           sourceColumn,
           targetColumn,
@@ -49,7 +62,7 @@ export class TransformationEngine {
         } = transformation;
 
         // Get raw value
-        let rawValue = rawRow[sourceColumn];
+        let rawValue = rawRow[rawColumn];
 
         // Apply preprocessing
         rawValue = this.preprocessValue(rawValue);
@@ -79,6 +92,8 @@ export class TransformationEngine {
 
         if (transformedValue.success) {
           transformedRow[targetColumn] = transformedValue.value;
+        } else if (defaultValue !== undefined) {
+          transformedRow[targetColumn] = defaultValue;
         } else {
           validationFailures.push({
             columnName: sourceColumn,
@@ -89,10 +104,11 @@ export class TransformationEngine {
           });
         }
       } catch (error) {
+        console.error(`Error transforming column '${rawColumn}': ${error}`);
         const errorMessage =
           error instanceof Error ? error.message : String(error);
         errors.push(
-          `Error transforming column '${transformation.sourceColumn}': ${errorMessage}`
+          `Error transforming column '${transformation?.sourceColumn ?? rawColumn}': ${errorMessage}`
         );
       }
     }
@@ -111,11 +127,9 @@ export class TransformationEngine {
    */
   async transformBatch(
     rawRows: Record<string, any>[],
-    transformations: ColumnTransformation[]
+    handler: StagingExtractHandler
   ): Promise<RowTransformResult[]> {
-    return Promise.all(
-      rawRows.map((row) => this.transformRow(row, transformations))
-    );
+    return Promise.all(rawRows.map((row) => this.transformRow(row, handler)));
   }
 
   /**
@@ -332,5 +346,18 @@ export class TransformationEngine {
         error: `Cannot parse '${value}' as JSON: ${error instanceof Error ? error.message : String(error)}`,
       };
     }
+  }
+
+  /**
+   * Get a transformation by source column
+   * @param sourceColumn - Source column name from the raw table
+   * @param transformations - Transformations to search through
+   * @returns
+   */
+  private getTransformationByColumn(
+    sourceColumn: string,
+    transformations: ColumnTransformation[]
+  ): ColumnTransformation | undefined {
+    return transformations.find((t) => t.sourceColumn === sourceColumn);
   }
 }

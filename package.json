@@ -29,6 +29,7 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "validate-schemas": "tsx src/services/shared/scripts/schema-validator.ts",
     "check-all": "pnpm type-check && pnpm lint && pnpm format:check && pnpm test:run",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate"
@@ -48,6 +49,7 @@
     "@typescript-eslint/parser": "^8.39.1",
     "drizzle-kit": "^0.31.4",
     "eslint": "^9.33.0",
+    "glob": "^11.0.3",
     "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
     "tsx": "^4.20.4",
