@@ -28,7 +28,7 @@ export const medicineTransformations: ColumnTransformation[] = [
   },
   {
     sourceColumn: "sct_id",
-    targetColumn: "sctid",
+    targetColumn: "sctId",
     targetType: ColumnType.TEXT,
     required: false,
   },

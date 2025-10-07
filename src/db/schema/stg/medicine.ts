@@ -20,7 +20,7 @@ export const medicineStg = createTable(
     medicineId: text("medicine_id").notNull(),
     medicineName: text("medicine_name").notNull(),
     medicineShortName: text("medicine_short_name"),
-    sctid: text("sctid"),
+    sctId: text("sct_id"),
     type: text("type"),
     pharmaCode: text("pharma_code"),
     isActive: boolean("is_active"),
