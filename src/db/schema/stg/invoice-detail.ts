@@ -98,3 +98,6 @@ export const fkInvoiceDetailStgLoadRunFile = foreignKey({
   name: "fk_invoice_detail_stg_load_run_file",
 });
 
+
+
+

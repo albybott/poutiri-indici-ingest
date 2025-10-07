@@ -3,6 +3,7 @@ import {
   timestamp,
   uuid,
   integer,
+  decimal,
   serial,
   uniqueIndex,
   index,
@@ -96,7 +97,7 @@ export const stagingRuns = createTable(
     failedBatches: integer("failed_batches").default(0),
     durationMs: integer("duration_ms"),
     rowsPerSecond: integer("rows_per_second"),
-    memoryUsageMB: integer("memory_usage_mb"),
+    memoryUsageMB: decimal("memory_usage_mb", { precision: 10, scale: 2 }),
     error: text("error"),
     result: text("result"), // JSON string of full result
     createdAt: timestamp("created_at", { withTimezone: true })

@@ -271,3 +271,6 @@ stg.patients + dimension_keys → patient_fact_handler → core.fact_patients
 
 **Approval Required:** Implementation plan review and approval before proceeding to Phase 1.
 
+
+
+

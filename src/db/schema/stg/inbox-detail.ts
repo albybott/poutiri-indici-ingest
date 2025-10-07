@@ -59,3 +59,6 @@ export const fkInboxDetailStgLoadRunFile = foreignKey({
   name: "fk_inbox_detail_stg_load_run_file",
 });
 
+
+
+

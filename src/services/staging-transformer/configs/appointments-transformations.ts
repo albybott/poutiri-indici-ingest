@@ -255,7 +255,7 @@ export const appointmentsTransformations: ColumnTransformation[] = [
   {
     sourceColumn: "self_assessment_queue_time",
     targetColumn: "selfAssessmentQueueTime",
-    targetType: ColumnType.TIMESTAMP,
+    targetType: ColumnType.INTEGER,
     required: false,
   },
   {
@@ -287,19 +287,19 @@ export const appointmentsTransformations: ColumnTransformation[] = [
   {
     sourceColumn: "last_appointment_status_id",
     targetColumn: "lastAppointmentStatusId",
-    targetType: ColumnType.INTEGER,
+    targetType: ColumnType.TEXT,
     required: false,
   },
   {
     sourceColumn: "priority_id",
     targetColumn: "priorityId",
-    targetType: ColumnType.INTEGER,
+    targetType: ColumnType.TEXT,
     required: false,
   },
   {
     sourceColumn: "consult_timer_status_id",
     targetColumn: "consultTimerStatusId",
-    targetType: ColumnType.INTEGER,
+    targetType: ColumnType.TEXT,
     required: false,
   },
   {
@@ -315,24 +315,48 @@ export const appointmentsTransformations: ColumnTransformation[] = [
     required: false,
   },
 
-  // Boolean fields
+  // Boolean fields - handle timestamp values as true if present
   {
     sourceColumn: "arrived",
     targetColumn: "arrived",
     targetType: ColumnType.BOOLEAN,
     required: false,
+    transformFunction: (value) => {
+      // If it's a timestamp string, treat as true (event occurred)
+      if (typeof value === "string" && value.trim() !== "") {
+        return true;
+      }
+      // Otherwise use standard boolean conversion
+      return Boolean(value);
+    },
   },
   {
     sourceColumn: "waiting_forpayment",
     targetColumn: "waitingForpayment",
     targetType: ColumnType.BOOLEAN,
     required: false,
+    transformFunction: (value) => {
+      // If it's a timestamp string, treat as true (event occurred)
+      if (typeof value === "string" && value.trim() !== "") {
+        return true;
+      }
+      // Otherwise use standard boolean conversion
+      return Boolean(value);
+    },
   },
   {
     sourceColumn: "appointment_completed",
     targetColumn: "appointmentCompleted",
     targetType: ColumnType.BOOLEAN,
     required: false,
+    transformFunction: (value) => {
+      // If it's a timestamp string, treat as true (event occurred)
+      if (typeof value === "string" && value.trim() !== "") {
+        return true;
+      }
+      // Otherwise use standard boolean conversion
+      return Boolean(value);
+    },
   },
   {
     sourceColumn: "is_active",

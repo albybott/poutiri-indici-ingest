@@ -95,4 +95,3 @@ export const fkAllergiesStgLoadRunFile = foreignKey({
   foreignColumns: [loadRunFiles.loadRunFileId],
   name: "fk_allergies_stg_load_run_file",
 });
-
