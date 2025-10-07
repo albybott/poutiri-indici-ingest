@@ -16,13 +16,14 @@ export const vaccineTransformations: ColumnTransformation[] = [
     sourceColumn: "vaccine_code",
     targetColumn: "vaccineCode",
     targetType: ColumnType.TEXT,
-    required: true,
+    required: false,
+    transformFunction: (value) => value?.trim() ?? null,
   },
   {
     sourceColumn: "vaccine_name",
     targetColumn: "vaccineName",
     targetType: ColumnType.TEXT,
-    required: true,
+    required: false,
     transformFunction: (value) => value?.trim() ?? null,
   },
   {

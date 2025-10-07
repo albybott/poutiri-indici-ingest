@@ -18,8 +18,8 @@ export const vaccineStg = createTable(
   {
     // Typed columns with proper constraints
     vaccineId: text("vaccine_id").notNull(),
-    vaccineCode: text("vaccine_code").notNull(),
-    vaccineName: text("vaccine_name").notNull(),
+    vaccineCode: text("vaccine_code"),
+    vaccineName: text("vaccine_name"),
     longDescription: text("long_description"),
     isActive: boolean("is_active"),
     isDeleted: boolean("is_deleted"),

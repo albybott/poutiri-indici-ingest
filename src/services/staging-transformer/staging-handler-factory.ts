@@ -25,6 +25,7 @@ import { invoicesTransformations } from "./configs/invoices-transformations";
 import { measurementsTransformations } from "./configs/measurements-transformations";
 import { nextOfKinTransformations } from "./configs/next-of-kin-transformations";
 import { patientAlertsTransformations } from "./configs/patient-alerts-transformations";
+import { recallsTransformations } from "./configs/recalls-transformations";
 /**
  * Staging Handler Factory
  * Creates handlers for different extract types
@@ -282,5 +283,16 @@ export class StagingHandlerFactory {
         this.rawHandlerFactory.getHandler("PatientAlerts").columnMapping,
     };
     this.handlers.set("patientalerts", patientAlertsHandler);
+
+    // Recalls handler
+    const recallsHandler: StagingExtractHandler = {
+      extractType: "Recalls",
+      sourceTable: "raw.recalls",
+      targetTable: "stg.recalls",
+      naturalKeys: ["reCallId", "practiceId", "perOrgId"],
+      transformations: recallsTransformations,
+      sourceColumns: this.rawHandlerFactory.getHandler("Recalls").columnMapping,
+    };
+    this.handlers.set("recalls", recallsHandler);
   }
 }

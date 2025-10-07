@@ -1,5 +1,5 @@
 {
-  "id": "67d1d296-b083-4c1a-aad8-dc91f2e5cb97",
+  "id": "24c20527-3c1a-4d24-97e0-f580baec9a9c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -1749,14 +1749,14 @@
           "primaryKey": false,
           "notNull": false
         },
-        "hbl_gp_agree_no": {
-          "name": "hbl_gp_agree_no",
+        "hbl_gpa_agree_no": {
+          "name": "hbl_gpa_agree_no",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "hbl_gp_agree_ver": {
-          "name": "hbl_gp_agree_ver",
+        "hbl_gpa_agree_ver": {
+          "name": "hbl_gpa_agree_ver",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -1857,8 +1857,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "registeration_no": {
-          "name": "registeration_no",
+        "registration_no": {
+          "name": "registration_no",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -1887,20 +1887,20 @@
           "primaryKey": false,
           "notNull": false
         },
-        "acc_45_prefix": {
-          "name": "acc_45_prefix",
+        "acc45_prefix": {
+          "name": "acc45_prefix",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "next_acc_45_no": {
-          "name": "next_acc_45_no",
+        "next_acc45_no": {
+          "name": "next_acc45_no",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "maximum_acc_45_no": {
-          "name": "maximum_acc_45_no",
+        "maximum_acc45_no": {
+          "name": "maximum_acc45_no",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -5273,6 +5273,464 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "raw.inbox": {
+      "name": "inbox",
+      "schema": "raw",
+      "columns": {
+        "inbox_folder_item_id": {
+          "name": "inbox_folder_item_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "folder_id": {
+          "name": "folder_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "folder_name": {
+          "name": "folder_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_system_folder": {
+          "name": "is_system_folder",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "order_no": {
+          "name": "order_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "item_type_id": {
+          "name": "item_type_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "item_type": {
+          "name": "item_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "patient_id": {
+          "name": "patient_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provider_id": {
+          "name": "provider_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_id": {
+          "name": "practice_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "patient_name": {
+          "name": "patient_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provider": {
+          "name": "provider",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_name": {
+          "name": "practice_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "from_org_id": {
+          "name": "from_org_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "from_organization_name": {
+          "name": "from_organization_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "assign_to_id": {
+          "name": "assign_to_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "assign_to": {
+          "name": "assign_to",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "result_date": {
+          "name": "result_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "message_subject_id": {
+          "name": "message_subject_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "message_subject": {
+          "name": "message_subject",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "comments": {
+          "name": "comments",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "mark_as_read": {
+          "name": "mark_as_read",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_confidential": {
+          "name": "is_confidential",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "show_on_portal": {
+          "name": "show_on_portal",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_reviewed": {
+          "name": "is_reviewed",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "show_on_time_line": {
+          "name": "show_on_time_line",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_deleted": {
+          "name": "is_deleted",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inserted_by_id": {
+          "name": "inserted_by_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inserted_by": {
+          "name": "inserted_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_by_id": {
+          "name": "updated_by_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inserted_at": {
+          "name": "inserted_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "med_tech_id": {
+          "name": "med_tech_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dms_id": {
+          "name": "dms_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_repeat_rx": {
+          "name": "is_repeat_rx",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_replied_rx": {
+          "name": "is_replied_rx",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "external_ref": {
+          "name": "external_ref",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "abnorm_result": {
+          "name": "abnorm_result",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_deactivated": {
+          "name": "is_deactivated",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "folder_group": {
+          "name": "folder_group",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "document_code": {
+          "name": "document_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_gp2gp": {
+          "name": "is_gp2gp",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "informat_id": {
+          "name": "informat_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "informat": {
+          "name": "informat",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_latitude": {
+          "name": "permanent_address_latitude",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_longitude": {
+          "name": "permanent_address_longitude",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "filed_at": {
+          "name": "filed_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "per_org_id": {
+          "name": "per_org_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "loaded_date_time": {
+          "name": "loaded_date_time",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "load_run_file_id": {
+          "name": "load_run_file_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "raw.inbox_detail": {
+      "name": "inbox_detail",
+      "schema": "raw",
+      "columns": {
+        "in_box_folder_item_in_line_id": {
+          "name": "in_box_folder_item_in_line_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inbox_folder_item_id": {
+          "name": "inbox_folder_item_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "patient_id": {
+          "name": "patient_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_id": {
+          "name": "practice_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_name": {
+          "name": "practice_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "prompt": {
+          "name": "prompt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "result": {
+          "name": "result",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ab_norm": {
+          "name": "ab_norm",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "unit": {
+          "name": "unit",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "result_code": {
+          "name": "result_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reference_ranges": {
+          "name": "reference_ranges",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "line_number": {
+          "name": "line_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inserted_at": {
+          "name": "inserted_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_confidential": {
+          "name": "is_confidential",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "show_on_portal": {
+          "name": "show_on_portal",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_deleted": {
+          "name": "is_deleted",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "per_org_id": {
+          "name": "per_org_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "loaded_date_time": {
+          "name": "loaded_date_time",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "load_run_file_id": {
+          "name": "load_run_file_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "raw.measurements": {
       "name": "measurements",
       "schema": "raw",
@@ -5283,8 +5741,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "screaning_id": {
-          "name": "screaning_id",
+        "screening_id": {
+          "name": "screening_id",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -5415,8 +5873,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "hbaic": {
-          "name": "hbaic",
+        "hba1c": {
+          "name": "hba1c",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -5445,8 +5903,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "is_gp_2_gp": {
-          "name": "is_gp_2_gp",
+        "is_gp2gp": {
+          "name": "is_gp2gp",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -5457,8 +5915,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "is_showon_time_line": {
-          "name": "is_showon_time_line",
+        "is_show_on_time_line": {
+          "name": "is_show_on_time_line",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -5499,302 +5957,302 @@
           "primaryKey": false,
           "notNull": false
         },
-        "field_1": {
-          "name": "field_1",
+        "field1": {
+          "name": "field1",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_2": {
-          "name": "field_2",
+        "field2": {
+          "name": "field2",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_3": {
-          "name": "field_3",
+        "field3": {
+          "name": "field3",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_4": {
-          "name": "field_4",
+        "field4": {
+          "name": "field4",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_5": {
-          "name": "field_5",
+        "field5": {
+          "name": "field5",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_6": {
-          "name": "field_6",
+        "field6": {
+          "name": "field6",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_7": {
-          "name": "field_7",
+        "field7": {
+          "name": "field7",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_8": {
-          "name": "field_8",
+        "field8": {
+          "name": "field8",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_9": {
-          "name": "field_9",
+        "field9": {
+          "name": "field9",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_10": {
-          "name": "field_10",
+        "field10": {
+          "name": "field10",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_11": {
-          "name": "field_11",
+        "field11": {
+          "name": "field11",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_12": {
-          "name": "field_12",
+        "field12": {
+          "name": "field12",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_13": {
-          "name": "field_13",
+        "field13": {
+          "name": "field13",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_14": {
-          "name": "field_14",
+        "field14": {
+          "name": "field14",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_15": {
-          "name": "field_15",
+        "field15": {
+          "name": "field15",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_16": {
-          "name": "field_16",
+        "field16": {
+          "name": "field16",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_17": {
-          "name": "field_17",
+        "field17": {
+          "name": "field17",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_18": {
-          "name": "field_18",
+        "field18": {
+          "name": "field18",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_19": {
-          "name": "field_19",
+        "field19": {
+          "name": "field19",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_20": {
-          "name": "field_20",
+        "field20": {
+          "name": "field20",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_21": {
-          "name": "field_21",
+        "field21": {
+          "name": "field21",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_22": {
-          "name": "field_22",
+        "field22": {
+          "name": "field22",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_23": {
-          "name": "field_23",
+        "field23": {
+          "name": "field23",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_24": {
-          "name": "field_24",
+        "field24": {
+          "name": "field24",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_25": {
-          "name": "field_25",
+        "field25": {
+          "name": "field25",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_26": {
-          "name": "field_26",
+        "field26": {
+          "name": "field26",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_27": {
-          "name": "field_27",
+        "field27": {
+          "name": "field27",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_28": {
-          "name": "field_28",
+        "field28": {
+          "name": "field28",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_29": {
-          "name": "field_29",
+        "field29": {
+          "name": "field29",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_30": {
-          "name": "field_30",
+        "field30": {
+          "name": "field30",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_31": {
-          "name": "field_31",
+        "field31": {
+          "name": "field31",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_32": {
-          "name": "field_32",
+        "field32": {
+          "name": "field32",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_33": {
-          "name": "field_33",
+        "field33": {
+          "name": "field33",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_34": {
-          "name": "field_34",
+        "field34": {
+          "name": "field34",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_35": {
-          "name": "field_35",
+        "field35": {
+          "name": "field35",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_36": {
-          "name": "field_36",
+        "field36": {
+          "name": "field36",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_37": {
-          "name": "field_37",
+        "field37": {
+          "name": "field37",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_38": {
-          "name": "field_38",
+        "field38": {
+          "name": "field38",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_39": {
-          "name": "field_39",
+        "field39": {
+          "name": "field39",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_40": {
-          "name": "field_40",
+        "field40": {
+          "name": "field40",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_41": {
-          "name": "field_41",
+        "field41": {
+          "name": "field41",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_42": {
-          "name": "field_42",
+        "field42": {
+          "name": "field42",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_43": {
-          "name": "field_43",
+        "field43": {
+          "name": "field43",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_44": {
-          "name": "field_44",
+        "field44": {
+          "name": "field44",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_45": {
-          "name": "field_45",
+        "field45": {
+          "name": "field45",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_46": {
-          "name": "field_46",
+        "field46": {
+          "name": "field46",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_47": {
-          "name": "field_47",
+        "field47": {
+          "name": "field47",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_48": {
-          "name": "field_48",
+        "field48": {
+          "name": "field48",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_49": {
-          "name": "field_49",
+        "field49": {
+          "name": "field49",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_50": {
-          "name": "field_50",
+        "field50": {
+          "name": "field50",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -5823,302 +6281,302 @@
           "primaryKey": false,
           "notNull": false
         },
-        "field_51": {
-          "name": "field_51",
+        "field51": {
+          "name": "field51",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_52": {
-          "name": "field_52",
+        "field52": {
+          "name": "field52",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_53": {
-          "name": "field_53",
+        "field53": {
+          "name": "field53",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_54": {
-          "name": "field_54",
+        "field54": {
+          "name": "field54",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_55": {
-          "name": "field_55",
+        "field55": {
+          "name": "field55",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_56": {
-          "name": "field_56",
+        "field56": {
+          "name": "field56",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_57": {
-          "name": "field_57",
+        "field57": {
+          "name": "field57",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_58": {
-          "name": "field_58",
+        "field58": {
+          "name": "field58",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_59": {
-          "name": "field_59",
+        "field59": {
+          "name": "field59",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_60": {
-          "name": "field_60",
+        "field60": {
+          "name": "field60",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_61": {
-          "name": "field_61",
+        "field61": {
+          "name": "field61",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_62": {
-          "name": "field_62",
+        "field62": {
+          "name": "field62",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_63": {
-          "name": "field_63",
+        "field63": {
+          "name": "field63",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_64": {
-          "name": "field_64",
+        "field64": {
+          "name": "field64",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_65": {
-          "name": "field_65",
+        "field65": {
+          "name": "field65",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_66": {
-          "name": "field_66",
+        "field66": {
+          "name": "field66",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_67": {
-          "name": "field_67",
+        "field67": {
+          "name": "field67",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_68": {
-          "name": "field_68",
+        "field68": {
+          "name": "field68",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_69": {
-          "name": "field_69",
+        "field69": {
+          "name": "field69",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_70": {
-          "name": "field_70",
+        "field70": {
+          "name": "field70",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_71": {
-          "name": "field_71",
+        "field71": {
+          "name": "field71",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_72": {
-          "name": "field_72",
+        "field72": {
+          "name": "field72",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_73": {
-          "name": "field_73",
+        "field73": {
+          "name": "field73",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_74": {
-          "name": "field_74",
+        "field74": {
+          "name": "field74",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_75": {
-          "name": "field_75",
+        "field75": {
+          "name": "field75",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_76": {
-          "name": "field_76",
+        "field76": {
+          "name": "field76",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_77": {
-          "name": "field_77",
+        "field77": {
+          "name": "field77",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_78": {
-          "name": "field_78",
+        "field78": {
+          "name": "field78",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_79": {
-          "name": "field_79",
+        "field79": {
+          "name": "field79",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_80": {
-          "name": "field_80",
+        "field80": {
+          "name": "field80",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_81": {
-          "name": "field_81",
+        "field81": {
+          "name": "field81",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_82": {
-          "name": "field_82",
+        "field82": {
+          "name": "field82",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_83": {
-          "name": "field_83",
+        "field83": {
+          "name": "field83",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_84": {
-          "name": "field_84",
+        "field84": {
+          "name": "field84",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_85": {
-          "name": "field_85",
+        "field85": {
+          "name": "field85",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_86": {
-          "name": "field_86",
+        "field86": {
+          "name": "field86",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_87": {
-          "name": "field_87",
+        "field87": {
+          "name": "field87",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_88": {
-          "name": "field_88",
+        "field88": {
+          "name": "field88",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_89": {
-          "name": "field_89",
+        "field89": {
+          "name": "field89",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_90": {
-          "name": "field_90",
+        "field90": {
+          "name": "field90",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_91": {
-          "name": "field_91",
+        "field91": {
+          "name": "field91",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_92": {
-          "name": "field_92",
+        "field92": {
+          "name": "field92",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_93": {
-          "name": "field_93",
+        "field93": {
+          "name": "field93",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_94": {
-          "name": "field_94",
+        "field94": {
+          "name": "field94",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_95": {
-          "name": "field_95",
+        "field95": {
+          "name": "field95",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_96": {
-          "name": "field_96",
+        "field96": {
+          "name": "field96",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_97": {
-          "name": "field_97",
+        "field97": {
+          "name": "field97",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_98": {
-          "name": "field_98",
+        "field98": {
+          "name": "field98",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_99": {
-          "name": "field_99",
+        "field99": {
+          "name": "field99",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_100": {
-          "name": "field_100",
+        "field100": {
+          "name": "field100",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -7974,6 +8432,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "is_nhi_validate": {
+          "name": "is_nhi_validate",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "nzmc_no": {
           "name": "nzmc_no",
           "type": "text",
@@ -8004,6 +8468,90 @@
           "primaryKey": false,
           "notNull": false
         },
+        "registration_no": {
+          "name": "registration_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "lab_no": {
+          "name": "lab_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "lab_tests_dr_id": {
+          "name": "lab_tests_dr_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "color_code": {
+          "name": "color_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "acc45_prefix": {
+          "name": "acc45_prefix",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "next_acc45_no": {
+          "name": "next_acc45_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "maximum_acc45_no": {
+          "name": "maximum_acc45_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aitc_prefix": {
+          "name": "aitc_prefix",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "next_aitc_no": {
+          "name": "next_aitc_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "maximum_aitc_no": {
+          "name": "maximum_aitc_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "arc_18_next_acc_form_no": {
+          "name": "arc_18_next_acc_form_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "m_45_prefix": {
+          "name": "m_45_prefix",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "next_m_45_no": {
+          "name": "next_m_45_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "maximum_m_45_no": {
+          "name": "maximum_m_45_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "title": {
           "name": "title",
           "type": "text",
@@ -8026,7 +8574,7 @@
           "name": "family_name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "full_name": {
           "name": "full_name",
@@ -8036,6 +8584,18 @@
         },
         "preferred_name": {
           "name": "preferred_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "other_maiden_name": {
+          "name": "other_maiden_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "marital_status": {
+          "name": "marital_status",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -8052,6 +8612,24 @@
           "primaryKey": false,
           "notNull": false
         },
+        "age": {
+          "name": "age",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "age_type": {
+          "name": "age_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "age_group": {
+          "name": "age_group",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "is_alive": {
           "name": "is_alive",
           "type": "boolean",
@@ -8064,14 +8642,50 @@
           "primaryKey": false,
           "notNull": false
         },
-        "practice_name": {
-          "name": "practice_name",
+        "dob_source": {
+          "name": "dob_source",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "user_role": {
-          "name": "user_role",
+        "picture_path": {
+          "name": "picture_path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "consentedto_share": {
+          "name": "consentedto_share",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "placeof_birth": {
+          "name": "placeof_birth",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "country_of_birth": {
+          "name": "country_of_birth",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cell_number": {
+          "name": "cell_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "day_phone": {
+          "name": "day_phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "night_phone": {
+          "name": "night_phone",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -8082,9 +8696,27 @@
           "primaryKey": false,
           "notNull": false
         },
-        "cell_number": {
-          "name": "cell_number",
+        "secondary_email": {
+          "name": "secondary_email",
           "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "preferred_contact_method": {
+          "name": "preferred_contact_method",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "consent_text_messaging": {
+          "name": "consent_text_messaging",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_portal_user": {
+          "name": "is_portal_user",
+          "type": "boolean",
           "primaryKey": false,
           "notNull": false
         },
@@ -8097,6 +8729,378 @@
         "is_deleted": {
           "name": "is_deleted",
           "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_same_address": {
+          "name": "is_same_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_gender_self_identified": {
+          "name": "is_gender_self_identified",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sex_related_gender": {
+          "name": "sex_related_gender",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_worked_visa_required": {
+          "name": "is_worked_visa_required",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "balance": {
+          "name": "balance",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "register_status": {
+          "name": "register_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "med_tech_nok": {
+          "name": "med_tech_nok",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "calculated_balance": {
+          "name": "calculated_balance",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_doctor": {
+          "name": "is_doctor",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_invoicing_diary": {
+          "name": "is_invoicing_diary",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_gp2gp": {
+          "name": "is_gp2gp",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_nzf_avoid": {
+          "name": "is_nzf_avoid",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_nzf_adjust": {
+          "name": "is_nzf_adjust",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_nzf_information": {
+          "name": "is_nzf_information",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_nzf_no_action": {
+          "name": "is_nzf_no_action",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_nzf_monitor": {
+          "name": "is_nzf_monitor",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address": {
+          "name": "permanent_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deprivation_quintile": {
+          "name": "deprivation_quintile",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "uncertainty_code": {
+          "name": "uncertainty_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_address": {
+          "name": "postal_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "temporary_address": {
+          "name": "temporary_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "city": {
+          "name": "city",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "suburb": {
+          "name": "suburb",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "portal_registration_status": {
+          "name": "portal_registration_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ethnicity": {
+          "name": "ethnicity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "affiliation_id": {
+          "name": "affiliation_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "affiliation": {
+          "name": "affiliation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "affiliation_code": {
+          "name": "affiliation_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hbl_mat_payee_no": {
+          "name": "hbl_mat_payee_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hbl_mat_agree_no": {
+          "name": "hbl_mat_agree_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hpac_mat_agree_no": {
+          "name": "hpac_mat_agree_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hpac_mat_agree_ver": {
+          "name": "hpac_mat_agree_ver",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hbl_payee_no": {
+          "name": "hbl_payee_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hbl_gpa_agree_no": {
+          "name": "hbl_gpa_agree_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hbl_gpa_agree_ver": {
+          "name": "hbl_gpa_agree_ver",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pho_contract_no": {
+          "name": "pho_contract_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pho_contract_ver": {
+          "name": "pho_contract_ver",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "group_id": {
+          "name": "group_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "group_name": {
+          "name": "group_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "acc_provider_code": {
+          "name": "acc_provider_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "health_facility_no": {
+          "name": "health_facility_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "unload_ref": {
+          "name": "unload_ref",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "acc_provider_no": {
+          "name": "acc_provider_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "acc_vendor_id": {
+          "name": "acc_vendor_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pin_pan_no": {
+          "name": "pin_pan_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "member_no": {
+          "name": "member_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rha_payee_no": {
+          "name": "rha_payee_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "budget_no": {
+          "name": "budget_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ipa": {
+          "name": "ipa",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "generic_profile_type_id": {
+          "name": "generic_profile_type_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "current_appointment_id": {
+          "name": "current_appointment_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sure_med_user_name": {
+          "name": "sure_med_user_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "from_date_practice": {
+          "name": "from_date_practice",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "apc_expiry_date": {
+          "name": "apc_expiry_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "mps_expiry_date": {
+          "name": "mps_expiry_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "apc_name": {
+          "name": "apc_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_location": {
+          "name": "practice_location",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provider_permanent_address_latitude": {
+          "name": "provider_permanent_address_latitude",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provider_permanent_address_longitude": {
+          "name": "provider_permanent_address_longitude",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_name": {
+          "name": "practice_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_role": {
+          "name": "user_role",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
@@ -8256,6 +9260,24 @@
           "primaryKey": false,
           "notNull": false
         },
+        "legal_date": {
+          "name": "legal_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "comments": {
+          "name": "comments",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "formula": {
+          "name": "formula",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "ownership_model": {
           "name": "ownership_model",
           "type": "text",
@@ -8280,6 +9302,42 @@
           "primaryKey": false,
           "notNull": false
         },
+        "other_phone": {
+          "name": "other_phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "after_hours_number": {
+          "name": "after_hours_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "emergency_number": {
+          "name": "emergency_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pager": {
+          "name": "pager",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fax1": {
+          "name": "fax1",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fax2": {
+          "name": "fax2",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "primary_email": {
           "name": "primary_email",
           "type": "text",
@@ -8288,6 +9346,12 @@
         },
         "secondary_email": {
           "name": "secondary_email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "other_email": {
+          "name": "other_email",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -8304,6 +9368,24 @@
           "primaryKey": false,
           "notNull": false
         },
+        "hpi_facility_ext": {
+          "name": "hpi_facility_ext",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hpi_organization_id": {
+          "name": "hpi_organization_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hpi_organization_ext": {
+          "name": "hpi_organization_ext",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "gst_no": {
           "name": "gst_no",
           "type": "text",
@@ -8312,6 +9394,18 @@
         },
         "acc_no": {
           "name": "acc_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bank_account_no": {
+          "name": "bank_account_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "moh_sending_practice_id": {
+          "name": "moh_sending_practice_id",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -8720,13 +9814,13 @@
         },
         "on_hold_time": {
           "name": "on_hold_time",
-          "type": "integer",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },
         "read_only_time": {
           "name": "read_only_time",
-          "type": "integer",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },
@@ -8750,13 +9844,13 @@
         },
         "triage_queue_time": {
           "name": "triage_queue_time",
-          "type": "integer",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },
         "virtual_queue_time": {
           "name": "virtual_queue_time",
-          "type": "integer",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },
@@ -8856,8 +9950,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "sctid": {
-          "name": "sctid",
+        "sct_id": {
+          "name": "sct_id",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -8968,13 +10062,13 @@
           "name": "vaccine_code",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "vaccine_name": {
           "name": "vaccine_name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "long_description": {
           "name": "long_description",
@@ -9204,8 +10298,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "is_nira_ck": {
-          "name": "is_nira_ck",
+        "is_nir_ack": {
+          "name": "is_nir_ack",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false
@@ -10056,11 +11150,12 @@
           "primaryKey": false,
           "notNull": true
         },
-        "loaded_date_time": {
-          "name": "loaded_date_time",
+        "load_ts": {
+          "name": "load_ts",
           "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "now()"
         }
       },
       "indexes": {
@@ -11683,6 +12778,534 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "stg.inbox": {
+      "name": "inbox",
+      "schema": "stg",
+      "columns": {
+        "inbox_folder_item_id": {
+          "name": "inbox_folder_item_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "folder_id": {
+          "name": "folder_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "folder_name": {
+          "name": "folder_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_system_folder": {
+          "name": "is_system_folder",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "order_no": {
+          "name": "order_no",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "item_type_id": {
+          "name": "item_type_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "item_type": {
+          "name": "item_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "patient_id": {
+          "name": "patient_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provider_id": {
+          "name": "provider_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_id": {
+          "name": "practice_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "patient_name": {
+          "name": "patient_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provider": {
+          "name": "provider",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_name": {
+          "name": "practice_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "from_org_id": {
+          "name": "from_org_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "from_organization_name": {
+          "name": "from_organization_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "assign_to_id": {
+          "name": "assign_to_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "assign_to": {
+          "name": "assign_to",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "result_date": {
+          "name": "result_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "message_subject_id": {
+          "name": "message_subject_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "message_subject": {
+          "name": "message_subject",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "comments": {
+          "name": "comments",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "mark_as_read": {
+          "name": "mark_as_read",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_confidential": {
+          "name": "is_confidential",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "show_on_portal": {
+          "name": "show_on_portal",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_reviewed": {
+          "name": "is_reviewed",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "show_on_time_line": {
+          "name": "show_on_time_line",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_deleted": {
+          "name": "is_deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inserted_by_id": {
+          "name": "inserted_by_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inserted_by": {
+          "name": "inserted_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_by_id": {
+          "name": "updated_by_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inserted_at": {
+          "name": "inserted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "med_tech_id": {
+          "name": "med_tech_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dms_id": {
+          "name": "dms_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_repeat_rx": {
+          "name": "is_repeat_rx",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_replied_rx": {
+          "name": "is_replied_rx",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "external_ref": {
+          "name": "external_ref",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "abnorm_result": {
+          "name": "abnorm_result",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_deactivated": {
+          "name": "is_deactivated",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "folder_group": {
+          "name": "folder_group",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "document_code": {
+          "name": "document_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_gp2gp": {
+          "name": "is_gp2gp",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "informat_id": {
+          "name": "informat_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "informat": {
+          "name": "informat",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_latitude": {
+          "name": "permanent_address_latitude",
+          "type": "numeric(10, 8)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "permanent_address_longitude": {
+          "name": "permanent_address_longitude",
+          "type": "numeric(11, 8)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "filed_at": {
+          "name": "filed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "per_org_id": {
+          "name": "per_org_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "loaded_date_time": {
+          "name": "loaded_date_time",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "load_run_file_id": {
+          "name": "load_run_file_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "load_ts": {
+          "name": "load_ts",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "inbox_stg_natural_key_idx": {
+          "name": "inbox_stg_natural_key_idx",
+          "columns": [
+            {
+              "expression": "inbox_folder_item_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "practice_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "per_org_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "stg.inbox_detail": {
+      "name": "inbox_detail",
+      "schema": "stg",
+      "columns": {
+        "in_box_folder_item_in_line_id": {
+          "name": "in_box_folder_item_in_line_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "inbox_folder_item_id": {
+          "name": "inbox_folder_item_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "patient_id": {
+          "name": "patient_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "practice_id": {
+          "name": "practice_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "practice_name": {
+          "name": "practice_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "prompt": {
+          "name": "prompt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "result": {
+          "name": "result",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ab_norm": {
+          "name": "ab_norm",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "unit": {
+          "name": "unit",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "result_code": {
+          "name": "result_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reference_ranges": {
+          "name": "reference_ranges",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "line_number": {
+          "name": "line_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inserted_at": {
+          "name": "inserted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_confidential": {
+          "name": "is_confidential",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "show_on_portal": {
+          "name": "show_on_portal",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_deleted": {
+          "name": "is_deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "per_org_id": {
+          "name": "per_org_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "loaded_date_time": {
+          "name": "loaded_date_time",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "load_run_file_id": {
+          "name": "load_run_file_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "load_ts": {
+          "name": "load_ts",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "inbox_detail_stg_natural_key_idx": {
+          "name": "inbox_detail_stg_natural_key_idx",
+          "columns": [
+            {
+              "expression": "in_box_folder_item_in_line_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "practice_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "per_org_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "stg.measurements": {
       "name": "measurements",
       "schema": "stg",
@@ -11693,8 +13316,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "screaning_id": {
-          "name": "screaning_id",
+        "screening_id": {
+          "name": "screening_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -11825,8 +13448,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "hbaic": {
-          "name": "hbaic",
+        "hba1c": {
+          "name": "hba1c",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -11855,8 +13478,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "is_gp_2_gp": {
-          "name": "is_gp_2_gp",
+        "is_gp2gp": {
+          "name": "is_gp2gp",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false
@@ -11867,8 +13490,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "is_showon_time_line": {
-          "name": "is_showon_time_line",
+        "is_show_on_time_line": {
+          "name": "is_show_on_time_line",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false
@@ -11909,302 +13532,302 @@
           "primaryKey": false,
           "notNull": false
         },
-        "field_1": {
-          "name": "field_1",
+        "field1": {
+          "name": "field1",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_2": {
-          "name": "field_2",
+        "field2": {
+          "name": "field2",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_3": {
-          "name": "field_3",
+        "field3": {
+          "name": "field3",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_4": {
-          "name": "field_4",
+        "field4": {
+          "name": "field4",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_5": {
-          "name": "field_5",
+        "field5": {
+          "name": "field5",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_6": {
-          "name": "field_6",
+        "field6": {
+          "name": "field6",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_7": {
-          "name": "field_7",
+        "field7": {
+          "name": "field7",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_8": {
-          "name": "field_8",
+        "field8": {
+          "name": "field8",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_9": {
-          "name": "field_9",
+        "field9": {
+          "name": "field9",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_10": {
-          "name": "field_10",
+        "field10": {
+          "name": "field10",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_11": {
-          "name": "field_11",
+        "field11": {
+          "name": "field11",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_12": {
-          "name": "field_12",
+        "field12": {
+          "name": "field12",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_13": {
-          "name": "field_13",
+        "field13": {
+          "name": "field13",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_14": {
-          "name": "field_14",
+        "field14": {
+          "name": "field14",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_15": {
-          "name": "field_15",
+        "field15": {
+          "name": "field15",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_16": {
-          "name": "field_16",
+        "field16": {
+          "name": "field16",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_17": {
-          "name": "field_17",
+        "field17": {
+          "name": "field17",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_18": {
-          "name": "field_18",
+        "field18": {
+          "name": "field18",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_19": {
-          "name": "field_19",
+        "field19": {
+          "name": "field19",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_20": {
-          "name": "field_20",
+        "field20": {
+          "name": "field20",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_21": {
-          "name": "field_21",
+        "field21": {
+          "name": "field21",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_22": {
-          "name": "field_22",
+        "field22": {
+          "name": "field22",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_23": {
-          "name": "field_23",
+        "field23": {
+          "name": "field23",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_24": {
-          "name": "field_24",
+        "field24": {
+          "name": "field24",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_25": {
-          "name": "field_25",
+        "field25": {
+          "name": "field25",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_26": {
-          "name": "field_26",
+        "field26": {
+          "name": "field26",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_27": {
-          "name": "field_27",
+        "field27": {
+          "name": "field27",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_28": {
-          "name": "field_28",
+        "field28": {
+          "name": "field28",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_29": {
-          "name": "field_29",
+        "field29": {
+          "name": "field29",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_30": {
-          "name": "field_30",
+        "field30": {
+          "name": "field30",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_31": {
-          "name": "field_31",
+        "field31": {
+          "name": "field31",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_32": {
-          "name": "field_32",
+        "field32": {
+          "name": "field32",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_33": {
-          "name": "field_33",
+        "field33": {
+          "name": "field33",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_34": {
-          "name": "field_34",
+        "field34": {
+          "name": "field34",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_35": {
-          "name": "field_35",
+        "field35": {
+          "name": "field35",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_36": {
-          "name": "field_36",
+        "field36": {
+          "name": "field36",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_37": {
-          "name": "field_37",
+        "field37": {
+          "name": "field37",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_38": {
-          "name": "field_38",
+        "field38": {
+          "name": "field38",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_39": {
-          "name": "field_39",
+        "field39": {
+          "name": "field39",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_40": {
-          "name": "field_40",
+        "field40": {
+          "name": "field40",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_41": {
-          "name": "field_41",
+        "field41": {
+          "name": "field41",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_42": {
-          "name": "field_42",
+        "field42": {
+          "name": "field42",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_43": {
-          "name": "field_43",
+        "field43": {
+          "name": "field43",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_44": {
-          "name": "field_44",
+        "field44": {
+          "name": "field44",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_45": {
-          "name": "field_45",
+        "field45": {
+          "name": "field45",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_46": {
-          "name": "field_46",
+        "field46": {
+          "name": "field46",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_47": {
-          "name": "field_47",
+        "field47": {
+          "name": "field47",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_48": {
-          "name": "field_48",
+        "field48": {
+          "name": "field48",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_49": {
-          "name": "field_49",
+        "field49": {
+          "name": "field49",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_50": {
-          "name": "field_50",
+        "field50": {
+          "name": "field50",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -12233,302 +13856,302 @@
           "primaryKey": false,
           "notNull": false
         },
-        "field_51": {
-          "name": "field_51",
+        "field51": {
+          "name": "field51",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_52": {
-          "name": "field_52",
+        "field52": {
+          "name": "field52",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_53": {
-          "name": "field_53",
+        "field53": {
+          "name": "field53",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_54": {
-          "name": "field_54",
+        "field54": {
+          "name": "field54",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_55": {
-          "name": "field_55",
+        "field55": {
+          "name": "field55",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_56": {
-          "name": "field_56",
+        "field56": {
+          "name": "field56",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_57": {
-          "name": "field_57",
+        "field57": {
+          "name": "field57",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_58": {
-          "name": "field_58",
+        "field58": {
+          "name": "field58",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_59": {
-          "name": "field_59",
+        "field59": {
+          "name": "field59",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_60": {
-          "name": "field_60",
+        "field60": {
+          "name": "field60",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_61": {
-          "name": "field_61",
+        "field61": {
+          "name": "field61",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_62": {
-          "name": "field_62",
+        "field62": {
+          "name": "field62",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_63": {
-          "name": "field_63",
+        "field63": {
+          "name": "field63",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_64": {
-          "name": "field_64",
+        "field64": {
+          "name": "field64",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_65": {
-          "name": "field_65",
+        "field65": {
+          "name": "field65",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_66": {
-          "name": "field_66",
+        "field66": {
+          "name": "field66",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_67": {
-          "name": "field_67",
+        "field67": {
+          "name": "field67",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_68": {
-          "name": "field_68",
+        "field68": {
+          "name": "field68",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_69": {
-          "name": "field_69",
+        "field69": {
+          "name": "field69",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_70": {
-          "name": "field_70",
+        "field70": {
+          "name": "field70",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_71": {
-          "name": "field_71",
+        "field71": {
+          "name": "field71",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_72": {
-          "name": "field_72",
+        "field72": {
+          "name": "field72",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_73": {
-          "name": "field_73",
+        "field73": {
+          "name": "field73",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_74": {
-          "name": "field_74",
+        "field74": {
+          "name": "field74",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_75": {
-          "name": "field_75",
+        "field75": {
+          "name": "field75",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_76": {
-          "name": "field_76",
+        "field76": {
+          "name": "field76",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_77": {
-          "name": "field_77",
+        "field77": {
+          "name": "field77",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_78": {
-          "name": "field_78",
+        "field78": {
+          "name": "field78",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_79": {
-          "name": "field_79",
+        "field79": {
+          "name": "field79",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_80": {
-          "name": "field_80",
+        "field80": {
+          "name": "field80",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_81": {
-          "name": "field_81",
+        "field81": {
+          "name": "field81",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_82": {
-          "name": "field_82",
+        "field82": {
+          "name": "field82",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_83": {
-          "name": "field_83",
+        "field83": {
+          "name": "field83",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_84": {
-          "name": "field_84",
+        "field84": {
+          "name": "field84",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_85": {
-          "name": "field_85",
+        "field85": {
+          "name": "field85",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_86": {
-          "name": "field_86",
+        "field86": {
+          "name": "field86",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_87": {
-          "name": "field_87",
+        "field87": {
+          "name": "field87",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_88": {
-          "name": "field_88",
+        "field88": {
+          "name": "field88",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_89": {
-          "name": "field_89",
+        "field89": {
+          "name": "field89",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_90": {
-          "name": "field_90",
+        "field90": {
+          "name": "field90",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_91": {
-          "name": "field_91",
+        "field91": {
+          "name": "field91",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_92": {
-          "name": "field_92",
+        "field92": {
+          "name": "field92",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_93": {
-          "name": "field_93",
+        "field93": {
+          "name": "field93",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_94": {
-          "name": "field_94",
+        "field94": {
+          "name": "field94",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_95": {
-          "name": "field_95",
+        "field95": {
+          "name": "field95",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_96": {
-          "name": "field_96",
+        "field96": {
+          "name": "field96",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_97": {
-          "name": "field_97",
+        "field97": {
+          "name": "field97",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_98": {
-          "name": "field_98",
+        "field98": {
+          "name": "field98",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_99": {
-          "name": "field_99",
+        "field99": {
+          "name": "field99",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "field_100": {
-          "name": "field_100",
+        "field100": {
+          "name": "field100",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -12576,7 +14199,7 @@
           "name": "measurements_stg_natural_key_idx",
           "columns": [
             {
-              "expression": "screaning_id",
+              "expression": "screening_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -16157,7 +17780,7 @@
         },
         "memory_usage_mb": {
           "name": "memory_usage_mb",
-          "type": "integer",
+          "type": "numeric(10, 2)",
           "primaryKey": false,
           "notNull": false
         },

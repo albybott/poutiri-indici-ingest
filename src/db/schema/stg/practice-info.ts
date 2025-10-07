@@ -34,20 +34,35 @@ export const practiceInfoStg = createTable(
     legalEntityTitle: text("legal_entity_title"),
     legalStatus: text("legal_status"),
     incorporationNumber: text("incorporation_number"),
+    legalDate: text("legal_date"),
+    comments: text("comments"),
+    formula: text("formula"),
     ownershipModel: text("ownership_model"),
     rural: boolean("rural"),
 
     // Contact information
     primaryPhone: text("primary_phone"),
     secondaryPhone: text("secondary_phone"),
+    otherPhone: text("other_phone"),
+    afterHoursNumber: text("after_hours_number"),
+    emergencyNumber: text("emergency_number"),
+    pager: text("pager"),
+    fax1: text("fax1"),
+    fax2: text("fax2"),
     primaryEmail: text("primary_email"),
     secondaryEmail: text("secondary_email"),
+    otherEmail: text("other_email"),
 
     // Identifiers
     healthFacilityNo: text("health_facility_no"),
     hpiFacilityNo: text("hpi_facility_no"),
+    hpiFacilityExt: text("hpi_facility_ext"),
+    hpiOrganizationId: text("hpi_organization_id"),
+    hpiOrganizationExt: text("hpi_organization_ext"),
     gstNo: text("gst_no"),
     accNo: text("acc_no"),
+    bankAccountNo: text("bank_account_no"),
+    mohSendingPracticeId: text("moh_sending_practice_id"),
 
     // Status
     isActive: boolean("is_active"),

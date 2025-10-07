@@ -6,7 +6,7 @@ import type { ValidationRule } from "../types/raw-loader";
  * Generated on 2025-10-06T01:11:46.106Z
  */
 export class RecallsSchemaHandler extends BaseSchemaDrivenHandler {
-  extractType = "Recall";
+  extractType = "Recalls";
   tableName = "raw.recalls";
 
   // Generated from src/db/schema/raw/recalls.ts
