@@ -57,7 +57,7 @@ export const inboxStg = createTable(
     isRepeatRx: boolean("is_repeat_rx"),
     isRepliedRx: boolean("is_replied_rx"),
     externalRef: text("external_ref"),
-    abnormResult: boolean("abnorm_result"),
+    abnormResult: text("abnorm_result"),
     isDeactivated: boolean("is_deactivated"),
     folderGroup: text("folder_group"),
     documentCode: text("document_code"),
@@ -96,7 +96,3 @@ export const fkInboxStgLoadRunFile = foreignKey({
   foreignColumns: [loadRunFiles.loadRunFileId],
   name: "fk_inbox_stg_load_run_file",
 });
-
-
-
-
