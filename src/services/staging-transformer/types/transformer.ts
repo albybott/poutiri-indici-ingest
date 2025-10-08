@@ -2,7 +2,7 @@
  * Staging Transformer Core Types
  */
 
-import type { ExtractType } from "@/services/discovery";
+import type { ExtractType } from "@/db/schema";
 import type { LoadError, LoadWarning } from "@/services/shared/types";
 
 /**
@@ -132,6 +132,7 @@ export interface StagingExtractHandler {
   naturalKeys: string[]; // Natural key columns for upsert
   uniqueConstraints?: string[][]; // Unique constraint column groups
   sourceColumns: string[]; // Source columns from the raw table to use for transformation
+  targetColumns: string[]; // Target columns for the staging table
 }
 
 /**

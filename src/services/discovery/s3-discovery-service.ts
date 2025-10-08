@@ -15,10 +15,11 @@ import { FilenameParser } from "./filename-parser";
 import { FileDiscovery } from "./file-discovery";
 import { BatchProcessor } from "./batch-processor";
 import { DiscoveryMonitor } from "./discovery-monitor";
-import type { S3DiscoveryConfig, ExtractType } from "./types/config";
-import { DEFAULT_CONFIG } from "./types/config";
+import type { S3DiscoveryConfig } from "./types/config";
+import { DefaultConfig } from "./types/config";
 import type { ProcessingPlan } from "./types/discovery";
 import type { FileBatch } from "./types/files";
+import type { ExtractType } from "@/db/schema";
 
 export class S3DiscoveryService {
   private config: S3DiscoveryConfig;
@@ -31,7 +32,7 @@ export class S3DiscoveryService {
   private monitor: DiscoveryMonitor;
 
   constructor(config: Partial<S3DiscoveryConfig> = {}) {
-    this.config = { ...DEFAULT_CONFIG, ...config };
+    this.config = { ...DefaultConfig, ...config };
 
     // Initialize AWS S3 Client with proper credential management
     this.s3Client = new S3Client({

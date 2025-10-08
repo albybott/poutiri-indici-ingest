@@ -25,8 +25,6 @@ export type {
   S3Config,
   DiscoveryConfig,
   ProcessingConfig,
-  ExtractType,
-  EXTRACT_TYPES,
 } from "./types/config.js";
 
 export type {
@@ -43,8 +41,8 @@ export type { ParsedFilename } from "./filename-parser.js";
 
 // Constants
 export {
-  DEFAULT_CONFIG,
-  DEFAULT_S3_CONFIG,
-  DEFAULT_DISCOVERY_CONFIG,
-  DEFAULT_PROCESSING_CONFIG,
+  DefaultConfig as DEFAULT_CONFIG,
+  DefaultS3Config as DEFAULT_S3_CONFIG,
+  DefaultDiscoveryConfig as DEFAULT_DISCOVERY_CONFIG,
+  DefaultProcessingConfig as DEFAULT_PROCESSING_CONFIG,
 } from "./types/config.js";

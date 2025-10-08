@@ -17,7 +17,7 @@ import { PracticeInfoSchemaHandler } from "./handlers/practice-info-schema-handl
 import { ProvidersSchemaHandler } from "./handlers/providers-schema-handler";
 import { RecallsSchemaHandler } from "./handlers/recalls-schema-handler";
 import { VaccineSchemaHandler } from "./handlers/vaccine-schema-handler";
-import type { ExtractType } from "../discovery/types/config";
+import type { ExtractType } from "@/db/schema";
 
 /**
  * Extract Handler Factory - creates handlers for different extract types

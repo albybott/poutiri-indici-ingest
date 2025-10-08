@@ -57,11 +57,11 @@ export * from "./etl/audit";
 // export * from "./etl/health";
 
 // Schema names for easy reference
-export const SCHEMA_NAMES = {
+export const SchemaNames = {
   RAW: "raw",
   STG: "stg",
   CORE: "core",
   ETL: "etl",
 } as const;
 
-export type SchemaName = (typeof SCHEMA_NAMES)[keyof typeof SCHEMA_NAMES];
+export type SchemaName = (typeof SchemaNames)[keyof typeof SchemaNames];

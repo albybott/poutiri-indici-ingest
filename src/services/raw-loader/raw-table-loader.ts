@@ -6,7 +6,7 @@ import type {
   LoadResult,
 } from "./types/raw-loader";
 import type { DatabaseConfig } from "./types/config";
-import { INDICI_CSV_SEPARATORS } from "./types/config";
+import { IndiciCsvSeparators } from "./types/config";
 import type { CSVRow } from "./csv-parser";
 import { CSVParser } from "./csv-parser";
 import type { ErrorHandler } from "./error-handler";
@@ -110,8 +110,8 @@ export class RawTableLoader {
 
     const csvParser = new CSVParser({
       fieldSeparator:
-        options.fieldSeparator ?? INDICI_CSV_SEPARATORS.FIELD_SEPARATOR,
-      rowSeparator: options.rowSeparator ?? INDICI_CSV_SEPARATORS.ROW_SEPARATOR,
+        options.fieldSeparator ?? IndiciCsvSeparators.fieldSeparator,
+      rowSeparator: options.rowSeparator ?? IndiciCsvSeparators.rowSeparator,
       hasHeaders: false,
       skipEmptyRows: true,
     });

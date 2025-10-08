@@ -1,5 +1,5 @@
 import { parse, Parser } from "csv-parse";
-import { INDICI_CSV_SEPARATORS } from "./types/config";
+import { IndiciCsvSeparators } from "./types/config";
 
 /**
  * CSV Processing Options for Indici format
@@ -44,9 +44,9 @@ export class CSVParser {
 
   constructor(options: CSVParseOptions) {
     this.fieldSeparator =
-      options.fieldSeparator ?? INDICI_CSV_SEPARATORS.FIELD_SEPARATOR;
+      options.fieldSeparator ?? IndiciCsvSeparators.fieldSeparator;
     this.rowSeparator =
-      options.rowSeparator ?? INDICI_CSV_SEPARATORS.ROW_SEPARATOR;
+      options.rowSeparator ?? IndiciCsvSeparators.rowSeparator;
     this.columnMapping = options.columnMapping ?? false;
     this.skipEmptyRows = options.skipEmptyRows ?? true;
     this.parser = this.getParser();

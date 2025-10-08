@@ -2,6 +2,8 @@
  * Configuration types for S3 Discovery Service
  */
 
+import type { ExtractType } from "@/db/schema";
+
 export interface S3Config {
   bucket: string; // "poutiri-datacraft-data"
   region: string; // "ap-southeast-2"
@@ -35,54 +37,9 @@ export interface S3DiscoveryConfig {
 }
 
 /**
- * Extract types supported by the Indici system
- * These match the actual extract types found in S3 bucket filenames
- */
-export type ExtractType =
-  | "Patient"
-  | "Appointments"
-  | "Provider"
-  | "PracticeInfo"
-  | "Invoices"
-  | "InvoiceDetail"
-  | "Immunisation"
-  | "Diagnosis"
-  | "Measurements"
-  | "Recalls"
-  | "Inbox"
-  | "InboxDetail"
-  | "Medicine"
-  | "NextOfKin"
-  | "Vaccine"
-  | "Allergies"
-  | "AppointmentMedications"
-  | "PatientAlerts";
-
-export const EXTRACT_TYPES: readonly ExtractType[] = [
-  "Patient",
-  "Appointments",
-  "Provider",
-  "PracticeInfo",
-  "Invoices",
-  "InvoiceDetail",
-  "Immunisation",
-  "Diagnosis",
-  "Measurements",
-  "Recalls",
-  "Inbox",
-  "InboxDetail",
-  "Medicine",
-  "NextOfKin",
-  "Vaccine",
-  "Allergies",
-  "AppointmentMedications",
-  "PatientAlerts",
-] as const;
-
-/**
  * Default configuration values
  */
-export const DEFAULT_S3_CONFIG: S3Config = {
+export const DefaultS3Config: S3Config = {
   bucket: "poutiri-datacraft-data",
   region: "ap-southeast-2",
   prefix: "C:/Jobs/indici_export/ebpha_poutiri/working/", // Path where Indici files are stored (S3 uses forward slashes)
@@ -93,7 +50,7 @@ export const DEFAULT_S3_CONFIG: S3Config = {
   timeoutMs: 30000,
 };
 
-export const DEFAULT_DISCOVERY_CONFIG: DiscoveryConfig = {
+export const DefaultDiscoveryConfig: DiscoveryConfig = {
   batchSize: 1000,
   maxFilesPerBatch: 100,
   enableVersioning: true,
@@ -102,14 +59,14 @@ export const DEFAULT_DISCOVERY_CONFIG: DiscoveryConfig = {
   cacheTtlMinutes: 60,
 };
 
-export const DEFAULT_PROCESSING_CONFIG: ProcessingConfig = {
+export const DefaultProcessingConfig: ProcessingConfig = {
   priorityExtracts: ["Patient", "Appointments", "Provider"],
   maxConcurrentFiles: 10,
   processingTimeoutMs: 300000, // 5 minutes
 };
 
-export const DEFAULT_CONFIG: S3DiscoveryConfig = {
-  s3: DEFAULT_S3_CONFIG,
-  discovery: DEFAULT_DISCOVERY_CONFIG,
-  processing: DEFAULT_PROCESSING_CONFIG,
+export const DefaultConfig: S3DiscoveryConfig = {
+  s3: DefaultS3Config,
+  discovery: DefaultDiscoveryConfig,
+  processing: DefaultProcessingConfig,
 };

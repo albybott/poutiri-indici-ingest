@@ -4,7 +4,7 @@
  */
 
 import type { StagingExtractHandler } from "./types/transformer";
-import type { ExtractType } from "@/services/discovery/types/config";
+import type { ExtractType } from "@/db/schema";
 
 // Import transformation configurations
 import { patientsTransformations } from "./configs/patients-transformations";
@@ -91,6 +91,9 @@ export class StagingHandlerFactory {
       naturalKeys: ["patientId", "practiceId", "perOrgId"],
       transformations: patientsTransformations,
       sourceColumns: this.rawHandlerFactory.getHandler("Patient").columnMapping,
+      targetColumns: patientsTransformations.map(
+        (transformation) => transformation.targetColumn
+      ),
     };
     this.handlers.set("patient", patientHandler);
 
@@ -103,6 +106,9 @@ export class StagingHandlerFactory {
       transformations: appointmentsTransformations,
       sourceColumns:
         this.rawHandlerFactory.getHandler("Appointments").columnMapping,
+      targetColumns: appointmentsTransformations.map(
+        (transformation) => transformation.targetColumn
+      ),
     };
     this.handlers.set("appointments", appointmentsHandler);
 
@@ -115,6 +121,9 @@ export class StagingHandlerFactory {
       transformations: providersTransformations,
       sourceColumns:
         this.rawHandlerFactory.getHandler("Provider").columnMapping,
+      targetColumns: providersTransformations.map(
+        (transformation) => transformation.targetColumn
+      ),
     };
     this.handlers.set("provider", providerHandler);
 
@@ -127,6 +136,9 @@ export class StagingHandlerFactory {
       transformations: practiceInfoTransformations,
       sourceColumns:
         this.rawHandlerFactory.getHandler("PracticeInfo").columnMapping,
+      targetColumns: practiceInfoTransformations.map(
+        (transformation) => transformation.targetColumn
+      ),
     };
     this.handlers.set("practiceinfo", practiceInfoHandler);
 
@@ -139,6 +151,9 @@ export class StagingHandlerFactory {
       transformations: medicineTransformations,
       sourceColumns:
         this.rawHandlerFactory.getHandler("Medicine").columnMapping,
+      targetColumns: medicineTransformations.map(
+        (transformation) => transformation.targetColumn
+      ),
     };
     this.handlers.set("medicine", medicineHandler);
 
@@ -150,6 +165,9 @@ export class StagingHandlerFactory {
       naturalKeys: ["vaccineId", "practiceId", "perOrgId"],
       transformations: vaccineTransformations,
       sourceColumns: this.rawHandlerFactory.getHandler("Vaccine").columnMapping,
+      targetColumns: vaccineTransformations.map(
+        (transformation) => transformation.targetColumn
+      ),
     };
     this.handlers.set("vaccine", vaccineHandler);
 
@@ -162,6 +180,9 @@ export class StagingHandlerFactory {
       transformations: immunisationTransformations,
       sourceColumns:
         this.rawHandlerFactory.getHandler("Immunisation").columnMapping,
+      targetColumns: immunisationTransformations.map(
+        (transformation) => transformation.targetColumn
+      ),
     };
     this.handlers.set("immunisation", immunisationHandler);
 
@@ -174,6 +195,9 @@ export class StagingHandlerFactory {
       transformations: diagnosisTransformations,
       sourceColumns:
         this.rawHandlerFactory.getHandler("Diagnosis").columnMapping,
+      targetColumns: diagnosisTransformations.map(
+        (transformation) => transformation.targetColumn
+      ),
     };
     this.handlers.set("diagnosis", diagnosisHandler);
 
@@ -186,6 +210,9 @@ export class StagingHandlerFactory {
       transformations: allergiesTransformations,
       sourceColumns:
         this.rawHandlerFactory.getHandler("Allergies").columnMapping,
+      targetColumns: allergiesTransformations.map(
+        (transformation) => transformation.targetColumn
+      ),
     };
     this.handlers.set("allergies", allergiesHandler);
 
@@ -198,6 +225,9 @@ export class StagingHandlerFactory {
       transformations: appointmentMedicationsTransformations,
       sourceColumns: this.rawHandlerFactory.getHandler("AppointmentMedications")
         .columnMapping,
+      targetColumns: appointmentMedicationsTransformations.map(
+        (transformation) => transformation.targetColumn
+      ),
     };
     this.handlers.set("appointmentmedications", appointmentMedicationsHandler);
 
@@ -209,6 +239,9 @@ export class StagingHandlerFactory {
       naturalKeys: ["inboxFolderItemId", "practiceId", "perOrgId"],
       transformations: inboxTransformations,
       sourceColumns: this.rawHandlerFactory.getHandler("Inbox").columnMapping,
+      targetColumns: inboxTransformations.map(
+        (transformation) => transformation.targetColumn
+      ),
     };
     this.handlers.set("inbox", inboxHandler);
 
@@ -221,6 +254,9 @@ export class StagingHandlerFactory {
       transformations: inboxDetailTransformations,
       sourceColumns:
         this.rawHandlerFactory.getHandler("InboxDetail").columnMapping,
+      targetColumns: inboxDetailTransformations.map(
+        (transformation) => transformation.targetColumn
+      ),
     };
     this.handlers.set("inboxdetail", inboxDetailHandler);
 
@@ -233,6 +269,9 @@ export class StagingHandlerFactory {
       transformations: invoiceDetailTransformations,
       sourceColumns:
         this.rawHandlerFactory.getHandler("InvoiceDetail").columnMapping,
+      targetColumns: invoiceDetailTransformations.map(
+        (transformation) => transformation.targetColumn
+      ),
     };
     this.handlers.set("invoicedetail", invoiceDetailHandler);
 
@@ -245,6 +284,9 @@ export class StagingHandlerFactory {
       transformations: invoicesTransformations,
       sourceColumns:
         this.rawHandlerFactory.getHandler("Invoices").columnMapping,
+      targetColumns: invoicesTransformations.map(
+        (transformation) => transformation.targetColumn
+      ),
     };
     this.handlers.set("invoices", invoicesHandler);
 
@@ -257,6 +299,9 @@ export class StagingHandlerFactory {
       transformations: measurementsTransformations,
       sourceColumns:
         this.rawHandlerFactory.getHandler("Measurements").columnMapping,
+      targetColumns: measurementsTransformations.map(
+        (transformation) => transformation.targetColumn
+      ),
     };
     this.handlers.set("measurements", measurementsHandler);
 
@@ -269,6 +314,9 @@ export class StagingHandlerFactory {
       transformations: nextOfKinTransformations,
       sourceColumns:
         this.rawHandlerFactory.getHandler("NextOfKin").columnMapping,
+      targetColumns: nextOfKinTransformations.map(
+        (transformation) => transformation.targetColumn
+      ),
     };
     this.handlers.set("nextofkin", nextOfKinHandler);
 
@@ -281,6 +329,9 @@ export class StagingHandlerFactory {
       transformations: patientAlertsTransformations,
       sourceColumns:
         this.rawHandlerFactory.getHandler("PatientAlerts").columnMapping,
+      targetColumns: patientAlertsTransformations.map(
+        (transformation) => transformation.targetColumn
+      ),
     };
     this.handlers.set("patientalerts", patientAlertsHandler);
 
@@ -292,6 +343,9 @@ export class StagingHandlerFactory {
       naturalKeys: ["reCallId", "practiceId", "perOrgId"],
       transformations: recallsTransformations,
       sourceColumns: this.rawHandlerFactory.getHandler("Recalls").columnMapping,
+      targetColumns: recallsTransformations.map(
+        (transformation) => transformation.targetColumn
+      ),
     };
     this.handlers.set("recalls", recallsHandler);
   }

@@ -45,13 +45,14 @@ interface ValidationResult {
 }
 
 // Column name patterns for extracting from schema files
-const COLUMN_PATTERN =
+const ColumnPattern =
   /(\w+):\s*(text|integer|decimal|boolean|date|timestamp|uuid)\s*\(\s*"([^"]+)"/g;
-const TABLE_NAME_PATTERN =
+
+const TableNamePattern =
   /export\s+const\s+(\w+)\s*=\s*createTable\s*\(\s*"[^"]*\.(\w+)"/;
 
 // Pattern to extract column mapping from raw handler files
-const COLUMN_MAPPING_PATTERN = /"([^"]+)"/g;
+const ColumnMappingPattern = /"([^"]+)"/g;
 
 /**
  * Extract columns from a schema file
@@ -61,7 +62,7 @@ function extractColumnsFromSchema(filePath: string): SchemaColumn[] {
   const columns: SchemaColumn[] = [];
 
   let match;
-  while ((match = COLUMN_PATTERN.exec(content)) !== null) {
+  while ((match = ColumnPattern.exec(content)) !== null) {
     const [, columnName, columnType, dbColumnName] = match;
     columns.push({
       name: columnName,
@@ -78,7 +79,7 @@ function extractColumnsFromSchema(filePath: string): SchemaColumn[] {
  */
 function extractTableName(filePath: string): string | null {
   const content = fs.readFileSync(filePath, "utf-8");
-  const match = TABLE_NAME_PATTERN.exec(content);
+  const match = TableNamePattern.exec(content);
   return match ? match[2] : null; // Return the table name part
 }
 
@@ -123,6 +124,7 @@ function loadTransformationConfig(extractType: string): TransformationColumn[] {
 
 /**
  * Extract column mapping from raw handler file
+ * TODO: Use this to dynamically generate the column mapping for raw handlers
  */
 function extractColumnMappingFromHandler(extractType: string): string[] {
   try {

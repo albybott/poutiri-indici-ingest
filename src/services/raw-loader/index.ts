@@ -89,10 +89,10 @@ export type {
  * These provide sensible defaults for all configuration options
  */
 export {
-  DEFAULT_RAW_LOADER_CONFIG, // Default configuration for the raw loader service
-  DEFAULT_DATABASE_CONFIG, // Default database connection settings
-  DEFAULT_PROCESSING_CONFIG, // Default data processing behavior
-  DEFAULT_CSV_CONFIG, // Default CSV parsing configuration
+  DefaultRawLoaderConfig as DEFAULT_RAW_LOADER_CONFIG, // Default configuration for the raw loader service
+  DefaultDatabaseConfig as DEFAULT_DATABASE_CONFIG, // Default database connection settings
+  DefaultProcessingConfig as DEFAULT_PROCESSING_CONFIG, // Default data processing behavior
+  DefaultCsvConfig as DEFAULT_CSV_CONFIG, // Default CSV parsing configuration
 } from "./types/config";
 
 // ============================================================================

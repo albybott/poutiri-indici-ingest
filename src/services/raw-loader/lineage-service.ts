@@ -1,6 +1,6 @@
 import type { LineageData } from "./types/raw-loader";
 import type { DiscoveredFile } from "../../services/discovery/types/files";
-import { DEFAULT_S3_CONFIG } from "../../services/discovery/types/config";
+import { DefaultS3Config } from "../../services/discovery/types/config";
 
 /**
  * Lineage Service - manages data lineage tracking
@@ -14,7 +14,7 @@ export class LineageService {
     loadRunId: string
   ): Promise<LineageData> {
     const lineageData: LineageData = {
-      s3Bucket: process.env.S3_BUCKET_NAME || DEFAULT_S3_CONFIG.bucket,
+      s3Bucket: process.env.S3_BUCKET_NAME || DefaultS3Config.bucket,
       s3Key: fileMetadata.s3Key,
       s3VersionId: fileMetadata.s3VersionId,
       fileHash: fileMetadata.fileHash || "",

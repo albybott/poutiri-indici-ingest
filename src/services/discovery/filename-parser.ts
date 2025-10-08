@@ -3,7 +3,7 @@
  * Parses Indici CSV filenames to extract metadata
  */
 
-import type { ExtractType } from "./types/config";
+import type { ExtractType } from "@/db/schema";
 import type { ParsedFilename } from "./types/files";
 
 // Re-export ParsedFilename for convenience

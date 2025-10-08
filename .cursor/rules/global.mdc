@@ -32,10 +32,10 @@ Follow these rules when you write code:
 - Implement comprehensive error handling and logging
 - Write unit tests for all new functionality
 - Use dependency injection patterns for testability
-- Use camelCase for constants instead of UPPER_CASE\*\*
+- Use camelCase when naming constants instead of UPPER_CASE\*\*
 - Use descriptive names that clearly indicate the constant's purpose
-- Group related constants together
 - Add JSDoc comments for complex configuration objects
 - Consider using `as const` for immutability when appropriate
 - Use the gitignored scratch folder (/scratch) for temp files
 - Use path aliases (`@/`) for src instead of relative imports for cleaner code
+- use pnpm not npm when running commands
