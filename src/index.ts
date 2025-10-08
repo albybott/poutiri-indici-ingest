@@ -1,37 +1,37 @@
 import "dotenv/config";
 import {
   S3DiscoveryService,
-  type ExtractType,
   type ProcessingPlan,
-} from "./services/discovery/index.js";
+} from "./services/discovery/index";
 import {
   RawLoaderFactory,
   type LoadResult,
   type ProcessingPlanResult,
-} from "./services/raw-loader/index.js";
-import type { RawLoaderConfig } from "./services/raw-loader/types/config.js";
-import type { DiscoveredFile } from "./services/discovery/types/files.js";
+} from "./services/raw-loader/index";
+import type { RawLoaderConfig } from "./services/raw-loader/types/config";
+import type { DiscoveredFile } from "./services/discovery/types/files";
 import {
   StagingTransformerContainer,
   ColumnType,
   ValidationRuleBuilders,
   type StagingExtractHandler,
   StagingHandlerFactory,
-} from "@/services/staging-transformer/index.js";
-import { LoadRunService } from "@/services/raw-loader/load-run-service.js";
+} from "@/services/staging-transformer/index";
+import { LoadRunService } from "@/services/raw-loader/load-run-service";
+import type { ExtractType } from "@/db/schema";
 
 interface AppConfig {
   databaseUrl: string;
   s3Bucket?: string;
   awsRegion?: string;
-  testMode: boolean;
+  failOnError: boolean;
 }
 
 const config: AppConfig = {
-  databaseUrl: `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
-  s3Bucket: process.env.S3_BUCKET_NAME,
-  awsRegion: process.env.AWS_REGION,
-  testMode: process.env.NODE_ENV !== "production",
+  databaseUrl: `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`, // PostgreSQL connection string for the ETL database
+  s3Bucket: process.env.S3_BUCKET_NAME, // S3 bucket name containing Indici healthcare data extracts
+  awsRegion: process.env.AWS_REGION, // AWS region where the S3 bucket is located
+  failOnError: process.env.NODE_ENV !== "production", // Whether to exit on errors (true for development, false for production)
 };
 
 function init(): void {
@@ -39,10 +39,29 @@ function init(): void {
   console.log(`📡 Database URL: ${config.databaseUrl}`);
   console.log(`☁️  S3 Bucket: ${config.s3Bucket || "Not configured"}`);
   console.log(`🌍 AWS Region: ${config.awsRegion || "Not configured"}`);
-  console.log(`🧪 Test Mode: ${config.testMode ? "Enabled" : "Disabled"}`);
+  console.log(`🧪 Test Mode: ${config.failOnError ? "Enabled" : "Disabled"}`);
 }
 
-const testExtractTypes: ExtractType[] = ["Appointments"];
+const testExtractTypes: ExtractType[] = [
+  "Patient",
+  // "Appointments",
+  // "Provider",
+  // "PracticeInfo",
+  // "Invoices",
+  // "InvoiceDetail",
+  // "Immunisation",
+  // "Diagnosis",
+  // "Measurements",
+  // "Recalls",
+  // "Inbox",
+  // "InboxDetail",
+  // "Medicine",
+  // "NextOfKin",
+  // "Vaccine",
+  // "Allergies",
+  // "AppointmentMedications",
+  // "PatientAlerts",
+];
 
 async function testDiscoveryService(): Promise<ProcessingPlan | null> {
   try {
@@ -53,23 +72,23 @@ async function testDiscoveryService(): Promise<ProcessingPlan | null> {
 
     const discoveryService = new S3DiscoveryService({
       s3: {
-        bucket: config.s3Bucket,
-        region: config.awsRegion,
-        maxConcurrency: 1,
-        retryAttempts: 2,
+        bucket: config.s3Bucket, // S3 bucket to scan for data files
+        region: config.awsRegion, // AWS region for S3 operations
+        maxConcurrency: 1, // Maximum concurrent S3 requests for file operations
+        retryAttempts: 2, // Number of retry attempts for failed S3 operations
       },
       discovery: {
-        batchSize: 1,
-        maxFilesPerBatch: 1,
-        enableVersioning: true,
-        validateHashes: false,
-        cacheMetadata: false,
-        cacheTtlMinutes: 5,
+        batchSize: 1, // Number of files to process in each discovery batch
+        maxFilesPerBatch: 1, // Maximum files to include per processing batch
+        enableVersioning: true, // Whether to check for S3 object versions
+        validateHashes: false, // Whether to validate file integrity using hashes
+        cacheMetadata: false, // Whether to cache S3 metadata to reduce API calls
+        cacheTtlMinutes: 5, // Time-to-live for cached metadata in minutes
       },
       processing: {
-        priorityExtracts: testExtractTypes,
-        maxConcurrentFiles: 1,
-        processingTimeoutMs: 60000,
+        priorityExtracts: testExtractTypes, // List of extract types to prioritize during processing
+        maxConcurrentFiles: 1, // Maximum files to process concurrently
+        processingTimeoutMs: 60000, // Timeout for individual file processing operations
       },
     });
 
@@ -94,11 +113,6 @@ async function testDiscoveryService(): Promise<ProcessingPlan | null> {
       // Remove maxBatches limit to process all available batches
     });
 
-    if (!processingPlan || processingPlan.batches.length === 0) {
-      console.log("⚠️  No batches found in the processing plan");
-      return null;
-    }
-
     console.log(
       `📁 Found ${processingPlan.batches.length} batches with ${processingPlan.totalFiles} total files for extraction:\n${processingPlan.batches
         .flatMap((b) => b.files)
@@ -117,6 +131,10 @@ async function testDiscoveryService(): Promise<ProcessingPlan | null> {
       });
     }
 
+    // Don't exit in test mode, just log the error
+    if (config.failOnError) {
+      throw error;
+    }
     return null;
   }
 }
@@ -150,34 +168,35 @@ async function testRawLoaderService(
     const rawLoaderConfig: RawLoaderConfig = {
       // Database configuration
       database: {
-        poolSize: 10,
-        timeoutMs: 30000,
-        maxConnections: 20,
+        poolSize: 10, // Number of database connections to maintain in the pool
+        timeoutMs: 30000, // Timeout for database operations in milliseconds
+        maxConnections: 20, // Maximum number of database connections allowed
       },
       // Processing configuration
       processing: {
-        batchSize: 1000,
-        maxConcurrentFiles: 5,
-        maxMemoryMB: 512,
-        enableStreaming: true,
-        bufferSizeMB: 16,
-        continueOnError: true,
+        batchSize: 1000, // Batch size raw records to be loaded into the database
+        maxConcurrentFiles: 5, // Maximum number of files to process concurrently
+        maxMemoryMB: 512, // Maximum memory usage for the raw loader
+        enableStreaming: true, // Whether to enable streaming for the raw loader
+        bufferSizeMB: 16, // Buffer size for the raw loader
+        continueOnError: true, // Whether to continue processing other batches when one fails
       },
       // Error handling configuration
       errorHandling: {
-        maxRetries: 3,
-        retryDelayMs: 1000,
-        continueOnError: true,
-        logErrors: true,
-        errorThreshold: 0.1,
+        maxRetries: 3, // Maximum number of retries for failed batches
+        retryDelayMs: 1000, // Delay between retries for failed batches
+        continueOnError: true, // Whether to continue processing other batches when one fails
+        logErrors: true, // Whether to log errors
+        errorThreshold: 0.1, // Error percentage threshold for the raw loader, if the error rate exceeds this threshold, the raw loader will stop processing
       },
       // Monitoring configuration
+      // TODO: Use this monitoring service in all of the stages
       monitoring: {
-        enableMetrics: true,
-        logLevel: "info",
-        metricsInterval: 30000,
-        enableProgressTracking: true,
-        progressUpdateInterval: 5000,
+        enableMetrics: true, // Whether to collect and report performance metrics
+        logLevel: "info", // Logging level for the raw loader (debug, info, warn, error)
+        metricsInterval: 30000, // Interval for collecting metrics in milliseconds
+        enableProgressTracking: true, // Whether to enable progress tracking for the raw loader
+        progressUpdateInterval: 5000, // Interval for progress tracking updates in milliseconds
       },
     };
 
@@ -203,9 +222,9 @@ async function testRawLoaderService(
       processingPlan.batches,
       loadRunId,
       {
-        batchSize: 500,
-        continueOnError: true,
-        maxConcurrentFiles: 1,
+        batchSize: 500, // Number of files to process in each batch during loading
+        continueOnError: true, // Whether to continue processing remaining batches if one fails
+        maxConcurrentFiles: 1, // Maximum number of files to process concurrently during loading
       }
     );
 
@@ -276,7 +295,7 @@ async function testRawLoaderService(
     }
 
     // Don't exit in test mode, just log the error
-    if (!config.testMode) {
+    if (config.failOnError) {
       throw error;
     }
     return null;
@@ -285,7 +304,7 @@ async function testRawLoaderService(
 
 async function testStagingTransformerService(
   loadRunId: string
-): Promise<{ stagingRunId: string }> {
+): Promise<{ stagingRunIds: string[] }> {
   console.log(
     "\n🔄 Testing Staging Transformer Service (raw.* → stg.* tables)..."
   );
@@ -294,29 +313,29 @@ async function testStagingTransformerService(
     // Create staging transformer
     const transformer = StagingTransformerContainer.create({
       transformation: {
-        batchSize: 1000,
-        maxConcurrentTransforms: 3,
-        enableTypeCoercion: true,
-        dateFormat: "YYYY-MM-DD",
-        timestampFormat: "YYYY-MM-DD HH:mm:ss",
-        decimalPrecision: 2,
-        trimStrings: true,
-        nullifyEmptyStrings: true,
+        batchSize: 1000, // Number of records to process in each transformation batch
+        maxConcurrentTransforms: 3, // Maximum number of concurrent transformation operations
+        enableTypeCoercion: true, // Whether to automatically convert data types during transformation
+        dateFormat: "YYYY-MM-DD", // Expected format for date fields in the data
+        timestampFormat: "YYYY-MM-DD HH:mm:ss", // Expected format for timestamp fields in the data
+        decimalPrecision: 2, // Number of decimal places to maintain for numeric values
+        trimStrings: true, // Whether to remove leading/trailing whitespace from string values
+        nullifyEmptyStrings: true, // Whether to convert empty strings to null values
       },
       validation: {
-        enableValidation: true,
-        failOnValidationError: false,
-        maxErrorsPerBatch: 100,
-        maxTotalErrors: 1000,
-        rejectInvalidRows: true,
-        trackRejectionReasons: true,
+        enableValidation: true, // Whether to validate data during transformation
+        failOnValidationError: false, // Whether to stop processing when validation errors occur
+        maxErrorsPerBatch: 100, // Maximum validation errors allowed per batch before stopping
+        maxTotalErrors: 1000, // Maximum total validation errors allowed for the entire process
+        rejectInvalidRows: true, // Whether to reject and track rows that fail validation
+        trackRejectionReasons: true, // Whether to capture and report reasons for row rejections
       },
       errorHandling: {
-        continueOnError: true,
-        maxRetries: 3,
-        retryDelayMs: 1000,
-        captureRawRow: true,
-        enableDetailedLogging: true,
+        continueOnError: true, // Whether to continue processing other batches when one fails
+        maxRetries: 3, // Maximum number of retry attempts for failed transformations
+        retryDelayMs: 1000, // Delay between retry attempts in milliseconds
+        captureRawRow: true, // Whether to capture the original raw data when errors occur
+        enableDetailedLogging: true, // Whether to enable verbose error logging
       },
     });
 
@@ -331,90 +350,138 @@ async function testStagingTransformerService(
       throw new Error("Staging transformer service is unhealthy");
     }
 
-    // Get the handler for the extract type we're testing
+    // Get the handler factory
     const handlerFactory = new StagingHandlerFactory();
-    const extractType = testExtractTypes[0]; // Use the first extract type being tested
-    const handler = await handlerFactory.getHandler(extractType);
+    const stagingRunIds: string[] = [];
+    let totalRowsTransformed = 0;
+    let totalRowsRejected = 0;
 
-    console.log(
-      `🔄 Transforming ${extractType} data from load run: ${loadRunId}`
-    );
+    // Process each extract type
+    for (const extractType of testExtractTypes) {
+      try {
+        const handler = await handlerFactory.getHandler(extractType);
 
-    // Transform the data
-    const result = await transformer.transformExtract(handler, {
-      loadRunId,
-      upsertMode: true,
-      conflictColumns: handler.naturalKeys,
-    });
-
-    // Display results
-    console.log("\n📊 Transformation Results:");
-    console.log(`  Total rows read:        ${result.totalRowsRead}`);
-    console.log(`  Successfully transformed: ${result.totalRowsTransformed}`);
-    console.log(`  Rejected rows:          ${result.totalRowsRejected}`);
-    console.log(`  Successful batches:     ${result.successfulBatches}`);
-    console.log(`  Failed batches:         ${result.failedBatches}`);
-    console.log(`  Duration:               ${result.durationMs}ms`);
-    console.log(
-      `  Throughput:             ${Math.round(result.rowsPerSecond)} rows/sec`
-    );
-    console.log(
-      `  Memory usage:           ${result.memoryUsageMB.toFixed(2)} MB`
-    );
-    console.log(`  Errors:                 ${result.errors.length}`);
-    console.log(`  Warnings:               ${result.warnings.length}`);
-
-    // Show rejection summary if there are rejections
-    if (result.totalRowsRejected > 0) {
-      console.log("\n⚠️  Rejection Summary:");
-      const rejectionRate =
-        (result.totalRowsRejected / result.totalRowsRead) * 100;
-      console.log(`  Rejection rate:         ${rejectionRate.toFixed(2)}%`);
-
-      // Show top rejection reasons
-      const reasonCounts = new Map<string, number>();
-      for (const rejection of result.rejections) {
-        reasonCounts.set(
-          rejection.rejectionReason,
-          (reasonCounts.get(rejection.rejectionReason) || 0) + 1
+        console.log(
+          `🔄 Transforming ${extractType} data from load run: ${loadRunId}`
         );
-      }
 
-      console.log("\n  Top rejection reasons:");
-      Array.from(reasonCounts.entries())
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 5)
-        .forEach(([reason, count]) => {
-          console.log(`    - ${reason}: ${count} rows`);
+        // Transform the data
+        const result = await transformer.transformExtract(handler, {
+          loadRunId, // ID of the load run this transformation belongs to
+          upsertMode: true, // Whether to use upsert (insert/update) mode for staging tables
+          // conflictColumns will be automatically converted from handler.naturalKeys
+          forceReprocess: true, // Whether to force reprocessing even if data hasn't changed
+          batchSize: 100, // Reduce batch size to test if query length is the issue
         });
+
+        stagingRunIds.push(result.stagingRunId);
+        totalRowsTransformed += result.totalRowsTransformed;
+        totalRowsRejected += result.totalRowsRejected;
+
+        // Display results for this extract type
+        console.log(`\n📊 ${extractType} Transformation Results:`);
+        console.log(`  Total rows read:        ${result.totalRowsRead}`);
+        console.log(
+          `  Successfully transformed: ${result.totalRowsTransformed}`
+        );
+        console.log(`  Rejected rows:          ${result.totalRowsRejected}`);
+        console.log(`  Successful batches:     ${result.successfulBatches}`);
+        console.log(`  Failed batches:         ${result.failedBatches}`);
+        console.log(`  Duration:               ${result.durationMs}ms`);
+        console.log(
+          `  Throughput:             ${Math.round(result.rowsPerSecond)} rows/sec`
+        );
+        console.log(
+          `  Memory usage:           ${result.memoryUsageMB.toFixed(2)} MB`
+        );
+        console.log(`  Errors:                 ${result.errors.length}`);
+        console.log(`  Warnings:               ${result.warnings.length}`);
+
+        // Show rejection summary if there are rejections
+        if (result.totalRowsRejected > 0) {
+          console.log("\n⚠️  Rejection Summary:");
+          const rejectionRate =
+            (result.totalRowsRejected / result.totalRowsRead) * 100;
+          console.log(`  Rejection rate:         ${rejectionRate.toFixed(2)}%`);
+
+          // Show top rejection reasons
+          const reasonCounts = new Map<string, number>();
+          for (const rejection of result.rejections) {
+            reasonCounts.set(
+              rejection.rejectionReason,
+              (reasonCounts.get(rejection.rejectionReason) || 0) + 1
+            );
+          }
+
+          console.log("\n  Top rejection reasons:");
+          Array.from(reasonCounts.entries())
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5)
+            .forEach(([reason, count]) => {
+              console.log(`    - ${reason}: ${count} rows`);
+            });
+        }
+
+        // Show sample errors if any
+        if (result.errors.length > 0) {
+          console.log("\n❌ Sample Errors (first 3):");
+          result.errors.slice(0, 3).forEach((error, idx) => {
+            console.log(`  ${idx + 1}. ${error.errorType}: ${error.message}`);
+          });
+        }
+
+        // Success message for this extract type
+        if (result.totalRowsTransformed > 0) {
+          console.log(
+            `\n✅ ${extractType} transformation completed successfully!`
+          );
+          console.log(
+            `   ${result.totalRowsTransformed} rows now in ${handler.targetTable} table`
+          );
+        } else {
+          console.log(
+            `\n⚠️  No rows were transformed for ${extractType} - check raw data availability`
+          );
+        }
+
+        console.log(`\n${"=".repeat(80)}\n`); // Separator between extract types
+      } catch (error) {
+        console.error(`❌ Failed to transform ${extractType}:`, error);
+
+        if (error instanceof Error) {
+          console.error("🔍 Error details:", {
+            message: error.message,
+            stack: error.stack?.split("\n").slice(0, 3).join("\n"),
+          });
+        }
+
+        // Continue with other extract types even if one fails
+        console.log(`\n⏭️  Continuing with next extract type...\n`);
+      }
     }
 
-    // Show sample errors if any
-    if (result.errors.length > 0) {
-      console.log("\n❌ Sample Errors (first 3):");
-      result.errors.slice(0, 3).forEach((error, idx) => {
-        console.log(`  ${idx + 1}. ${error.errorType}: ${error.message}`);
-      });
-    }
+    // Overall summary
+    console.log("\n📊 Overall Staging Transformation Summary:");
+    console.log(`  Total extract types processed: ${testExtractTypes.length}`);
+    console.log(`  Total rows transformed: ${totalRowsTransformed}`);
+    console.log(`  Total rows rejected: ${totalRowsRejected}`);
+    console.log(`  Staging run IDs: ${stagingRunIds.join(", ")}`);
 
-    // Success message
-    if (result.totalRowsTransformed > 0) {
+    if (totalRowsTransformed > 0) {
       console.log(
         "\n✅ Staging Transformer Service tests completed successfully!"
       );
-      console.log(
-        `   ${result.totalRowsTransformed} rows now in ${handler.targetTable} table`
-      );
+      console.log(`   All ${testExtractTypes.length} extract types processed`);
     } else {
       console.log(
-        "\n⚠️  No rows were transformed - check raw data availability"
+        "\n⚠️  No rows were transformed - check raw data availability for all extract types"
       );
     }
 
     // Close connections
     await transformer.close();
 
-    return { stagingRunId: result.stagingRunId };
+    return { stagingRunIds };
   } catch (error) {
     console.error("❌ Staging Transformer Service test failed:", error);
 
@@ -426,7 +493,10 @@ async function testStagingTransformerService(
     }
 
     // In test mode, re-throw the error to fail the pipeline
-    throw error;
+    if (config.failOnError) {
+      throw error;
+    }
+    return { stagingRunIds: [] };
   }
 }
 
@@ -534,7 +604,7 @@ async function testCoreMergerService(stagingRunId: string): Promise<void> {
     }
 
     // Don't exit in test mode, just log the error
-    if (!config.testMode) {
+    if (config.failOnError) {
       throw error;
     }
   }
@@ -546,23 +616,25 @@ async function main(): Promise<void> {
     init();
 
     const processingPlan = await testDiscoveryService();
-    if (!processingPlan) {
-      throw new Error("There was an error with the discovery service");
-    }
 
-    const loadRunId = await testRawLoaderService(processingPlan);
-    if (!loadRunId) {
-      throw new Error("There was an error with the raw loader service");
-    }
+    // const loadRunId = await testRawLoaderService(processingPlan);
+    // if (!loadRunId) {
+    //   throw new Error("There was an error with the raw loader service");
+    // }
 
-    const { stagingRunId } = await testStagingTransformerService(loadRunId);
-    if (!stagingRunId) {
-      throw new Error(
-        "There was an error with the staging transformer service"
-      );
-    }
+    // const { stagingRunIds } = await testStagingTransformerService(loadRunId);
+    // if (!stagingRunIds || stagingRunIds.length === 0) {
+    //   throw new Error(
+    //     "There was an error with the staging transformer service"
+    //   );
+    // }
 
-    await testCoreMergerService(stagingRunId);
+    // console.log(
+    //   `✅ Staging transformation completed for ${stagingRunIds.length} extract types`
+    // );
+
+    // Note: Core merger service is commented out as requested
+    // await testCoreMergerService(stagingRunIds);
 
     console.log("✅ Application completed successfully!");
   } catch (error) {
