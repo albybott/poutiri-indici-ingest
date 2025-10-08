@@ -5,8 +5,6 @@ import type {
   LoadErrorType,
   InsertBatch,
 } from "@/services/shared/types";
-import type { FileBatch } from "../../discovery/types/files";
-import type { ProcessingPlan } from "../../discovery/types/discovery";
 
 /**
  * Raw Loader Service Types
