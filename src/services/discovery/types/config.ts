@@ -60,6 +60,7 @@ export const DefaultDiscoveryConfig: DiscoveryConfig = {
 };
 
 export const DefaultProcessingConfig: ProcessingConfig = {
+  // TODO: Update this to use the actual priority extract types
   priorityExtracts: ["Patient", "Appointments", "Provider"],
   maxConcurrentFiles: 10,
   processingTimeoutMs: 300000, // 5 minutes

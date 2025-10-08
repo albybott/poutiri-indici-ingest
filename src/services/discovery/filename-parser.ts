@@ -3,7 +3,7 @@
  * Parses Indici CSV filenames to extract metadata
  */
 
-import type { ExtractType } from "@/db/schema";
+import { extractTypes, type ExtractType } from "@/db/schema";
 import type { ParsedFilename } from "./types/files";
 
 // Re-export ParsedFilename for convenience
@@ -14,12 +14,7 @@ export class FilenameParser {
    * Parse filename and extract metadata
    */
   parseFilename(filename: string): ParsedFilename | null {
-    try {
-      return FilenameParser.parse(filename);
-    } catch (error) {
-      console.warn(`Failed to parse filename ${filename}:`, error);
-      return null;
-    }
+    return FilenameParser.parse(filename);
   }
 
   /**
@@ -72,6 +67,12 @@ export class FilenameParser {
 
     if (practiceId !== "535") {
       throw new Error(`Invalid PracticeID: ${practiceId}. Expected: 535`);
+    }
+
+    if (!extractTypes[extractType as ExtractType]) {
+      throw new Error(
+        `Invalid ExtractType: ${extractType}. Expected: ${Object.values(extractTypes).join(", ")}`
+      );
     }
 
     const dateFrom = this.parseDateString(dateFromStr);

@@ -94,6 +94,15 @@ export class S3DiscoveryService {
 
     try {
       const files = await this.fileDiscovery.discoverFiles(options);
+      if (files.length === 0) {
+        throw new Error(
+          "No files found in the discovery service for the given extract types",
+          {
+            cause: options?.extractTypes,
+          }
+        );
+      }
+
       const batches = await this.fileDiscovery.groupByBatch(files);
       const processingPlan = await this.batchProcessor.createProcessingPlan({
         mode: "latest",
