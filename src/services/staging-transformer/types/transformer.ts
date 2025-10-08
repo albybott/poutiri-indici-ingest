@@ -2,6 +2,7 @@
  * Staging Transformer Core Types
  */
 
+import type { ExtractType } from "@/services/discovery";
 import type { LoadError, LoadWarning } from "@/services/shared/types";
 
 /**
@@ -124,7 +125,7 @@ export enum ValidationType {
  * Extract handler configuration for staging
  */
 export interface StagingExtractHandler {
-  extractType: string; // Extract type (e.g., "Patient")
+  extractType: ExtractType; // Extract type (e.g., "Patient")
   sourceTable: string; // Raw table name
   targetTable: string; // Staging table name
   transformations: ColumnTransformation[]; // Column transformations

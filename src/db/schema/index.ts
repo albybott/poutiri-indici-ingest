@@ -56,30 +56,6 @@ export * from "./core/facts";
 export * from "./etl/audit";
 // export * from "./etl/health";
 
-// Extract types enum for type safety - matches filename format from S3
-export const EXTRACT_TYPES = {
-  PATIENT: "Patient",
-  APPOINTMENTS: "Appointments",
-  IMMUNISATION: "Immunisation",
-  INVOICES: "Invoices",
-  INVOICE_DETAIL: "InvoiceDetail",
-  PROVIDER: "Provider",
-  PRACTICE_INFO: "PracticeInfo",
-  MEASUREMENTS: "Measurements",
-  DIAGNOSIS: "Diagnosis",
-  RECALLS: "Recalls",
-  INBOX: "Inbox",
-  INBOX_DETAIL: "InboxDetail",
-  MEDICINE: "Medicine",
-  NEXT_OF_KIN: "NextOfKin",
-  VACCINE: "Vaccine",
-  ALLERGIES: "Allergies",
-  APPOINTMENT_MEDICATIONS: "AppointmentMedications",
-  PATIENT_ALERTS: "PatientAlerts",
-} as const;
-
-export type ExtractType = (typeof EXTRACT_TYPES)[keyof typeof EXTRACT_TYPES];
-
 // Schema names for easy reference
 export const SCHEMA_NAMES = {
   RAW: "raw",
