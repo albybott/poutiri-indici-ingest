@@ -16,8 +16,6 @@ import type {
  * Controls batch processing, validation, and error handling behavior
  */
 export interface RawLoadOptions {
-  /** Type of data extract being processed (e.g., 'patients', 'appointments') */
-  extractType: string;
   /** Unique identifier for this load run session */
   loadRunId: string;
   /** Foreign key to etl.load_run_files table for audit trail */

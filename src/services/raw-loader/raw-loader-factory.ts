@@ -13,6 +13,7 @@ import { RawTableLoader } from "./raw-table-loader";
 import { ExtractHandlerFactory } from "./extract-handler-factory";
 import { IdempotencyService } from "./idempotency-service";
 import { RawLoaderService } from "./raw-loader-service";
+import { Logger } from "../shared/utils/logger";
 
 /**
  * Raw Loader Factory - Dependency Injection Factory
@@ -45,6 +46,7 @@ export class RawLoaderFactory {
     const tableLoader = new RawTableLoader(config.database, errorHandler);
     const handlerFactory = new ExtractHandlerFactory();
     const idempotencyService = new IdempotencyService();
+    const logger = new Logger(config.logging);
 
     return new RawLoaderService(
       tableLoader,
@@ -53,7 +55,8 @@ export class RawLoaderFactory {
       errorHandler,
       monitor,
       fileSystemAdapter,
-      config
+      config,
+      logger
     );
   }
 

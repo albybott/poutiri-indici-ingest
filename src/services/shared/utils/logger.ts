@@ -1,9 +1,11 @@
-export enum LogLevel {
-  DEBUG = "debug",
-  INFO = "info",
-  WARN = "warn",
-  ERROR = "error",
-}
+export const LogLevels = {
+  DEBUG: "debug",
+  INFO: "info",
+  WARN: "warn",
+  ERROR: "error",
+};
+
+export type LogLevel = (typeof LogLevels)[keyof typeof LogLevels];
 
 export interface LoggerOptions {
   level: LogLevel;
@@ -20,7 +22,7 @@ export class Logger {
   }
 
   private shouldLog(level: LogLevel): boolean {
-    const levels = Object.values(LogLevel);
+    const levels = Object.values(LogLevels);
     const currentIndex = levels.indexOf(this.level);
     const messageIndex = levels.indexOf(level);
     return messageIndex >= currentIndex;
@@ -32,36 +34,36 @@ export class Logger {
   }
 
   debug(message: string, metadata?: Record<string, unknown>): void {
-    if (this.shouldLog(LogLevel.DEBUG)) {
+    if (this.shouldLog(LogLevels.DEBUG)) {
       const metadataStr = metadata ? ` ${JSON.stringify(metadata)}` : "";
-      console.debug(this.formatMessage(LogLevel.DEBUG, message) + metadataStr);
+      console.debug(this.formatMessage(LogLevels.DEBUG, message) + metadataStr);
     }
   }
 
   info(message: string, metadata?: Record<string, unknown>): void {
-    if (this.shouldLog(LogLevel.INFO)) {
+    if (this.shouldLog(LogLevels.INFO)) {
       const metadataStr = metadata ? ` ${JSON.stringify(metadata)}` : "";
-      console.info(this.formatMessage(LogLevel.INFO, message) + metadataStr);
+      console.info(this.formatMessage(LogLevels.INFO, message) + metadataStr);
     }
   }
 
   warn(message: string, metadata?: Record<string, unknown>): void {
-    if (this.shouldLog(LogLevel.WARN)) {
+    if (this.shouldLog(LogLevels.WARN)) {
       const metadataStr = metadata ? ` ${JSON.stringify(metadata)}` : "";
-      console.warn(this.formatMessage(LogLevel.WARN, message) + metadataStr);
+      console.warn(this.formatMessage(LogLevels.WARN, message) + metadataStr);
     }
   }
 
   error(message: string, metadata?: Record<string, unknown>): void {
-    if (this.shouldLog(LogLevel.ERROR)) {
+    if (this.shouldLog(LogLevels.ERROR)) {
       const metadataStr = metadata ? ` ${JSON.stringify(metadata)}` : "";
-      console.error(this.formatMessage(LogLevel.ERROR, message) + metadataStr);
+      console.error(this.formatMessage(LogLevels.ERROR, message) + metadataStr);
     }
   }
 }
 
 // Default logger instance
 export const logger = new Logger({
-  level: LogLevel.INFO,
+  level: LogLevels.INFO,
   prefix: "[Core-Merger]",
 });

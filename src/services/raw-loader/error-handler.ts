@@ -78,10 +78,10 @@ export class ErrorHandler {
    * Log error for monitoring
    */
   async logError(error: LoadError): Promise<void> {
-    const logLevel = this.determineLogLevel(error);
+    const logType = this.determineErrorLogType(error); // error, warn, info
     const logMessage = this.formatErrorMessage(error);
 
-    console[logLevel](logMessage, {
+    console[logType](logMessage, {
       errorType: error.errorType,
       message: error.message,
       timestamp: error.timestamp,
@@ -181,7 +181,7 @@ export class ErrorHandler {
     }
   }
 
-  private determineLogLevel(error: LoadError): "error" | "warn" | "info" {
+  private determineErrorLogType(error: LoadError): "error" | "warn" | "info" {
     switch (error.errorType) {
       case LoadErrorType.CSV_PARSE_ERROR:
       case LoadErrorType.VALIDATION_ERROR:

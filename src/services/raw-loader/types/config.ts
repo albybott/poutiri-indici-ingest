@@ -2,6 +2,12 @@
  * Raw Loader Configuration Types
  */
 
+import {
+  LogLevels,
+  type LoggerOptions,
+  type LogLevel,
+} from "@/services/shared/utils/logger";
+
 // Indici CSV Format Constants
 export const IndiciCsvSeparators = {
   fieldSeparator: "|^^|",
@@ -13,6 +19,7 @@ export interface RawLoaderConfig {
   processing: ProcessingConfig;
   errorHandling: ErrorHandlingConfig;
   monitoring: MonitoringConfig;
+  logging: LoggerOptions;
 }
 
 export interface DatabaseConfig {
@@ -30,6 +37,7 @@ export interface ProcessingConfig {
   enableStreaming: boolean;
   bufferSizeMB: number;
   continueOnError?: boolean;
+  forceReprocess?: boolean;
 }
 
 export interface CSVConfig {
@@ -50,7 +58,8 @@ export interface ErrorHandlingConfig {
 
 export interface MonitoringConfig {
   enableMetrics: boolean;
-  logLevel: string;
+  // TODO: Do we need this? as we use the logger now?
+  logLevel: LogLevel;
   metricsInterval: number;
   enableProgressTracking?: boolean;
   progressUpdateInterval?: number;
@@ -82,10 +91,14 @@ export const DefaultRawLoaderConfig: RawLoaderConfig = {
   },
   monitoring: {
     enableMetrics: true,
-    logLevel: "info",
+    logLevel: LogLevels.INFO,
     metricsInterval: 30000,
     enableProgressTracking: true,
     progressUpdateInterval: 5000,
+  },
+  logging: {
+    level: LogLevels.INFO,
+    prefix: "[RawLoader]",
   },
 };
 

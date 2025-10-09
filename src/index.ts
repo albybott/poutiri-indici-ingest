@@ -19,6 +19,7 @@ import {
 } from "@/services/staging-transformer/index";
 import { LoadRunService } from "@/services/raw-loader/load-run-service";
 import type { ExtractType } from "@/db/schema";
+import { LogLevels } from "./services/shared/utils/logger";
 
 interface AppConfig {
   databaseUrl: string;
@@ -180,8 +181,9 @@ async function testRawLoaderService(
         enableStreaming: true, // Whether to enable streaming for the raw loader
         bufferSizeMB: 16, // Buffer size for the raw loader
         continueOnError: true, // Whether to continue processing other batches when one fails
+        forceReprocess: false, // This will force a reprocessing of the file if already processed (by IdempotencyService)
       },
-      // Error handling configuration
+      // TODO: Ensure this is used in all stages - Error handling configuration
       errorHandling: {
         maxRetries: 3, // Maximum number of retries for failed batches
         retryDelayMs: 1000, // Delay between retries for failed batches
@@ -197,6 +199,10 @@ async function testRawLoaderService(
         metricsInterval: 30000, // Interval for collecting metrics in milliseconds
         enableProgressTracking: true, // Whether to enable progress tracking for the raw loader
         progressUpdateInterval: 5000, // Interval for progress tracking updates in milliseconds
+      },
+      logging: {
+        level: LogLevels.INFO, // Logging level for the raw loader (debug, info, warn, error)
+        prefix: "[RawLoader]",
       },
     };
 
@@ -616,11 +622,16 @@ async function main(): Promise<void> {
     init();
 
     const processingPlan = await testDiscoveryService();
+    if (!processingPlan) {
+      throw new Error(
+        "We did not get a processing plan from the discovery service"
+      );
+    }
 
-    // const loadRunId = await testRawLoaderService(processingPlan);
-    // if (!loadRunId) {
-    //   throw new Error("There was an error with the raw loader service");
-    // }
+    const loadRunId = await testRawLoaderService(processingPlan);
+    if (!loadRunId) {
+      throw new Error("There was an error with the raw loader service");
+    }
 
     // const { stagingRunIds } = await testStagingTransformerService(loadRunId);
     // if (!stagingRunIds || stagingRunIds.length === 0) {
@@ -636,10 +647,11 @@ async function main(): Promise<void> {
     // Note: Core merger service is commented out as requested
     // await testCoreMergerService(stagingRunIds);
 
-    console.log("✅ Application completed successfully!");
+    console.log("✅ Load completed successfully");
+    process.exit(0);
   } catch (error) {
-    console.error("❌ Failed to start application:", error);
-    process.exit(1);
+    console.error("❌ Failed to complete load:", error);
+    throw error;
   }
 }
 

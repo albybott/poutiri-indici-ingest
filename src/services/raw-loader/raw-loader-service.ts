@@ -26,6 +26,7 @@ import { IdempotencyService } from "./idempotency-service";
 import { LineageService } from "./lineage-service";
 import { ErrorHandler } from "./error-handler";
 import { LoadMonitor } from "./load-monitor";
+import type { Logger } from "../shared/utils/logger";
 
 /**
  * Main Raw Loader Service - orchestrates the entire loading process
@@ -37,6 +38,7 @@ export class RawLoaderService {
   private errorHandler: ErrorHandler;
   private monitor: LoadMonitor;
   private fileSystemAdapter: FileSystemAdapter;
+  private logger: Logger;
   public tableLoader: RawTableLoader;
   public handlerFactory: ExtractHandlerFactory;
 
@@ -49,7 +51,8 @@ export class RawLoaderService {
     errorHandler: ErrorHandler,
     monitor: LoadMonitor,
     fileSystemAdapter: FileSystemAdapter,
-    config: RawLoaderConfig
+    config: RawLoaderConfig,
+    logger: Logger
   ) {
     this.config = config;
     this.tableLoader = tableLoader;
@@ -59,6 +62,7 @@ export class RawLoaderService {
     this.errorHandler = errorHandler;
     this.monitor = monitor;
     this.fileSystemAdapter = fileSystemAdapter;
+    this.logger = logger;
   }
 
   /**
@@ -67,37 +71,46 @@ export class RawLoaderService {
   async loadFile(
     file: DiscoveredFile,
     loadRunId: string,
-    options?: Partial<RawLoadOptions>
+    options: Partial<RawLoadOptions>
   ): Promise<LoadResult> {
     // Build load options ensuring defaults are set if not provided
-    const loadOptions = this.buildLoadOptions(loadRunId, options);
+    const loadOptions = this.applyLoadOptionDefaults(loadRunId, options);
+
+    this.logger.warn(
+      `✅ File already processed, forcing reprocessing: ${file.s3Key}`
+    );
 
     try {
       // Check idempotency, this is to ensure we don't load the same file multiple times
       const idempotencyCheck =
         await this.idempotencyService.checkFileProcessed(file);
 
-      if (idempotencyCheck.isProcessed && loadOptions.skipValidation !== true) {
-        console.log(`✅ File already processed, skipping: ${file.s3Key}`);
-        // If the file has already been loaded, return the previous result
-        return {
-          totalRows: idempotencyCheck.rowCount || 0,
-          successfulBatches: 1,
-          failedBatches: 0,
-          errors: [],
-          warnings: [
-            {
-              message: `File was already processed in load run ${idempotencyCheck.loadRunId}`,
-              fileKey: file.s3Key,
-              timestamp: new Date(),
-              severity: "low",
-            },
-          ],
-          durationMs: 0,
-          bytesProcessed: 0,
-          rowsPerSecond: 0,
-          memoryUsageMB: 0,
-        };
+      if (idempotencyCheck.isProcessed) {
+        if (this.config.processing.forceReprocess) {
+          this.logger.warn(
+            `✅ File already processed, forcing reprocessing: ${file.s3Key}`
+          );
+        } else {
+          console.log(`✅ File already processed, skipping: ${file.s3Key}`);
+          return {
+            totalRows: idempotencyCheck.rowCount || 0,
+            successfulBatches: 1,
+            failedBatches: 0,
+            errors: [],
+            warnings: [
+              {
+                message: `File was already processed in load run ${idempotencyCheck.loadRunId}`,
+                fileKey: file.s3Key,
+                timestamp: new Date(),
+                severity: "low",
+              },
+            ],
+            durationMs: 0,
+            bytesProcessed: 0,
+            rowsPerSecond: 0,
+            memoryUsageMB: 0,
+          };
+        }
       }
 
       // Mark file as being processed and get the loadRunFileId for foreign key relationships
@@ -177,7 +190,7 @@ export class RawLoaderService {
     options?: Partial<RawLoadOptions>
   ): Promise<LoadResult[]> {
     // Build load options ensuring defaults are set if not provided
-    const loadOptions = this.buildLoadOptions(loadRunId, options);
+    const loadOptions = this.applyLoadOptionDefaults(loadRunId, options);
 
     // Get max concurrent files from options or config
     const maxConcurrent =
@@ -289,7 +302,7 @@ export class RawLoaderService {
     options?: Partial<RawLoadOptions>
   ): Promise<ProcessingPlanResult> {
     // Build load options ensuring defaults are set if not provided
-    const loadOptions = this.buildLoadOptions(loadRunId, options);
+    const loadOptions = this.applyLoadOptionDefaults(loadRunId, options);
 
     const startedAt = new Date();
     const batchResults: ProcessingBatchResult[] = [];
@@ -474,29 +487,6 @@ export class RawLoaderService {
   }
 
   /**
-   * Load files from a complete processing plan
-   * Delegates to loadBatches with the plan's batches, potentially using plan metadata for optimization
-   */
-  async loadProcessingPlan(
-    processingPlan: ProcessingPlan,
-    loadRunId: string,
-    options?: Partial<RawLoadOptions>
-  ): Promise<ProcessingPlanResult> {
-    console.log(
-      `📋 Processing plan loaded: ${processingPlan.totalFiles} files across ${processingPlan.batches.length} batches`
-    );
-
-    // Log any warnings from the processing plan
-    if (processingPlan.warnings.length > 0) {
-      console.warn(`⚠️  Processing plan warnings:`, processingPlan.warnings);
-    }
-
-    // For now, delegate to loadBatches. In the future, this could use processing plan metadata
-    // like estimatedDuration, dependencies, or processingOrder for optimization
-    return this.loadBatches(processingPlan.batches, loadRunId, options);
-  }
-
-  /**
    * Helper method to aggregate results from multiple files
    */
   private aggregateResults(results: LoadResult[]) {
@@ -669,12 +659,11 @@ export class RawLoaderService {
 
   // Private helper methods
 
-  private buildLoadOptions(
+  private applyLoadOptionDefaults(
     loadRunId: string,
     options?: Partial<RawLoadOptions>
   ): RawLoadOptions {
     return {
-      extractType: "",
       loadRunId,
       batchSize: options?.batchSize || this.config.processing.batchSize,
       maxRetries: options?.maxRetries || this.config.errorHandling.maxRetries,
