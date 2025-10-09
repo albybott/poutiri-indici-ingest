@@ -358,7 +358,7 @@ export class StagingTransformerService {
         // Transform row
         const transformResult = await this.transformationEngine.transformRow(
           rawRow,
-          handler.transformations
+          handler
         );
 
         if (!transformResult.success) {
@@ -426,7 +426,7 @@ export class StagingTransformerService {
     // Deduplicate transformed rows by natural key to prevent upsert conflicts
     const deduplicatedRows = this.deduplicateByNaturalKey(
       transformedRows,
-      options.conflictColumns || []
+      handler.naturalKeys
     );
 
     // Track deduplication metrics
@@ -435,19 +435,19 @@ export class StagingTransformerService {
     // Load transformed rows to staging table
     let loadSuccess = true;
     if (deduplicatedRows.length > 0) {
-      const columns = this.stagingLoader.getStagingColumns(
-        handler.transformations.map((t) => t.targetColumn)
-      );
+      // Get the target column names for accessing the transformed row data
+      const targetColumns = handler.transformations.map((t) => t.targetColumn);
 
       const loadResult = await this.stagingLoader.loadBatch(
         deduplicatedRows,
-        columns,
+        targetColumns, // Specify the target column names for the staging table
         {
           ...options,
           batchSize: this.config.transformation.batchSize,
           continueOnError: this.config.errorHandling.continueOnError,
         },
-        batchNumber
+        batchNumber,
+        handler.transformations // Pass transformations for column name conversion
       );
 
       loadSuccess = loadResult.success;
@@ -603,8 +603,32 @@ export class StagingTransformerService {
       batchSize: options.batchSize || this.config.transformation.batchSize,
       skipValidation: options.skipValidation ?? false,
       upsertMode: options.upsertMode ?? true,
-      conflictColumns: options.conflictColumns || handler.naturalKeys,
+      conflictColumns:
+        options.conflictColumns ||
+        this.convertToDatabaseColumns(
+          handler.naturalKeys,
+          handler.transformations
+        ),
     };
+  }
+
+  /**
+   * Convert camelCase column names to database column names
+   * TODO: Do we need this? it was added recently - review improve and refactor
+   */
+  private convertToDatabaseColumns(
+    camelCaseColumns: string[],
+    transformations: { sourceColumn: string; targetColumn: string }[]
+  ): string[] {
+    // Create mapping from target column names (TypeScript property names) to source column names (database column names)
+    const targetToSourceMap = new Map(
+      transformations.map((t) => [t.targetColumn, t.sourceColumn])
+    );
+
+    // Convert target column names back to database column names
+    return camelCaseColumns.map(
+      (targetCol) => targetToSourceMap.get(targetCol) || targetCol
+    );
   }
 
   /**

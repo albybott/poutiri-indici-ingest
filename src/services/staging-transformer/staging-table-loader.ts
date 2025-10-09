@@ -35,10 +35,11 @@ export class StagingTableLoader {
    * Load a batch of transformed rows into staging table
    */
   async loadBatch(
-    rows: Record<string, any>[],
-    columns: string[],
+    rows: Record<string, any>[], // Rows to load
+    targetColumns: string[], // Target columns for the staging table
     options: StagingLoadOptions,
-    batchNumber: number
+    batchNumber: number,
+    transformations?: { sourceColumn: string; targetColumn: string }[]
   ): Promise<BatchResult> {
     if (rows.length === 0) {
       return {
@@ -51,13 +52,32 @@ export class StagingTableLoader {
       };
     }
 
-    // Convert rows to values array
-    const values = rows.map((row) => columns.map((col) => row[col] ?? null));
+    // Get database column names for SQL generation
+    // TODO: Do we need this? it was added recently - review improve and refactor
+    const databaseColumns = transformations
+      ? this.getStagingColumns(targetColumns, transformations)
+      : targetColumns;
+
+    // Convert rows to values array using the database column names
+    // This ensures we include lineage columns that were added by getStagingColumns
+    const values = rows.map((row) =>
+      databaseColumns.map((col) => {
+        // For lineage columns, get them directly from the row
+        if (col === "load_run_file_id" || col === "load_ts") {
+          return row[col] ?? null;
+        }
+        // For other columns, map from camelCase to snake_case
+        const camelCaseCol =
+          transformations?.find((t) => t.sourceColumn === col)?.targetColumn ||
+          col;
+        return row[camelCaseCol] ?? null;
+      })
+    );
 
     // Build insert batch
     const batch: InsertBatch = {
       tableName: options.targetTable,
-      columns,
+      columns: databaseColumns, // Use database column names for SQL
       values,
       rowCount: rows.length,
       batchNumber,
@@ -66,10 +86,15 @@ export class StagingTableLoader {
 
     // Use upsert if configured
     if (options.upsertMode && options.conflictColumns) {
+      // Convert update columns to database column names
+      const updateColumns = transformations
+        ? this.getStagingColumns(targetColumns, transformations)
+        : targetColumns;
+
       return await this.loadBatchWithUpsert(
         batch,
         options.conflictColumns,
-        columns,
+        updateColumns,
         options
       );
     }
@@ -92,7 +117,6 @@ export class StagingTableLoader {
     const startTime = Date.now();
 
     try {
-      // Build upsert query
       const { query, paramCount } = this.batchLoader.buildUpsertQuery(
         batch.tableName,
         batch.columns,
@@ -166,10 +190,24 @@ export class StagingTableLoader {
    * Get columns for staging table insert
    * Includes both business columns and lineage FK
    */
-  getStagingColumns(transformedColumns: string[]): string[] {
+  getStagingColumns(
+    transformedColumns: string[],
+    transformations: { sourceColumn: string; targetColumn: string }[]
+  ): string[] {
+    // TODO: Do we need this? it was added recently - review improve and refactor
+    // Create mapping from target column names (TypeScript property names) to source column names (database column names)
+    const targetToSourceMap = new Map(
+      transformations.map((t) => [t.targetColumn, t.sourceColumn])
+    );
+
+    // Convert target column names back to database column names
+    const databaseColumns = transformedColumns.map(
+      (targetCol) => targetToSourceMap.get(targetCol) || targetCol
+    );
+
     const lineageColumns = ["load_run_file_id", "load_ts"];
 
-    return [...transformedColumns, ...lineageColumns];
+    return [...databaseColumns, ...lineageColumns];
   }
 
   /**
